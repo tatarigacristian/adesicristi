@@ -11,5 +11,5 @@ export const config = {
   jwt: {
     secret: process.env.JWT_SECRET || 'change-this',
   },
-  port: parseInt(process.env.PORT || '3001'),
+  port: parseInt(process.env.PORT || '3011'),
 };

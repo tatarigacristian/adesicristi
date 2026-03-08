@@ -1,7 +1,7 @@
 # Tasks - Site Prezentare Nunta
 
 > Ultima actualizare: 2026-03-08
-> Progres general: 27 / 29 task-uri complete
+> Progres general: 28 / 29 task-uri complete
 
 ---
 
@@ -47,7 +47,7 @@
 - [x] **T4.3** Sectiunea "Noi doi" - text + YouTube video embed `High`
 - [x] **T4.4** Sectiunea "Familie" - nasi + parinti `Medium`
 - [x] **T4.5** Sectiunea "Locatii" - 3 carduri cu detalii + buton harta `High`
-- [ ] **T4.6** Drawer harta pe mobil (Google Maps / Apple Maps / Waze) `Medium`
+- [x] **T4.6** Drawer harta pe mobil (Google Maps / Apple Maps / Waze) `Medium`
 - [x] **T4.7** Footer - minimal `Low`
 - [x] **T4.8** Animatii scroll pe toate sectiunile (fade-in, slide-up la intrare in viewport) `Medium`
 
