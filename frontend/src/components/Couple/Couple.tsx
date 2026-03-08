@@ -9,55 +9,31 @@ export default function Couple() {
     <section
       id="couple"
       ref={ref}
-      className="snap-section content-section bg-background animate-on-scroll"
+      className="snap-section content-section bg-background animate-on-scroll !px-0 md:!px-12"
     >
-      <div className="max-w-3xl mx-auto w-full">
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center">
-          {/* Image */}
-          <div className="w-full md:w-1/2">
-            <div className="glass-card p-3">
-              {/* TODO: replace with real couple photo */}
-              <div className="w-full aspect-[4/5] bg-background-soft rounded-lg flex items-center justify-center">
-                <span className="text-text-muted text-sm">Foto cuplu</span>
-              </div>
-            </div>
-          </div>
+      <div className="w-full flex flex-col items-center">
+        <div className="text-center mb-6 px-6">
+          <h2 className="script-font text-4xl text-text-heading mb-3">Noi doi</h2>
+          <p className="text-sm text-foreground/70">
+            Va invitam sa urmariti povestea noastra
+          </p>
+        </div>
 
-          {/* Text */}
-          <div className="w-full md:w-1/2">
-            <h2 className="script-font text-4xl text-text-heading mb-2">Noi doi</h2>
-            <h3 className="serif-font text-lg font-light text-accent tracking-wide mb-4">
-              O calatorie a iubirii
-            </h3>
-            <div className="w-12 h-px bg-accent/40 mb-6"></div>
-            <div className="text-sm leading-relaxed text-foreground/80 space-y-4">
-              <p>
-                Sunt momente in viata pe care le astepti cu sufletul la gura si cu
-                fluturasi in stomac, iar acesta, pentru noi, este unul dintre ele.
-              </p>
-              <p>
-                Incepand cu aceasta zi vom pasi spre viitor cu planuri ambitioase,
-                cu visuri marete si cu forte proaspete, unite.
-              </p>
-              <p>
-                Avem deosebita placere de a va invita sa fiti alaturi de noi in
-                ziua in care sufletele noastre se vor uni.
-              </p>
-              <p>Va asteptam cu drag!</p>
-            </div>
-
-            {/* YouTube embed placeholder */}
-            <div className="mt-8 aspect-video rounded-lg overflow-hidden bg-background-soft flex items-center justify-center border border-border-light">
-              <span className="text-text-muted text-sm">Video YouTube</span>
-              {/*
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/VIDEO_ID"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-              */}
-            </div>
+        {/* YouTube Short embed - cropped to hide overlays */}
+        <div className="w-full max-w-sm md:rounded-lg overflow-hidden border-y md:border border-border-light">
+          <div className="relative overflow-hidden" style={{ paddingBottom: "155%" }}>
+            <iframe
+              className="absolute border-0"
+              style={{
+                top: "-60px",
+                left: "0",
+                width: "100%",
+                height: "calc(100% + 120px)",
+              }}
+              src="https://www.youtube.com/embed/jEj57Rqeuy8?controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen={false}
+            />
           </div>
         </div>
       </div>

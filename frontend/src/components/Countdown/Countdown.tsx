@@ -46,23 +46,23 @@ export default function Countdown({ variant = "section" }: { variant?: "section"
 
   if (variant === "sidebar") {
     return (
-      <div className="border border-border-light rounded-lg px-4 py-5">
-        <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
+      <div className="bg-background rounded-xl px-5 py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)] border border-border-light/50">
+        <p className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-4 font-medium">
           Au mai ramas
         </p>
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-2">
           {units.map((unit, i) => (
-            <div key={unit.key} className="flex items-center gap-1">
-              <div className="text-center">
-                <span className="block text-2xl font-light serif-font text-text-heading tabular-nums">
+            <div key={unit.key} className="flex items-center gap-2">
+              <div className="text-center min-w-[2.5rem]">
+                <span className="block text-3xl font-light serif-font text-text-heading tabular-nums">
                   {unit.key === "days" ? timeLeft[unit.key] : pad(timeLeft[unit.key])}
                 </span>
-                <span className="block text-[0.55rem] tracking-[0.2em] uppercase text-text-muted">
+                <span className="block mt-1 text-[0.5rem] tracking-[0.25em] uppercase text-text-muted">
                   {unit.label}
                 </span>
               </div>
               {i < units.length - 1 && (
-                <span className="text-lg text-border mx-1 -mt-4">:</span>
+                <span className="text-xl text-accent/40 -mt-4">:</span>
               )}
             </div>
           ))}

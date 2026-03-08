@@ -21,10 +21,7 @@ export default function Home() {
         {/* Right content panel */}
         <main className="right-panel">
           <Hero />
-          {/* Countdown only shown as section on mobile (sidebar has it on desktop) */}
-          <div className="lg:hidden">
-            <Countdown variant="section" />
-          </div>
+          {/* Countdown only on desktop sidebar */}
           <Couple />
           <Family />
           <Locations />

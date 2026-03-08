@@ -2,7 +2,7 @@
 
 export default function Footer() {
   return (
-    <section className="content-section bg-background min-h-[50vh]">
+    <section className="snap-section content-section bg-background min-h-[50vh]">
       <div className="text-center">
         <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
           Va multumim din suflet

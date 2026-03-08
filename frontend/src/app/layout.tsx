@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Great_Vibes, Montserrat } from "next/font/google";
+import { Cormorant_Garamond, Alex_Brush, Montserrat } from "next/font/google";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -9,8 +9,8 @@ const cormorant = Cormorant_Garamond({
   style: ["normal", "italic"],
 });
 
-const greatVibes = Great_Vibes({
-  variable: "--font-great-vibes",
+const alexBrush = Alex_Brush({
+  variable: "--font-script",
   subsets: ["latin", "latin-ext"],
   weight: "400",
 });
@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="ro">
       <body
-        className={`${cormorant.variable} ${greatVibes.variable} ${montserrat.variable} antialiased`}
+        className={`${cormorant.variable} ${alexBrush.variable} ${montserrat.variable} antialiased`}
       >
         {children}
       </body>

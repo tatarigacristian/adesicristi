@@ -3,7 +3,7 @@
 import { useState, useRef, FormEvent, KeyboardEvent } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
 type FormState = "idle" | "submitting" | "success" | "error";
 

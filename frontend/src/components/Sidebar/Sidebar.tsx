@@ -41,38 +41,52 @@ export default function Sidebar() {
 
   return (
     <aside className="left-panel">
-      <div className="flex flex-col items-center text-center px-8">
-        {/* Hero info */}
-        <p className="text-[0.7rem] tracking-[0.3em] uppercase text-text-muted mb-3">
+      <div className="flex flex-col items-center text-center px-8 w-full">
+        {/* "Ne casatorim!" label */}
+        <p className="text-[0.8rem] tracking-[0.35em] uppercase text-foreground/50 serif-font font-medium mb-2">
           Ne casatorim!
         </p>
-        <h1 className="script-font text-5xl lg:text-6xl text-text-heading mb-4 leading-tight">
+
+        {/* Names - large script font */}
+        <h1 className="script-font text-6xl xl:text-7xl text-text-heading mb-4 leading-tight">
           Ade & Cristi
         </h1>
-        <div className="elegant-divider">
+
+        {/* Heart divider */}
+        <div className="elegant-divider mb-4">
           <span></span>
           <span className="heart-icon">&#9829;</span>
           <span></span>
         </div>
-        <p className="serif-font text-xl text-text-heading font-light mt-2 mb-1 tracking-wide">
+
+        {/* Date - large serif */}
+        <p className="serif-font text-2xl text-text-heading font-light tracking-wide mb-2">
           4 Iulie 2026
         </p>
-        <p className="text-[0.75rem] text-text-muted mt-1">
-          {/* TODO: add venue */}
-        </p>
+
+        {/* Location */}
+        <div className="flex flex-col items-center gap-0.5 text-foreground/50 mb-8">
+          <div className="flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span className="serif-font text-sm">Iasi</span>
+          </div>
+        </div>
 
         {/* Countdown */}
-        <div className="mt-8 mb-10 w-full">
+        <div className="w-full max-w-xs mb-10">
           <Countdown variant="sidebar" />
         </div>
 
-        {/* Navigation */}
+        {/* Navigation - centered */}
         <nav className="w-full">
-          <ul className="flex flex-col items-start gap-3 pl-4">
+          <ul className="flex flex-col items-center gap-4">
             {NAV_ITEMS.map((item) => (
               <li key={item.href} className="flex items-center gap-3">
                 <span
-                  className={`w-2 h-2 rounded-full transition-colors ${
+                  className={`w-2 h-2 rounded-full transition-colors duration-300 ${
                     activeSection === item.href.slice(1)
                       ? "bg-accent-rose"
                       : "bg-border"
@@ -81,7 +95,7 @@ export default function Sidebar() {
                 <a
                   href={item.href}
                   onClick={(e) => handleClick(e, item.href)}
-                  className={`text-[0.7rem] tracking-[0.2em] uppercase transition-colors ${
+                  className={`text-[0.7rem] tracking-[0.2em] uppercase transition-colors duration-300 cursor-pointer ${
                     activeSection === item.href.slice(1)
                       ? "text-text-heading font-medium"
                       : "text-text-muted hover:text-text-heading"
