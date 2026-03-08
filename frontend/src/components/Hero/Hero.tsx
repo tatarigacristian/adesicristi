@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-export default function Hero() {
+interface GuestData {
+  nume: string;
+  prenume: string;
+  plus_one: boolean;
+  intro: string | null;
+  partner: { nume: string; prenume: string } | null;
+}
+
+export default function Hero({ guest }: { guest?: GuestData | null }) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -97,10 +105,25 @@ export default function Hero() {
           </div>
 
           <p className="serif-font text-[0.95rem] leading-[1.9] text-foreground/75 mt-6 max-w-md mx-auto">
-            Dragii nostri, cu bucurie in suflet va anuntam ca ne casatorim!
-            Ne-ar face o deosebita placere sa fiti alaturi de noi in aceasta zi
-            speciala, sa impartasim impreuna emotia si fericirea acestui moment
-            unic.
+            {guest ? (
+              <>
+                Dragii nostri {guest.prenume} {guest.nume}
+                {guest.partner && <> si {guest.partner.prenume} {guest.partner.nume}</>}
+                , cu bucurie in suflet va anuntam ca ne casatorim!
+                {guest.intro ? (
+                  <> {guest.intro}</>
+                ) : (
+                  <> Ne-ar face o deosebita placere sa fiti alaturi de noi in aceasta zi speciala, sa impartasim impreuna emotia si fericirea acestui moment unic.</>
+                )}
+              </>
+            ) : (
+              <>
+                Dragii nostri, cu bucurie in suflet va anuntam ca ne casatorim!
+                Ne-ar face o deosebita placere sa fiti alaturi de noi in aceasta zi
+                speciala, sa impartasim impreuna emotia si fericirea acestui moment
+                unic.
+              </>
+            )}
           </p>
         </div>
 

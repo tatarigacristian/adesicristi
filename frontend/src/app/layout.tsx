@@ -32,8 +32,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ro">
+    <html lang="ro" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className={`${cormorant.variable} ${alexBrush.variable} ${montserrat.variable} antialiased`}
       >
         {children}

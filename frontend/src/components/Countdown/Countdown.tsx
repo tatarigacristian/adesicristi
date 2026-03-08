@@ -36,13 +36,20 @@ const units = [
 ] as const;
 
 export default function Countdown({ variant = "section" }: { variant?: "section" | "sidebar" }) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft);
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
   const ref = useScrollAnimation<HTMLElement>();
 
   useEffect(() => {
+    setTimeLeft(calculateTimeLeft());
     const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  if (!timeLeft) {
+    return variant === "sidebar" ? (
+      <div className="bg-background rounded-xl px-5 py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)] border border-border-light/50 min-h-[6rem]" />
+    ) : null;
+  }
 
   if (variant === "sidebar") {
     return (

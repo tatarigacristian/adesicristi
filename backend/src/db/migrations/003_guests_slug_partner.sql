@@ -1,0 +1,5 @@
+USE adesicristi;
+
+ALTER TABLE guests ADD COLUMN slug VARCHAR(200) NULL UNIQUE;
+ALTER TABLE guests ADD COLUMN partner_id INT NULL;
+ALTER TABLE guests ADD CONSTRAINT fk_partner FOREIGN KEY (partner_id) REFERENCES guests(id) ON DELETE SET NULL;
