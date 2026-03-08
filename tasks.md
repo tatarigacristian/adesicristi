@@ -1,7 +1,7 @@
 # Tasks - Site Prezentare Nunta
 
 > Ultima actualizare: 2026-03-08
-> Progres general: 6 / 29 task-uri complete
+> Progres general: 10 / 29 task-uri complete
 
 ---
 
@@ -32,10 +32,10 @@
 ## Faza 3: Frontend - Layout & Navigare
 > Prioritate: **High** | Dependente: Faza 1 (T1.1)
 
-- [ ] **T3.1** Layout principal cu snap scrolling (CSS native) `High`
-- [ ] **T3.2** Componenta Navigation - meniu cu anchor links `High`
-- [ ] **T3.3** Smooth scroll behavior `Medium`
-- [ ] **T3.4** Responsive breakpoints Tailwind (mobile-first) `High`
+- [x] **T3.1** Layout principal cu snap scrolling (CSS native) `High`
+- [x] **T3.2** Componenta Navigation - meniu cu anchor links `High`
+- [x] **T3.3** Smooth scroll behavior `Medium`
+- [x] **T3.4** Responsive breakpoints Tailwind (mobile-first) `High`
 
 ---
 
