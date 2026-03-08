@@ -1,7 +1,7 @@
 # Tasks - Site Prezentare Nunta
 
 > Ultima actualizare: 2026-03-08
-> Progres general: 10 / 29 task-uri complete
+> Progres general: 27 / 29 task-uri complete
 
 ---
 
@@ -20,12 +20,12 @@
 ## Faza 2: Backend API
 > Prioritate: **High** | Dependente: Faza 1
 
-- [ ] **T2.1** Endpoint POST `/api/auth/login` - autentificare admin cu JWT `High`
-- [ ] **T2.2** Middleware autentificare JWT `High`
-- [ ] **T2.3** Endpoint POST `/api/rsvp` - salvare confirmare `High`
-- [ ] **T2.4** Endpoint GET `/api/admin/rsvp` - lista confirmari (protejat) `Medium`
-- [ ] **T2.5** Validare input pe toate endpoint-urile `Medium`
-- [ ] **T2.6** CORS configurare pentru frontend `Medium`
+- [x] **T2.1** Endpoint POST `/api/auth/login` - autentificare admin cu JWT `High`
+- [x] **T2.2** Middleware autentificare JWT `High`
+- [x] **T2.3** Endpoint POST `/api/rsvp` - salvare confirmare `High`
+- [x] **T2.4** Endpoint GET `/api/admin/rsvp` - lista confirmari (protejat) `Medium`
+- [x] **T2.5** Validare input pe toate endpoint-urile `Medium`
+- [x] **T2.6** CORS configurare pentru frontend `Medium`
 
 ---
 
@@ -42,26 +42,26 @@
 ## Faza 4: Frontend - Sectiuni
 > Prioritate: **High** | Dependente: Faza 3
 
-- [ ] **T4.1** Hero Section - imagine fundal, titlu, nume cuplu, data, CTA button `High`
-- [ ] **T4.2** Countdown Timer - logica JS + UI (target: 4.07.2026) `High`
-- [ ] **T4.3** Sectiunea "Noi doi" - text + YouTube video embed `High`
-- [ ] **T4.4** Sectiunea "Familie" - nasi + parinti `Medium`
-- [ ] **T4.5** Sectiunea "Locatii" - 3 carduri cu detalii + buton harta `High`
+- [x] **T4.1** Hero Section - imagine fundal, titlu, nume cuplu, data, CTA button `High`
+- [x] **T4.2** Countdown Timer - logica JS + UI (target: 4.07.2026) `High`
+- [x] **T4.3** Sectiunea "Noi doi" - text + YouTube video embed `High`
+- [x] **T4.4** Sectiunea "Familie" - nasi + parinti `Medium`
+- [x] **T4.5** Sectiunea "Locatii" - 3 carduri cu detalii + buton harta `High`
 - [ ] **T4.6** Drawer harta pe mobil (Google Maps / Apple Maps / Waze) `Medium`
-- [ ] **T4.7** Footer - minimal `Low`
-- [ ] **T4.8** Animatii scroll pe toate sectiunile (fade-in, slide-up la intrare in viewport) `Medium`
+- [x] **T4.7** Footer - minimal `Low`
+- [x] **T4.8** Animatii scroll pe toate sectiunile (fade-in, slide-up la intrare in viewport) `Medium`
 
 ---
 
 ## Faza 5: Frontend - RSVP Form
 > Prioritate: **High** | Dependente: Faza 2 (T2.3), Faza 3
 
-- [ ] **T5.1** Formular RSVP - UI campuri (dropdown, inputs, textarea) `High`
-- [ ] **T5.2** Logica conditionala - camp partener vizibil doar la 2 persoane `High`
-- [ ] **T5.3** Validare client-side `Medium`
-- [ ] **T5.4** Integrare cu API POST `/api/rsvp` `High`
-- [ ] **T5.5** Stare post-submit (disable campuri + mesaj multumire) `Medium`
-- [ ] **T5.6** Comportament tastatura (Enter navigheaza intre campuri) `Low`
+- [x] **T5.1** Formular RSVP - UI campuri (dropdown, inputs, textarea) `High`
+- [x] **T5.2** Logica conditionala - camp partener vizibil doar la 2 persoane `High`
+- [x] **T5.3** Validare client-side `Medium`
+- [x] **T5.4** Integrare cu API POST `/api/rsvp` `High`
+- [x] **T5.5** Stare post-submit (disable campuri + mesaj multumire) `Medium`
+- [x] **T5.6** Comportament tastatura (Enter navigheaza intre campuri) `Low`
 
 ---
 
