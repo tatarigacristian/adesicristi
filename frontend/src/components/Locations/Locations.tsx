@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
+import SectionCorners from "@/components/Ornaments/SectionCorners";
 
 interface LocationCard {
   title: string;
@@ -88,13 +89,14 @@ function LocationCardContent({
   onMapClick: (loc: LocationCard) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-accent">
+    <div className="relative overflow-hidden rounded-xl border border-accent bg-background">
       <img
         src={loc.image}
         alt={loc.title}
-        className="w-full h-96 sm:h-96 md:h-44 object-cover"
+        className="w-full h-96 sm:h-96 md:h-80 object-cover"
       />
-      <div className="px-4 py-3 sm:p-5 text-center bg-accent-light">
+      <SectionCorners size="w-[30px] h-[30px]" offset={0} />
+      <div className="px-4 py-3 sm:p-5 text-center">
         <h3 className="serif-font text-base sm:text-lg text-text-heading mb-1">
           {loc.title}
         </h3>
