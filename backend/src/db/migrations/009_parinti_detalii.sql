@@ -1,0 +1,9 @@
+-- Structured parent names (bride and groom sides)
+ALTER TABLE wedding_settings ADD COLUMN tata_mireasa_nume VARCHAR(200) NULL;
+ALTER TABLE wedding_settings ADD COLUMN tata_mireasa_prenume VARCHAR(200) NULL;
+ALTER TABLE wedding_settings ADD COLUMN mama_mireasa_nume VARCHAR(200) NULL;
+ALTER TABLE wedding_settings ADD COLUMN mama_mireasa_prenume VARCHAR(200) NULL;
+ALTER TABLE wedding_settings ADD COLUMN tata_mire_nume VARCHAR(200) NULL;
+ALTER TABLE wedding_settings ADD COLUMN tata_mire_prenume VARCHAR(200) NULL;
+ALTER TABLE wedding_settings ADD COLUMN mama_mire_nume VARCHAR(200) NULL;
+ALTER TABLE wedding_settings ADD COLUMN mama_mire_prenume VARCHAR(200) NULL;

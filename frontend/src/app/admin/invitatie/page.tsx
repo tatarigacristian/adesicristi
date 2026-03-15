@@ -25,6 +25,14 @@ interface WeddingSettings {
   nasa_prenume: string | null;
   parinti_mireasa: string | null;
   parinti_mire: string | null;
+  tata_mireasa_nume: string | null;
+  tata_mireasa_prenume: string | null;
+  mama_mireasa_nume: string | null;
+  mama_mireasa_prenume: string | null;
+  tata_mire_nume: string | null;
+  tata_mire_prenume: string | null;
+  mama_mire_nume: string | null;
+  mama_mire_prenume: string | null;
   ceremonie_data: string | null;
   ceremonie_ora: string | null;
   ceremonie_adresa: string | null;
@@ -186,20 +194,29 @@ function InvitatieContent() {
           </p>
 
           {/* Parents */}
-          {(settings.parinti_mireasa || settings.parinti_mire) && (
-            <div style={{ display: "flex", justifyContent: "center", gap: "1.5cm", width: "100%", marginTop: "0.1cm" }}>
-              {settings.parinti_mireasa && (
-                <p style={{ fontSize: "0.5rem", fontFamily: s.mont, letterSpacing: "0.1em", textTransform: s.upper, fontWeight: 400, color: "#444" }}>
-                  {settings.parinti_mireasa}
-                </p>
-              )}
-              {settings.parinti_mire && (
-                <p style={{ fontSize: "0.5rem", fontFamily: s.mont, letterSpacing: "0.1em", textTransform: s.upper, fontWeight: 400, color: "#444" }}>
-                  {settings.parinti_mire}
-                </p>
-              )}
-            </div>
-          )}
+          {(() => {
+            const parintiMireasa = settings.tata_mireasa_prenume
+              ? `${settings.tata_mireasa_prenume} și ${settings.mama_mireasa_prenume} ${settings.tata_mireasa_nume}`
+              : settings.parinti_mireasa;
+            const parintiMire = settings.tata_mire_prenume
+              ? `${settings.tata_mire_prenume} și ${settings.mama_mire_prenume} ${settings.tata_mire_nume}`
+              : settings.parinti_mire;
+            if (!parintiMireasa && !parintiMire) return null;
+            return (
+              <div style={{ display: "flex", justifyContent: "center", gap: "1.5cm", width: "100%", marginTop: "0.1cm" }}>
+                {parintiMireasa && (
+                  <p style={{ fontSize: "0.5rem", fontFamily: s.mont, letterSpacing: "0.1em", textTransform: s.upper, fontWeight: 400, color: "#444" }}>
+                    {parintiMireasa}
+                  </p>
+                )}
+                {parintiMire && (
+                  <p style={{ fontSize: "0.5rem", fontFamily: s.mont, letterSpacing: "0.1em", textTransform: s.upper, fontWeight: 400, color: "#444" }}>
+                    {parintiMire}
+                  </p>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Nasi */}
           {(settings.nas_prenume || settings.nasa_prenume) && (

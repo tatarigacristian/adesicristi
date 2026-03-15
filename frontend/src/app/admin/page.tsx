@@ -230,6 +230,8 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
   const [editGuest, setEditGuest] = useState<Guest | null>(null);
   const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "" });
   const [saving, setSaving] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<Guest | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<GuestFilter>("all");
   const [page, setPage] = useState(1);
@@ -319,9 +321,12 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
     fetchGuests();
   }
 
-  async function handleDelete(id: number) {
-    if (!confirm("Esti sigur ca vrei sa stergi acest invitat?")) return;
-    await fetch(`${API_URL}/api/admin/guests/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+  async function handleDelete() {
+    if (!deleteConfirm) return;
+    setDeleting(true);
+    await fetch(`${API_URL}/api/admin/guests/${deleteConfirm.id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+    setDeleting(false);
+    setDeleteConfirm(null);
     fetchGuests();
   }
 
@@ -423,6 +428,38 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
         </div>
       )}
 
+      {/* Delete confirmation modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+          onClick={() => setDeleteConfirm(null)}>
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center" onClick={(e) => e.stopPropagation()}>
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+            </div>
+            <h3 className="serif-font text-lg text-text-heading mb-2">Șterge invitatul</h3>
+            <p className="text-sm text-text-muted mb-1">
+              Ești sigur că vrei să ștergi invitatul
+            </p>
+            <p className="text-sm font-medium text-text-heading mb-5">
+              {deleteConfirm.prenume} {deleteConfirm.nume}?
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteConfirm(null)}
+                className="flex-1 border border-border py-2.5 rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer">
+                Anulează
+              </button>
+              <button onClick={handleDelete} disabled={deleting}
+                className="flex-1 bg-red-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 cursor-pointer">
+                {deleting ? "Se șterge..." : "Șterge"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Table (desktop) / Cards (mobile) */}
       <div className="family-card p-0 overflow-hidden">
         {paginated.length === 0 ? (
@@ -481,12 +518,20 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                           </>
                         )}
                         <button onClick={() => openEdit(g)}
-                          className="text-xs text-accent hover:text-accent-light transition-colors cursor-pointer p-1">
-                          Editează
+                          className="text-foreground/50 hover:text-accent transition-colors cursor-pointer p-1"
+                          title="Editează">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
                         </button>
-                        <button onClick={() => handleDelete(g.id)}
-                          className="text-xs text-accent-rose hover:text-accent-rose-light transition-colors cursor-pointer p-1">
-                          Șterge
+                        <button onClick={() => setDeleteConfirm(g)}
+                          className="text-foreground/50 hover:text-accent-rose transition-colors cursor-pointer p-1"
+                          title="Șterge">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
                         </button>
                       </div>
                     </div>
@@ -567,12 +612,20 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                             </>
                           )}
                           <button onClick={() => openEdit(g)}
-                            className="text-xs text-accent hover:text-accent-light transition-colors cursor-pointer mr-3">
-                            Editează
+                            className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
+                            title="Editează">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
                           </button>
-                          <button onClick={() => handleDelete(g.id)}
-                            className="text-xs text-accent-rose hover:text-accent-rose-light transition-colors cursor-pointer">
-                            Șterge
+                          <button onClick={() => setDeleteConfirm(g)}
+                            className="text-xs text-foreground/50 hover:text-accent-rose transition-colors cursor-pointer"
+                            title="Șterge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            </svg>
                           </button>
                         </td>
                       </tr>
@@ -801,6 +854,14 @@ interface WeddingSettingsData {
   link_youtube_video: string | null;
   parinti_mireasa: string | null;
   parinti_mire: string | null;
+  tata_mireasa_nume: string | null;
+  tata_mireasa_prenume: string | null;
+  mama_mireasa_nume: string | null;
+  mama_mireasa_prenume: string | null;
+  tata_mire_nume: string | null;
+  tata_mire_prenume: string | null;
+  mama_mire_nume: string | null;
+  mama_mire_prenume: string | null;
   confirmare_pana_la: string | null;
   contact_info: string | null;
   color_main: string;
@@ -898,6 +959,14 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
     link_youtube_video: "",
     parinti_mireasa: "",
     parinti_mire: "",
+    tata_mireasa_nume: "",
+    tata_mireasa_prenume: "",
+    mama_mireasa_nume: "",
+    mama_mireasa_prenume: "",
+    tata_mire_nume: "",
+    tata_mire_prenume: "",
+    mama_mire_nume: "",
+    mama_mire_prenume: "",
     confirmare_pana_la: "",
     contact_info: "",
     color_main: "#FDF8F7",
@@ -938,6 +1007,14 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
           link_youtube_video: data.link_youtube_video || "",
           parinti_mireasa: data.parinti_mireasa || "",
           parinti_mire: data.parinti_mire || "",
+          tata_mireasa_nume: data.tata_mireasa_nume || "",
+          tata_mireasa_prenume: data.tata_mireasa_prenume || "",
+          mama_mireasa_nume: data.mama_mireasa_nume || "",
+          mama_mireasa_prenume: data.mama_mireasa_prenume || "",
+          tata_mire_nume: data.tata_mire_nume || "",
+          tata_mire_prenume: data.tata_mire_prenume || "",
+          mama_mire_nume: data.mama_mire_nume || "",
+          mama_mire_prenume: data.mama_mire_prenume || "",
           confirmare_pana_la: data.confirmare_pana_la ? data.confirmare_pana_la.split("T")[0] : "",
           contact_info: data.contact_info || "",
           color_main: data.color_main || "#FDF8F7",
@@ -1060,11 +1137,27 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
           <SettingsInput label="Link Google Maps" value={form.petrecere_google_maps} onChange={updateForm("petrecere_google_maps")} placeholder="https://maps.app.goo.gl/..." />
         </SettingsSection>
 
-        {/* Parinti */}
-        <SettingsSection title="Părinți">
+        {/* Parinti mireasa */}
+        <SettingsSection title="Părinții miresei">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Părinți mireasă" value={form.parinti_mireasa} onChange={updateForm("parinti_mireasa")} placeholder="Vasile și Veronica Pop" />
-            <SettingsInput label="Părinți mire" value={form.parinti_mire} onChange={updateForm("parinti_mire")} placeholder="Alexandru și Marieta Budai" />
+            <SettingsInput label="Prenume tată" value={form.tata_mireasa_prenume} onChange={updateForm("tata_mireasa_prenume")} placeholder="Vasile" />
+            <SettingsInput label="Nume tată" value={form.tata_mireasa_nume} onChange={updateForm("tata_mireasa_nume")} placeholder="Pop" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <SettingsInput label="Prenume mamă" value={form.mama_mireasa_prenume} onChange={updateForm("mama_mireasa_prenume")} placeholder="Veronica" />
+            <SettingsInput label="Nume mamă" value={form.mama_mireasa_nume} onChange={updateForm("mama_mireasa_nume")} placeholder="Pop" />
+          </div>
+        </SettingsSection>
+
+        {/* Parinti mire */}
+        <SettingsSection title="Părinții mirelui">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <SettingsInput label="Prenume tată" value={form.tata_mire_prenume} onChange={updateForm("tata_mire_prenume")} placeholder="Alexandru" />
+            <SettingsInput label="Nume tată" value={form.tata_mire_nume} onChange={updateForm("tata_mire_nume")} placeholder="Budai" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <SettingsInput label="Prenume mamă" value={form.mama_mire_prenume} onChange={updateForm("mama_mire_prenume")} placeholder="Marieta" />
+            <SettingsInput label="Nume mamă" value={form.mama_mire_nume} onChange={updateForm("mama_mire_nume")} placeholder="Budai" />
           </div>
         </SettingsSection>
 
