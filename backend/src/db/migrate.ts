@@ -52,7 +52,22 @@ export async function runMigrations() {
         console.log(`  Skipping: ${statement.substring(0, 50)}...`);
         continue;
       }
-      await pool.query(statement);
+      try {
+        await pool.query(statement);
+      } catch (err: any) {
+        // Ignore "already exists" errors for idempotent migrations
+        const ignorable = [
+          1060, // Duplicate column name
+          1061, // Duplicate key name
+          1050, // Table already exists
+          1062, // Duplicate entry (for unique constraints)
+        ];
+        if (ignorable.includes(err.errno)) {
+          console.log(`  Ignored (already applied): ${err.sqlMessage}`);
+        } else {
+          throw err;
+        }
+      }
     }
 
     await pool.query('INSERT INTO _migrations (name) VALUES (?)', [file]);
