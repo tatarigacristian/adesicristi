@@ -42,10 +42,31 @@ export default function Hero({
 
   return (
     <section className="snap-section content-section bg-background relative overflow-hidden">
-      <div className="absolute top-8 left-8 w-16 h-16 border-t border-l border-button/30 rounded-tl-sm" />
-      <div className="absolute top-8 right-8 w-16 h-16 border-t border-r border-button/30 rounded-tr-sm" />
-      <div className="absolute bottom-8 left-8 w-16 h-16 border-b border-l border-button/30 rounded-bl-sm" />
-      <div className="absolute bottom-8 right-8 w-16 h-16 border-b border-r border-button/30 rounded-br-sm" />
+      {/* Corner ornaments */}
+      <svg className="absolute top-6 left-6 w-[45px] h-[45px] text-button/40" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
+        <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="currentColor" strokeWidth="0.5" />
+        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="currentColor" strokeWidth="0.4" opacity="0.6" />
+        <circle cx="8" cy="8" r="1.2" fill="currentColor" opacity="0.5" />
+      </svg>
+      <svg className="absolute top-6 right-6 w-[45px] h-[45px] text-button/40 -scale-x-100" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
+        <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="currentColor" strokeWidth="0.5" />
+        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="currentColor" strokeWidth="0.4" opacity="0.6" />
+        <circle cx="8" cy="8" r="1.2" fill="currentColor" opacity="0.5" />
+      </svg>
+      <svg className="absolute bottom-6 left-6 w-[45px] h-[45px] text-button/40 -scale-y-100" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
+        <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="currentColor" strokeWidth="0.5" />
+        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="currentColor" strokeWidth="0.4" opacity="0.6" />
+        <circle cx="8" cy="8" r="1.2" fill="currentColor" opacity="0.5" />
+      </svg>
+      <svg className="absolute bottom-6 right-6 w-[45px] h-[45px] text-button/40 -scale-100" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
+        <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="currentColor" strokeWidth="0.5" />
+        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="currentColor" strokeWidth="0.4" opacity="0.6" />
+        <circle cx="8" cy="8" r="1.2" fill="currentColor" opacity="0.5" />
+      </svg>
 
       <div
         className={`max-w-lg mx-auto text-center transition-all duration-1000 ease-out ${
@@ -76,10 +97,20 @@ export default function Hero({
             isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
           }`}
         >
-          <div className="monogram-ring w-32 h-32 mx-auto rounded-full flex items-center justify-center">
-            <div className="w-[7rem] h-[7rem] rounded-full border border-button/30 flex items-center justify-center bg-background">
-              <span className="script-font text-4xl text-button tracking-wide">
-                {initialMireasa} <span className="serif-font text-lg text-button/80 italic">&</span> {initialMire}
+          <div className="relative w-32 h-32 mx-auto">
+            <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
+              <circle cx="80" cy="80" r="68" className="stroke-button/25" strokeWidth="0.3" fill="none" />
+              <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" className="fill-button/60" />
+              <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" className="fill-button/60" />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center gap-2">
+              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">
+                {initialMireasa}
+              </span>
+              <span className="script-font text-lg text-button/80 italic">&amp;</span>
+              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">
+                {initialMire}
               </span>
             </div>
           </div>
