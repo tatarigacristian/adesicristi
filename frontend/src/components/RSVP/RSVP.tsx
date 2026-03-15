@@ -5,6 +5,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, getCoupleNames } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import Flourish from "@/components/Ornaments/Flourish";
+import SectionCorners from "@/components/Ornaments/SectionCorners";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -290,7 +291,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     return (
       <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
-          <div className="glass-card py-12">
+          <div className="relative glass-card py-12">
+            <SectionCorners size="w-[30px] h-[30px]" offset={0} />
             <p className="text-sm text-text-muted">Se încarcă...</p>
           </div>
         </div>
@@ -303,7 +305,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     return (
       <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
-          <div className="glass-card py-12">
+          <div className="relative glass-card py-12">
+            <SectionCorners size="w-[30px] h-[30px]" offset={0} />
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Mulțumim pentru confirmare!
             </p>
@@ -336,7 +339,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     return (
       <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
-          <div className="glass-card py-12">
+          <div className="relative glass-card py-12">
+            <SectionCorners size="w-[30px] h-[30px]" offset={0} />
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Prezența anulată
             </p>
@@ -357,7 +361,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     return (
       <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
-          <div className="glass-card py-12">
+          <div className="relative glass-card py-12">
+            <SectionCorners size="w-[30px] h-[30px]" offset={0} />
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Am primit răspunsul tău
             </p>
@@ -380,7 +385,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       className="snap-section content-section bg-background animate-on-scroll"
     >
       <div className="max-w-lg mx-auto w-full">
-        <div className="glass-card">
+        <div className="relative glass-card">
+          <SectionCorners size="w-[30px] h-[30px]" offset={0} />
           <div className="text-center mb-6">
             <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
               Confirmare

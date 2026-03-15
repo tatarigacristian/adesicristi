@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import SectionCorners from "@/components/Ornaments/SectionCorners";
 
 const DEFAULT_WEDDING_ISO = "2026-07-04T11:00:00";
 
@@ -70,7 +71,8 @@ export default function Countdown({
 
   if (variant === "sidebar") {
     return (
-      <div className="family-card rounded-xl !px-5 !py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+      <div className="relative family-card rounded-xl !px-5 !py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+        <SectionCorners size="w-[30px] h-[30px]" offset={0} />
         <p className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-4 font-medium">
           Au mai ramas
         </p>
