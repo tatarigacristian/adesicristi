@@ -122,7 +122,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
 
           {/* Timeline — vertically centered with video on desktop */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-end lg:self-center">
-            {/* Mobile: single item with fade */}
+            {/* Mobile: single item with fade, no icons/dots */}
             <div className="lg:hidden flex flex-col items-center">
               {(() => {
                 const item = timeline[activeTimelineIndex];
@@ -133,12 +133,6 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                       timelineFading ? "opacity-0" : "opacity-100"
                     }`}
                   >
-                    <div
-                      className={`w-[36px] h-[36px] rounded-full flex items-center justify-center mb-3
-                        ${isLast ? "bg-button text-white" : "bg-button/70 text-white"}`}
-                    >
-                      <TimelineIcon icon={item.icon} />
-                    </div>
                     <p className="text-[0.6rem] tracking-[0.2em] uppercase text-text-muted mb-1">
                       {formatDate(item.date)}
                     </p>
@@ -148,19 +142,6 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                   </div>
                 );
               })()}
-              {/* Dots indicator */}
-              <div className="flex items-center gap-2 mt-4">
-                {timeline.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`rounded-full transition-all duration-300 ${
-                      activeTimelineIndex === i
-                        ? "w-5 h-1.5 bg-button"
-                        : "w-1.5 h-1.5 bg-border"
-                    }`}
-                  />
-                ))}
-              </div>
             </div>
 
             {/* Desktop: full vertical timeline */}
