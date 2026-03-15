@@ -46,7 +46,7 @@ export default function Home() {
           <Family settings={settings} />
           <Locations settings={settings} />
           <RSVP settings={settings} />
-          <Footer />
+          <Footer settings={settings} />
         </main>
       </div>
     </>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, formatDate } from "@/utils/settings";
+import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 
 const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/embed/jEj57Rqeuy8";
 
@@ -96,7 +97,8 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
     >
       <div className="w-full max-w-5xl mx-auto px-6">
         <div className="text-center mb-10">
-          <h2 className="script-font text-4xl text-text-heading mb-3">Noi doi</h2>
+          <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-3">Noi doi</h2>
+          <SmallFlourish className="mx-auto mb-3" />
           <p className="text-sm text-foreground">
             Vă invităm să urmăriți povestea noastră
           </p>

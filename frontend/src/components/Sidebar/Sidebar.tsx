@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Countdown from "../Countdown/Countdown";
 import { WeddingSettings, getCoupleNames, formatDate, getWeddingDateISO } from "@/utils/settings";
+import Flourish from "@/components/Ornaments/Flourish";
 
 const NAV_ITEMS = [
   { label: "Noi doi", href: "#couple" },
@@ -57,11 +58,7 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
           {couple.display}
         </h1>
 
-        <div className="elegant-divider mb-4">
-          <span></span>
-          <span className="heart-icon">&#9829;</span>
-          <span></span>
-        </div>
+        <Flourish size="sm" className="mb-4" />
 
         <p className="serif-font text-2xl text-text-heading font-light tracking-wide mb-2">
           {dateDisplay}

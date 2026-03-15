@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, formatDate } from "@/utils/settings";
+import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 
 interface LocationCard {
   title: string;
@@ -97,8 +98,14 @@ function LocationCardContent({
         <h3 className="serif-font text-lg text-text-heading mb-2">
           {loc.title}
         </h3>
-        <p className="text-xs text-text-muted flex items-center justify-center gap-1 mb-1">
-          <span>&#128197;</span> {loc.date}{loc.time ? `, ${loc.time}` : ""}
+        <p className="text-xs text-text-muted flex items-center justify-center gap-1.5 mb-1">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button/60">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          {loc.date}{loc.time ? `, ${loc.time}` : ""}
         </p>
         <p className="text-xs text-foreground mb-4 leading-relaxed">
           {loc.address}
@@ -108,7 +115,11 @@ function LocationCardContent({
             onClick={() => onMapClick(loc)}
             className="btn-glass text-xs cursor-pointer"
           >
-            <span>&#128204;</span> Vezi pe hartă
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            Vezi pe hartă
           </button>
         )}
       </div>
@@ -180,6 +191,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
             <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
               Detaliile evenimentului
             </h2>
+            <SmallFlourish className="mx-auto mb-3" />
             <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
               Când și unde
             </p>
@@ -256,7 +268,10 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border-light hover:bg-background-soft transition-colors"
               >
-                <span className="text-xl">📍</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
                 <span className="text-sm font-medium text-text-heading">Google Maps</span>
               </a>
               <a
@@ -265,7 +280,11 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border-light hover:bg-background-soft transition-colors"
               >
-                <span className="text-xl">🗺️</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                  <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+                  <line x1="8" y1="2" x2="8" y2="18" />
+                  <line x1="16" y1="6" x2="16" y2="22" />
+                </svg>
                 <span className="text-sm font-medium text-text-heading">Apple Maps</span>
               </a>
               <a
@@ -274,7 +293,12 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border-light hover:bg-background-soft transition-colors"
               >
-                <span className="text-xl">🚗</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                  <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H7L5 10l-2.5 1.1C1.7 11.3 1 12.1 1 13v3c0 .6.4 1 1 1h2" />
+                  <circle cx="7" cy="17" r="2" />
+                  <circle cx="17" cy="17" r="2" />
+                  <path d="M9 17h6" />
+                </svg>
                 <span className="text-sm font-medium text-text-heading">Waze</span>
               </a>
             </div>

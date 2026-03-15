@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback, FormEvent, KeyboardEvent } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, getCoupleNames } from "@/utils/settings";
+import SmallFlourish from "@/components/Ornaments/SmallFlourish";
+import Flourish from "@/components/Ornaments/Flourish";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -150,6 +152,7 @@ function AddToCalendar({ settings }: { settings: WeddingSettings }) {
 
 export default function RSVP({ guest, settings }: { guest?: GuestData | null; settings?: WeddingSettings | null }) {
   const sectionRef = useScrollAnimation<HTMLElement>();
+  const couple = getCoupleNames(settings ?? null);
   const [personCount, setPersonCount] = useState(0);
   const [name, setName] = useState("");
   const [partnerName, setPartnerName] = useState("");
@@ -304,7 +307,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Mulțumim pentru confirmare!
             </p>
-            <p className="script-font text-4xl text-text-heading mb-4">Ade & Cristi</p>
+            <p className="script-font text-4xl text-text-heading mb-4">{couple.display}</p>
             <p className="text-sm text-foreground mb-6">
               Vă mulțumim din suflet că ați confirmat prezența.
               <br />
@@ -382,6 +385,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
               Confirmare
             </h2>
+            <SmallFlourish className="mx-auto mb-3" />
             <p className="text-xs text-text-muted leading-relaxed">
               Vă așteptăm cu drag!<br />
               Completați formularul de mai jos pentru a ne anunța decizia.

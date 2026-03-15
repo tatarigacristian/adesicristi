@@ -85,7 +85,7 @@ export default function SlugPage() {
               <Family settings={settings} />
               <Locations settings={settings} />
               <RSVP guest={guest} settings={settings} />
-              <Footer />
+              <Footer settings={settings} />
             </main>
           </div>
         </>

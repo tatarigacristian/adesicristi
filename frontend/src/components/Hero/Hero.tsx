@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
+import SectionCorners from "@/components/Ornaments/SectionCorners";
 
 interface GuestData {
   nume: string;
@@ -43,30 +44,7 @@ export default function Hero({
   return (
     <section className="snap-section content-section bg-background relative overflow-hidden">
       {/* Corner ornaments */}
-      <svg className="absolute top-6 left-6 w-[45px] h-[45px] text-button/40" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
-        <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="currentColor" strokeWidth="0.5" />
-        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="currentColor" strokeWidth="0.4" opacity="0.6" />
-        <circle cx="8" cy="8" r="1.2" fill="currentColor" opacity="0.5" />
-      </svg>
-      <svg className="absolute top-6 right-6 w-[45px] h-[45px] text-button/40 -scale-x-100" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
-        <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="currentColor" strokeWidth="0.5" />
-        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="currentColor" strokeWidth="0.4" opacity="0.6" />
-        <circle cx="8" cy="8" r="1.2" fill="currentColor" opacity="0.5" />
-      </svg>
-      <svg className="absolute bottom-6 left-6 w-[45px] h-[45px] text-button/40 -scale-y-100" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
-        <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="currentColor" strokeWidth="0.5" />
-        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="currentColor" strokeWidth="0.4" opacity="0.6" />
-        <circle cx="8" cy="8" r="1.2" fill="currentColor" opacity="0.5" />
-      </svg>
-      <svg className="absolute bottom-6 right-6 w-[45px] h-[45px] text-button/40 -scale-100" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
-        <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="currentColor" strokeWidth="0.5" />
-        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="currentColor" strokeWidth="0.4" opacity="0.6" />
-        <circle cx="8" cy="8" r="1.2" fill="currentColor" opacity="0.5" />
-      </svg>
+      <SectionCorners size="w-[55px] h-[55px]" offset={20} />
 
       <div
         className={`max-w-lg mx-auto text-center transition-all duration-1000 ease-out ${
