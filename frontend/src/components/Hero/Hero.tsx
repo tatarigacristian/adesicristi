@@ -126,7 +126,7 @@ export default function Hero({
                 {guest.intro_long ? (
                   <>{guest.intro_long}</>
                 ) : (
-                  <>Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment unic.</>
+                  <>Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment.</>
                 )}
               </>
             ) : (
