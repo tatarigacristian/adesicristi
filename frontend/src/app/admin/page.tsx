@@ -11,6 +11,7 @@ function forceAdminTextColors() {
   root.style.setProperty("--color-dark", "#000000");
 }
 
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 const PAGE_SIZE = 10;
 
