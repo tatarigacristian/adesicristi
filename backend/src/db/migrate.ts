@@ -61,6 +61,7 @@ export async function runMigrations() {
           1061, // Duplicate key name
           1050, // Table already exists
           1062, // Duplicate entry (for unique constraints)
+          1826, // Duplicate foreign key constraint name
         ];
         if (ignorable.includes(err.errno)) {
           console.log(`  Ignored (already applied): ${err.sqlMessage}`);
