@@ -180,8 +180,8 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
 
           {/* Video */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-start">
-            <div className="w-full max-w-[280px] sm:max-w-xs glass-card !p-0 overflow-hidden">
-              <div className="relative w-full" style={{ paddingBottom: "120%" }}>
+            <div className="w-full max-w-[280px] sm:max-w-xs lg:max-w-sm glass-card !p-0 overflow-hidden">
+              <div className="relative w-full" style={{ paddingBottom: "150%" }}>
                 {!playing ? (
                   <button
                     onClick={() => setPlaying(true)}
