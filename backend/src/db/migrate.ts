@@ -40,11 +40,15 @@ export async function runMigrations() {
     console.log(`Running migration: ${file}`);
     const sql = await readFile(join(migrationsDir, file), 'utf-8');
 
-    // Split by semicolons and run each statement
-    const statements = sql
+    // Strip comment lines, then split by semicolons
+    const cleanedSql = sql
+      .split('\n')
+      .filter((line) => !line.trimStart().startsWith('--'))
+      .join('\n');
+    const statements = cleanedSql
       .split(';')
       .map((s) => s.trim())
-      .filter((s) => s.length > 0 && !s.startsWith('--'));
+      .filter((s) => s.length > 0);
 
     for (const statement of statements) {
       // Skip statements that aren't compatible with pool connection
