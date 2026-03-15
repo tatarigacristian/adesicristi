@@ -54,7 +54,7 @@ export default function Hero({
         {/* Mobile-only hero info */}
         <div className="lg:hidden mb-10">
           <p className="text-[0.65rem] tracking-[0.4em] uppercase text-button font-medium mb-4">
-            Ne casatorim!
+            Ne căsătorim!
           </p>
           <h1 className="script-font text-5xl text-text-heading mb-5 leading-tight">
             {couple.display}
@@ -91,15 +91,15 @@ export default function Hero({
           }`}
         >
           <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-5 font-medium">
-            Cu drag va invitam
+            Cu drag vă invităm
           </p>
 
           <h2 className="serif-font text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-6">
-            Sa petreceti alaturi de noi
+            Să petreceți alături de noi
             <br />
             cel mai important moment
             <br />
-            din viata noastra
+            din viața noastră
           </h2>
 
           <div className="flex items-center justify-center gap-4 my-6">
@@ -122,20 +122,23 @@ export default function Hero({
           <p className="serif-font text-[0.95rem] leading-[1.9] text-foreground mt-6 max-w-md mx-auto">
             {guest ? (
               <>
-                Dragii nostri {guest.prenume} {guest.nume}
-                {guest.partner && <> si {guest.partner.prenume} {guest.partner.nume}</>}
-                , cu bucurie in suflet va anuntam ca ne casatorim!
+                Dragii nostri {guest.partner
+                  ? guest.nume === guest.partner.nume
+                    ? <>{guest.prenume} și {guest.partner.prenume} {guest.nume}</>
+                    : <>{guest.prenume} {guest.nume} și {guest.partner.prenume} {guest.partner.nume}</>
+                  : <>{guest.prenume} {guest.nume}</>}
+                , cu bucurie în suflet vă anunțăm că ne căsătorim!
                 {guest.intro ? (
                   <> {guest.intro}</>
                 ) : (
-                  <> Ne-ar face o deosebita placere sa fiti alaturi de noi in aceasta zi speciala, sa impartasim impreuna emotia si fericirea acestui moment unic.</>
+                  <> Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment unic.</>
                 )}
               </>
             ) : (
               <>
-                Dragii nostri, cu bucurie in suflet va anuntam ca ne casatorim!
-                Ne-ar face o deosebita placere sa fiti alaturi de noi in aceasta zi
-                speciala, sa impartasim impreuna emotia si fericirea acestui moment
+                Dragii noștri, cu bucurie în suflet vă anunțăm că ne căsătorim!
+                Ne-ar face o deosebită plăcere să fiți alături de noi în această zi
+                specială, să împărtășim împreună emoția și fericirea acestui moment
                 unic.
               </>
             )}
@@ -154,7 +157,7 @@ export default function Hero({
             aria-label="Scroll down"
           >
             <span className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted group-hover:text-button transition-colors duration-300">
-              Descopera mai mult
+              Descoperă mai mult
             </span>
             <svg
               width="20"

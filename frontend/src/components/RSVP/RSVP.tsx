@@ -105,7 +105,7 @@ function AddToCalendar({ settings }: { settings: WeddingSettings }) {
           <line x1="8" y1="2" x2="8" y2="6" />
           <line x1="3" y1="10" x2="21" y2="10" />
         </svg>
-        Adauga in calendar
+        Adaugă în calendar
       </button>
 
       {open && (
@@ -203,17 +203,17 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
 
     if (attending) {
       if (personCount === 0) {
-        newErrors.personCount = "Te rog sa alegi numarul de persoane";
+        newErrors.personCount = "Te rog să alegi numărul de persoane";
       }
       if (!name.trim()) {
-        newErrors.name = "Te rog sa introduci numele";
+        newErrors.name = "Te rog să introduci numele";
       }
       if (personCount === 2 && !partnerName.trim()) {
-        newErrors.partnerName = "Te rog sa introduci numele partenerului";
+        newErrors.partnerName = "Te rog să introduci numele partenerului";
       }
     } else {
       if (!name.trim()) {
-        newErrors.name = "Te rog sa introduci numele";
+        newErrors.name = "Te rog să introduci numele";
       }
     }
 
@@ -287,7 +287,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="glass-card py-12">
-            <p className="text-sm text-text-muted">Se incarca...</p>
+            <p className="text-sm text-text-muted">Se încarcă...</p>
           </div>
         </div>
       </section>
@@ -301,13 +301,13 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="glass-card py-12">
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
-              Multumim pentru confirmare!
+              Mulțumim pentru confirmare!
             </p>
             <p className="script-font text-4xl text-text-heading mb-4">Ade & Cristi</p>
             <p className="text-sm text-foreground mb-6">
-              Va multumim din suflet ca ati confirmat prezenta.
+              Vă mulțumim din suflet că ați confirmat prezența.
               <br />
-              Abia asteptam sa fiti alaturi de noi!
+              Abia așteptăm să fiți alături de noi!
             </p>
             {settings && (
               <div className="mb-6">
@@ -319,7 +319,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               disabled={cancelling}
               className="text-xs text-text-muted hover:text-button transition-colors cursor-pointer underline underline-offset-2 disabled:opacity-50"
             >
-              {cancelling ? "Se anuleaza..." : "Anuleaza prezenta"}
+              {cancelling ? "Se anulează..." : "Anulează prezența"}
             </button>
           </div>
         </div>
@@ -334,13 +334,13 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="glass-card py-12">
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
-              Prezenta anulata
+              Prezența anulată
             </p>
-            <p className="script-font text-4xl text-text-heading mb-4">Ne pare rau</p>
+            <p className="script-font text-4xl text-text-heading mb-4">Ne pare rău</p>
             <p className="text-sm text-foreground">
-              Regretam ca nu veti putea fi alaturi de noi.
+              Regretăm că nu veți putea fi alături de noi.
               <br />
-              Va dorim numai bine!
+              Vă dorim numai bine!
             </p>
           </div>
         </div>
@@ -355,13 +355,13 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="glass-card py-12">
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
-              Am primit raspunsul tau
+              Am primit răspunsul tău
             </p>
-            <p className="script-font text-4xl text-text-heading mb-4">Ne pare rau</p>
+            <p className="script-font text-4xl text-text-heading mb-4">Ne pare rău</p>
             <p className="text-sm text-foreground">
-              Regretam ca nu veti putea fi alaturi de noi.
+              Regretăm că nu veți putea fi alături de noi.
               <br />
-              Va dorim numai bine!
+              Vă dorim numai bine!
             </p>
           </div>
         </div>
@@ -382,8 +382,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               Confirmare
             </h2>
             <p className="text-xs text-text-muted leading-relaxed">
-              Va asteptam cu drag!<br />
-              Completati formularul de mai jos pentru a ne anunta decizia.
+              Vă așteptăm cu drag!<br />
+              Completați formularul de mai jos pentru a ne anunța decizia.
             </p>
           </div>
 
@@ -391,7 +391,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* Person count */}
             <div>
               <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                Cate persoane
+                Câte persoane
               </label>
               <select
                 value={personCount}
@@ -404,9 +404,9 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 className="w-full border border-border-light rounded-lg px-3 py-2.5 text-sm bg-white
                            focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
               >
-                <option value={0}>Alege numar persoane</option>
-                <option value={1}>O persoana</option>
-                <option value={2}>Doua persoane</option>
+                <option value={0}>Alege număr persoane</option>
+                <option value={1}>O persoană</option>
+                <option value={2}>Două persoane</option>
               </select>
               {errors.personCount && (
                 <p className="text-xs text-button mt-1">{errors.personCount}</p>
@@ -418,7 +418,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               <div className={`grid gap-4 ${personCount === 2 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
                 <div>
                   <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                    Numele tau
+                    Numele tău
                   </label>
                   <input
                     ref={nameRef}
@@ -471,7 +471,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* Message */}
             <div>
               <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                Vrei sa ne transmiti ceva?
+                Vrei să ne transmiți ceva?
               </label>
               <textarea
                 ref={messageRef}
@@ -488,7 +488,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* Error message */}
             {formState === "error" && (
               <p className="text-xs text-button text-center">
-                A aparut o eroare. Te rog incearca din nou.
+                A apărut o eroare. Te rog încearcă din nou.
               </p>
             )}
 
@@ -501,7 +501,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 className="flex-1 bg-button text-white py-2.5 px-4 rounded-lg text-sm font-medium
                            hover:bg-button-hover transition-colors disabled:opacity-50"
               >
-                {formState === "submitting" ? "Se trimite..." : "Da, confirm prezenta"}
+                {formState === "submitting" ? "Se trimite..." : "Da, confirm prezența"}
               </button>
               <button
                 type="button"
@@ -510,7 +510,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 className="flex-1 border border-button py-2.5 px-4 rounded-lg text-sm
                            text-foreground hover:bg-background-soft transition-colors disabled:opacity-50"
               >
-                Nu pot sa particip
+                Nu pot să particip
               </button>
             </div>
           </form>

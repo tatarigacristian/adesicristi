@@ -17,10 +17,10 @@ function buildLocations(settings: WeddingSettings | null): LocationCard[] {
   if (!settings) {
     return [
       {
-        title: "Cununia Religioasa",
+        title: "Cununia Religioasă",
         date: "4 Iulie 2026",
         time: "ora 15:00",
-        address: "Adresa va fi comunicata ulterior",
+        address: "Adresa va fi comunicată ulterior",
         googleMapsUrl: "https://maps.app.goo.gl/BpJMVU3vwg3QuLDr5",
         image: "/images/spiritual.png",
       },
@@ -28,7 +28,7 @@ function buildLocations(settings: WeddingSettings | null): LocationCard[] {
         title: "Transport",
         date: "4 Iulie 2026",
         time: "ora 18:00",
-        address: "Adresa va fi comunicata ulterior",
+        address: "Adresa va fi comunicată ulterior",
         googleMapsUrl: "https://maps.app.goo.gl/zvSki9tUL6UGbsyU9",
         image: "/images/bus.png",
       },
@@ -36,7 +36,7 @@ function buildLocations(settings: WeddingSettings | null): LocationCard[] {
         title: "Petrecerea",
         date: "4 Iulie 2026",
         time: "ora 19:00",
-        address: "Adresa va fi comunicata ulterior",
+        address: "Adresa va fi comunicată ulterior",
         googleMapsUrl: "https://maps.app.goo.gl/kpEz9hCmH5mY19s68",
         image: "/images/party.png",
       },
@@ -45,10 +45,10 @@ function buildLocations(settings: WeddingSettings | null): LocationCard[] {
 
   return [
     {
-      title: settings.ceremonie_descriere || "Cununia Religioasa",
+      title: settings.ceremonie_descriere || "Cununia Religioasă",
       date: settings.ceremonie_data ? formatDate(settings.ceremonie_data) : "4 Iulie 2026",
       time: settings.ceremonie_ora ? `ora ${settings.ceremonie_ora}` : "",
-      address: settings.ceremonie_adresa || "Adresa va fi comunicata ulterior",
+      address: settings.ceremonie_adresa || "Adresa va fi comunicată ulterior",
       googleMapsUrl: settings.ceremonie_google_maps || "",
       image: "/images/spiritual.png",
     },
@@ -56,7 +56,7 @@ function buildLocations(settings: WeddingSettings | null): LocationCard[] {
       title: settings.transport_descriere || "Transport",
       date: settings.transport_data ? formatDate(settings.transport_data) : "4 Iulie 2026",
       time: settings.transport_ora ? `ora ${settings.transport_ora}` : "",
-      address: settings.transport_adresa || "Adresa va fi comunicata ulterior",
+      address: settings.transport_adresa || "Adresa va fi comunicată ulterior",
       googleMapsUrl: settings.transport_google_maps || "",
       image: "/images/bus.png",
     },
@@ -64,7 +64,7 @@ function buildLocations(settings: WeddingSettings | null): LocationCard[] {
       title: settings.petrecere_descriere || "Petrecerea",
       date: settings.petrecere_data ? formatDate(settings.petrecere_data) : "4 Iulie 2026",
       time: settings.petrecere_ora ? `ora ${settings.petrecere_ora}` : "",
-      address: settings.petrecere_adresa || "Adresa va fi comunicata ulterior",
+      address: settings.petrecere_adresa || "Adresa va fi comunicată ulterior",
       googleMapsUrl: settings.petrecere_google_maps || "",
       image: "/images/party.png",
     },
@@ -108,7 +108,7 @@ function LocationCardContent({
             onClick={() => onMapClick(loc)}
             className="btn-glass text-xs cursor-pointer"
           >
-            <span>&#128204;</span> Vezi pe harta
+            <span>&#128204;</span> Vezi pe hartă
           </button>
         )}
       </div>
@@ -181,7 +181,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
               Detaliile evenimentului
             </h2>
             <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
-              Cand si unde
+              Când și unde
             </p>
           </div>
 
@@ -247,7 +247,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
               {drawerLocation.title}
             </h3>
             <p className="text-xs text-text-muted text-center mb-5">
-              Deschide cu aplicatia preferata
+              Deschide cu aplicația preferată
             </p>
             <div className="flex flex-col gap-3">
               <a
@@ -282,7 +282,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
               onClick={() => setDrawerLocation(null)}
               className="w-full mt-4 py-2.5 text-sm text-text-muted hover:text-text-heading transition-colors cursor-pointer"
             >
-              Inchide
+              Închide
             </button>
           </div>
         </div>

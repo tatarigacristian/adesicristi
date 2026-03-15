@@ -3,6 +3,14 @@
 import { useState, useEffect, useMemo, FormEvent } from "react";
 import { fetchWeddingSettings, applyThemeColors } from "@/utils/settings";
 
+function forceAdminTextColors() {
+  const root = document.documentElement;
+  root.style.setProperty("--color-text-heading", "#1a1a1a");
+  root.style.setProperty("--color-foreground", "#333333");
+  root.style.setProperty("--color-text-muted", "#666666");
+  root.style.setProperty("--color-dark", "#000000");
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 const PAGE_SIZE = 10;
 
@@ -108,7 +116,7 @@ function SearchInput({ value, onChange, placeholder }: { value: string; onChange
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-9 pr-3 py-2 border border-border-light rounded-lg text-sm bg-white
+        className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm bg-white
                    focus:outline-none focus:border-accent transition-colors"
       />
     </div>
@@ -190,13 +198,13 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
           <div>
             <label className="block text-xs text-text-muted mb-1 tracking-wide">Utilizator</label>
             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-              className="w-full border border-border-light rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-accent transition-colors"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-accent transition-colors"
               autoComplete="username" />
           </div>
           <div>
             <label className="block text-xs text-text-muted mb-1 tracking-wide">Parola</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-border-light rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-accent transition-colors"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-accent transition-colors"
               autoComplete="current-password" />
           </div>
           {error && <p className="text-xs text-accent-rose text-center">{error}</p>}
@@ -319,17 +327,17 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
         <h2 className="serif-font text-2xl text-text-heading">Invitati</h2>
         <button onClick={openNew}
           className="bg-button text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
-          + Adauga invitat
+          + Adaugă invitat
         </button>
       </div>
 
       {/* Search & Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="flex-1">
-          <SearchInput value={search} onChange={setSearch} placeholder="Cauta dupa nume, prenume sau notite..." />
+          <SearchInput value={search} onChange={setSearch} placeholder="Caută după nume, prenume sau notițe..." />
         </div>
         <div className="flex items-center gap-2">
-          <FilterButton label="Toti" active={filter === "all"} count={mainGuests.length} onClick={() => setFilter("all")} />
+          <FilterButton label="Toți" active={filter === "all"} count={mainGuests.length} onClick={() => setFilter("all")} />
           <FilterButton label="Cu +1" active={filter === "plus_one"} count={plusOneCount} onClick={() => setFilter("plus_one")} />
           <FilterButton label="Fara +1" active={filter === "no_plus_one"} count={noPlusOneCount} onClick={() => setFilter("no_plus_one")} />
         </div>
@@ -341,26 +349,26 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
           onClick={() => setShowForm(false)}>
           <div className="bg-white rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
             <h3 className="serif-font text-lg text-text-heading mb-4">
-              {editGuest ? "Editeaza invitat" : "Invitat nou"}
+              {editGuest ? "Editează invitat" : "Invitat nou"}
             </h3>
             <form onSubmit={handleSave} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs text-text-muted mb-1">Nume</label>
                   <input type="text" value={form.nume} onChange={(e) => setForm({ ...form, nume: e.target.value })}
-                    required className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
                 <div>
                   <label className="block text-xs text-text-muted mb-1">Prenume</label>
                   <input type="text" value={form.prenume} onChange={(e) => setForm({ ...form, prenume: e.target.value })}
-                    required className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs text-text-muted mb-1">Slug (unic)</label>
                 <input type="text" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })}
                   placeholder="ex: ion-maria"
-                  className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="plus_one" checked={form.plus_one}
@@ -373,28 +381,30 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                   <div>
                     <label className="block text-xs text-text-muted mb-1">Nume partener</label>
                     <input type="text" value={form.partner_nume} onChange={(e) => setForm({ ...form, partner_nume: e.target.value })}
-                      required className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                      required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                   </div>
                   <div>
                     <label className="block text-xs text-text-muted mb-1">Prenume partener</label>
                     <input type="text" value={form.partner_prenume} onChange={(e) => setForm({ ...form, partner_prenume: e.target.value })}
-                      required className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                      required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                   </div>
                 </div>
               )}
               <div>
-                <label className="block text-xs text-text-muted mb-1">Introducere / Notite</label>
-                <textarea value={form.intro} onChange={(e) => setForm({ ...form, intro: e.target.value })}
-                  rows={3} className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
+                <label className="block text-xs text-text-muted mb-1">Introducere / Notițe</label>
+                <textarea value={form.intro} onChange={(e) => { if (e.target.value.length <= 200) setForm({ ...form, intro: e.target.value }); }}
+                  maxLength={200}
+                  rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
+                <p className="text-xs text-text-muted text-right mt-1">{form.intro.length}/200</p>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={saving}
                   className="flex-1 bg-button text-white py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer">
-                  {saving ? "Se salveaza..." : "Salveaza"}
+                  {saving ? "Se salvează..." : "Salvează"}
                 </button>
                 <button type="button" onClick={() => setShowForm(false)}
                   className="flex-1 border border-border py-2.5 rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer">
-                  Anuleaza
+                  Anulează
                 </button>
               </div>
             </form>
@@ -407,7 +417,7 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
         {paginated.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <p className="text-sm text-text-muted">
-              {search || filter !== "all" ? "Niciun rezultat gasit." : "Niciun invitat adaugat."}
+              {search || filter !== "all" ? "Niciun rezultat găsit." : "Niciun invitat adăugat."}
             </p>
           </div>
         ) : (
@@ -418,7 +428,7 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                   <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Invitat</th>
                   <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Slug</th>
                   <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Partener (+1)</th>
-                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Notite</th>
+                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Notițe</th>
                   <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Actiuni</th>
                 </tr>
               </thead>
@@ -442,23 +452,34 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                       <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{g.intro || "—"}</td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         {g.slug && (
-                          <button onClick={() => window.open(`/admin/card?guestId=${g.id}`, '_blank')}
-                            className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
-                            title="Carte de vizita">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
-                              <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
-                              <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
-                              <rect x="20" y="14" width="2" height="2" /><rect x="14" y="20" width="2" height="2" /><rect x="20" y="20" width="2" height="2" />
-                            </svg>
-                          </button>
+                          <>
+                            <button onClick={() => window.open(`/${g.slug}`, '_blank')}
+                              className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
+                              title="Pagina invitatie">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                              </svg>
+                            </button>
+                            <button onClick={() => window.open(`/admin/card?guestId=${g.id}`, '_blank')}
+                              className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
+                              title="Carte de vizita">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+                                <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
+                                <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
+                                <rect x="20" y="14" width="2" height="2" /><rect x="14" y="20" width="2" height="2" /><rect x="20" y="20" width="2" height="2" />
+                              </svg>
+                            </button>
+                          </>
                         )}
                         <button onClick={() => openEdit(g)}
                           className="text-xs text-accent hover:text-accent-light transition-colors cursor-pointer mr-3">
-                          Editeaza
+                          Editează
                         </button>
                         <button onClick={() => handleDelete(g.id)}
                           className="text-xs text-accent-rose hover:text-accent-rose-light transition-colors cursor-pointer">
-                          Sterge
+                          Șterge
                         </button>
                       </td>
                     </tr>
@@ -530,7 +551,7 @@ function ConfirmariPanel({ token, onUnauth }: { token: string; onUnauth: () => v
 
   return (
     <div>
-      <h2 className="serif-font text-2xl text-text-heading mb-6">Confirmari</h2>
+      <h2 className="serif-font text-2xl text-text-heading mb-6">Confirmări</h2>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-8">
@@ -540,23 +561,23 @@ function ConfirmariPanel({ token, onUnauth }: { token: string; onUnauth: () => v
         </div>
         <div className="family-card text-center">
           <p className="text-3xl serif-font text-accent">{attending.length}</p>
-          <p className="text-xs text-text-muted mt-1 tracking-wide">Participa</p>
+          <p className="text-xs text-text-muted mt-1 tracking-wide">Participă</p>
         </div>
         <div className="family-card text-center">
           <p className="text-3xl serif-font text-accent-rose">{notAttending.length}</p>
-          <p className="text-xs text-text-muted mt-1 tracking-wide">Nu participa</p>
+          <p className="text-xs text-text-muted mt-1 tracking-wide">Nu participă</p>
         </div>
       </div>
 
       {/* Search & Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="flex-1">
-          <SearchInput value={search} onChange={setSearch} placeholder="Cauta dupa nume, partener sau mesaj..." />
+          <SearchInput value={search} onChange={setSearch} placeholder="Caută după nume, partener sau mesaj..." />
         </div>
         <div className="flex items-center gap-2">
           <FilterButton label="Toate" active={filter === "all"} count={rsvps.length} onClick={() => setFilter("all")} />
-          <FilterButton label="Participa" active={filter === "attending"} count={attending.length} onClick={() => setFilter("attending")} />
-          <FilterButton label="Nu participa" active={filter === "not_attending"} count={notAttending.length} onClick={() => setFilter("not_attending")} />
+          <FilterButton label="Participă" active={filter === "attending"} count={attending.length} onClick={() => setFilter("attending")} />
+          <FilterButton label="Nu participă" active={filter === "not_attending"} count={notAttending.length} onClick={() => setFilter("not_attending")} />
         </div>
       </div>
 
@@ -572,7 +593,7 @@ function ConfirmariPanel({ token, onUnauth }: { token: string; onUnauth: () => v
         {paginated.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <p className="text-sm text-text-muted">
-              {search || filter !== "all" ? "Niciun rezultat gasit." : "Niciun raspuns inca."}
+              {search || filter !== "all" ? "Niciun rezultat găsit." : "Niciun răspuns încă."}
             </p>
           </div>
         ) : (
@@ -632,6 +653,10 @@ interface WeddingSettingsData {
   id: number;
   nume_mire: string;
   nume_mireasa: string;
+  nas_nume: string | null;
+  nas_prenume: string | null;
+  nasa_nume: string | null;
+  nasa_prenume: string | null;
   ceremonie_data: string | null;
   ceremonie_ora: string | null;
   ceremonie_adresa: string | null;
@@ -677,7 +702,7 @@ function ColorPicker({ label, value, onChange }: {
           onChange={(e) => onChange(e.target.value)}
           placeholder="#000000"
           maxLength={7}
-          className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white font-mono
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white font-mono
                      focus:outline-none focus:border-accent transition-colors"
         />
       </div>
@@ -696,7 +721,7 @@ function SettingsInput({ label, value, onChange, type = "text", placeholder }: {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors"
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors"
       />
     </div>
   );
@@ -721,6 +746,10 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
   const [form, setForm] = useState({
     nume_mire: "",
     nume_mireasa: "",
+    nas_nume: "",
+    nas_prenume: "",
+    nasa_nume: "",
+    nasa_prenume: "",
     ceremonie_data: "",
     ceremonie_ora: "",
     ceremonie_adresa: "",
@@ -753,6 +782,10 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
         setForm({
           nume_mire: data.nume_mire || "",
           nume_mireasa: data.nume_mireasa || "",
+          nas_nume: data.nas_nume || "",
+          nas_prenume: data.nas_prenume || "",
+          nasa_nume: data.nasa_nume || "",
+          nasa_prenume: data.nasa_prenume || "",
           ceremonie_data: data.ceremonie_data ? data.ceremonie_data.split("T")[0] : "",
           ceremonie_ora: data.ceremonie_ora || "",
           ceremonie_adresa: data.ceremonie_adresa || "",
@@ -799,6 +832,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
         const data = await res.json();
         setSettings(data);
         applyThemeColors(data);
+        forceAdminTextColors();
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
       }
@@ -816,7 +850,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-sm text-text-muted">Se incarca setarile...</p>
+        <p className="text-sm text-text-muted">Se încarcă setările...</p>
       </div>
     );
   }
@@ -824,7 +858,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="serif-font text-2xl text-text-heading">Setari eveniment</h2>
+        <h2 className="serif-font text-2xl text-text-heading">Setări eveniment</h2>
         {settings && (
           <p className="text-xs text-text-muted">
             Ultima actualizare: {new Date(settings.updated_at).toLocaleDateString("ro-RO", {
@@ -843,14 +877,26 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
           </div>
         </SettingsSection>
 
+        {/* Nasi */}
+        <SettingsSection title="Nașii">
+          <div className="grid grid-cols-2 gap-3">
+            <SettingsInput label="Prenume nașă" value={form.nasa_prenume} onChange={updateForm("nasa_prenume")} placeholder="Prenume" />
+            <SettingsInput label="Nume nașă" value={form.nasa_nume} onChange={updateForm("nasa_nume")} placeholder="Nume" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <SettingsInput label="Prenume naș" value={form.nas_prenume} onChange={updateForm("nas_prenume")} placeholder="Prenume" />
+            <SettingsInput label="Nume naș" value={form.nas_nume} onChange={updateForm("nas_nume")} placeholder="Nume" />
+          </div>
+        </SettingsSection>
+
         {/* Ceremonie */}
-        <SettingsSection title="Cununia Religioasa">
-          <SettingsInput label="Descriere / Titlu" value={form.ceremonie_descriere} onChange={updateForm("ceremonie_descriere")} placeholder="Cununia Religioasa" />
+        <SettingsSection title="Cununia Religioasă">
+          <SettingsInput label="Descriere / Titlu" value={form.ceremonie_descriere} onChange={updateForm("ceremonie_descriere")} placeholder="Cununia Religioasă" />
           <div className="grid grid-cols-2 gap-3">
             <SettingsInput label="Data" value={form.ceremonie_data} onChange={updateForm("ceremonie_data")} type="date" />
             <SettingsInput label="Ora" value={form.ceremonie_ora} onChange={updateForm("ceremonie_ora")} type="time" />
           </div>
-          <SettingsInput label="Adresa" value={form.ceremonie_adresa} onChange={updateForm("ceremonie_adresa")} placeholder="Adresa locatiei" />
+          <SettingsInput label="Adresa" value={form.ceremonie_adresa} onChange={updateForm("ceremonie_adresa")} placeholder="Adresa locației" />
           <SettingsInput label="Link Google Maps" value={form.ceremonie_google_maps} onChange={updateForm("ceremonie_google_maps")} placeholder="https://maps.app.goo.gl/..." />
         </SettingsSection>
 
@@ -861,7 +907,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
             <SettingsInput label="Data" value={form.transport_data} onChange={updateForm("transport_data")} type="date" />
             <SettingsInput label="Ora" value={form.transport_ora} onChange={updateForm("transport_ora")} type="time" />
           </div>
-          <SettingsInput label="Adresa" value={form.transport_adresa} onChange={updateForm("transport_adresa")} placeholder="Adresa locatiei" />
+          <SettingsInput label="Adresa" value={form.transport_adresa} onChange={updateForm("transport_adresa")} placeholder="Adresa locației" />
           <SettingsInput label="Link Google Maps" value={form.transport_google_maps} onChange={updateForm("transport_google_maps")} placeholder="https://maps.app.goo.gl/..." />
         </SettingsSection>
 
@@ -872,7 +918,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
             <SettingsInput label="Data" value={form.petrecere_data} onChange={updateForm("petrecere_data")} type="date" />
             <SettingsInput label="Ora" value={form.petrecere_ora} onChange={updateForm("petrecere_ora")} type="time" />
           </div>
-          <SettingsInput label="Adresa" value={form.petrecere_adresa} onChange={updateForm("petrecere_adresa")} placeholder="Adresa locatiei" />
+          <SettingsInput label="Adresa" value={form.petrecere_adresa} onChange={updateForm("petrecere_adresa")} placeholder="Adresa locației" />
           <SettingsInput label="Link Google Maps" value={form.petrecere_google_maps} onChange={updateForm("petrecere_google_maps")} placeholder="https://maps.app.goo.gl/..." />
         </SettingsSection>
 
@@ -909,7 +955,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
             disabled={saving}
             className="bg-button text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer"
           >
-            {saving ? "Se salveaza..." : "Salveaza setarile"}
+            {saving ? "Se salvează..." : "Salvează setările"}
           </button>
           {saved && (
             <span className="text-sm text-green-600 font-medium">Salvat cu succes!</span>
@@ -925,7 +971,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
 const NAV_ITEMS: { key: Exclude<View, "login">; label: string; icon: React.ReactNode }[] = [
   {
     key: "guests",
-    label: "Invitati",
+    label: "Invitați",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -937,7 +983,7 @@ const NAV_ITEMS: { key: Exclude<View, "login">; label: string; icon: React.React
   },
   {
     key: "confirmari",
-    label: "Confirmari",
+    label: "Confirmări",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -947,7 +993,7 @@ const NAV_ITEMS: { key: Exclude<View, "login">; label: string; icon: React.React
   },
   {
     key: "setari",
-    label: "Setari",
+    label: "Setări",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="3" />
@@ -970,7 +1016,10 @@ export default function AdminPage() {
       setToken(saved);
       setView("guests");
     }
-    fetchWeddingSettings().then((s) => applyThemeColors(s));
+    fetchWeddingSettings().then((s) => {
+      applyThemeColors(s);
+      forceAdminTextColors();
+    });
   }, []);
 
   function handleLogin(jwt: string) {

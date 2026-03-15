@@ -70,7 +70,7 @@ export default function SlugPage() {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <p className="script-font text-3xl text-text-heading mb-2">{couple.display}</p>
-            <p className="text-xs text-text-muted tracking-widest uppercase">Se incarca...</p>
+            <p className="text-xs text-text-muted tracking-widest uppercase">Se încarcă...</p>
           </div>
         </div>
       ) : (

@@ -50,7 +50,7 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
     <aside className="left-panel">
       <div className="flex flex-col items-center text-center px-8 w-full">
         <p className="text-[0.8rem] tracking-[0.35em] uppercase text-button serif-font font-medium mb-2">
-          Ne casatorim!
+          Ne căsătorim!
         </p>
 
         <h1 className="script-font text-6xl xl:text-7xl text-text-heading mb-4 leading-tight">

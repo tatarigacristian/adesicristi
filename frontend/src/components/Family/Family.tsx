@@ -23,7 +23,7 @@ export default function Family() {
               </svg>
             </div>
             <h3 className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-3">
-              Impreuna cu nasii
+              Împreună cu nașii
             </h3>
             <div className="w-8 h-px bg-button/40 mx-auto mb-4"></div>
             <p className="script-font text-2xl text-text-heading">
@@ -40,7 +40,7 @@ export default function Family() {
               </svg>
             </div>
             <h3 className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-3">
-              Dragii nostri parinti
+              Dragii noștri părinți
             </h3>
             <div className="w-8 h-px bg-button/40 mx-auto mb-4"></div>
             <p className="script-font text-2xl text-text-heading leading-relaxed">

@@ -13,6 +13,8 @@ export function getPool(): mysql.Pool {
       database: config.db.database,
       waitForConnections: true,
       connectionLimit: 10,
+      timezone: 'local',
+      dateStrings: true,
     });
   }
   return pool;

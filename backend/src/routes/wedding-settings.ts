@@ -25,6 +25,7 @@ export async function weddingSettingsRoutes(fastify: FastifyInstance) {
 
     const fields = [
       'nume_mire', 'nume_mireasa',
+      'nas_nume', 'nas_prenume', 'nasa_nume', 'nasa_prenume',
       'ceremonie_data', 'ceremonie_ora', 'ceremonie_adresa', 'ceremonie_google_maps', 'ceremonie_descriere',
       'transport_data', 'transport_ora', 'transport_adresa', 'transport_google_maps', 'transport_descriere',
       'petrecere_data', 'petrecere_ora', 'petrecere_adresa', 'petrecere_google_maps', 'petrecere_descriere',
