@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #FFFFFF;
+  --color-background-soft: #FFFFFF;
+  --color-foreground: #FFFFFF;
+  --color-dark: #FFFFFF;
+  --color-accent: #FFFFFF;
+  --color-accent-light: #FFFFFF;
+  --color-accent-rose: #FFFFFF;
+  --color-accent-rose-light: #FFFFFF;
+  --color-button: #FFFFFF;
+  --color-button-hover: #FFFFFF;
+  --color-border: #FFFFFF;
+  --color-border-light: #FFFFFF;
+  --color-text-heading: #FFFFFF;
+  --color-text-muted: #FFFFFF;
+  --font-cormorant: var(--font-cormorant);
+  --font-script: var(--font-script);
+  --font-sans: var(--font-montserrat);
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+/* Script font class */
+.script-font {
+  font-family: var(--font-script), cursive;
+  font-weight: 400;
+}
+
+/* Serif font class */
+.serif-font {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+/* Split layout for desktop */
+.split-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Left panel - fixed sidebar */
+.left-panel {
+  display: none;
+}
+
+/* Right panel - scrollable content with snap */
+.right-panel {
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Desktop: split layout */
+@media (min-width: 1024px) {
+  .left-panel {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 35%;
+    height: 100vh;
+    background: var(--color-background-soft);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    border-right: 1px solid var(--color-border-light);
+  }
+
+  .right-panel {
+    margin-left: 35%;
+    width: 65%;
+    height: 100vh;
+  }
+}
+
+/* Snap scrolling - all breakpoints */
+.snap-section {
+  min-height: 100vh;
+  scroll-snap-align: start;
+}
+
+/* Content sections */
+.content-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .content-section {
+    padding: 4rem 3rem;
+  }
+}
+
+/* Elegant divider */
+.elegant-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.elegant-divider span {
+  display: block;
+  width: 50px;
+  height: 1px;
+  background: var(--color-button);
+  opacity: 0.3;
+}
+
+.elegant-divider .heart-icon {
+  width: auto;
+  height: auto;
+  background: none;
+  color: var(--color-button);
+  font-size: 1rem;
+  opacity: 0.5;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Monogram decorative ring */
+.monogram-ring {
+  position: relative;
+  border: 1px solid var(--color-button);
+}
+
+.monogram-ring::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  border: 1px solid var(--color-button);
+  opacity: 0.6;
+}
+
+.monogram-ring::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px dashed var(--color-button);
+  opacity: 0.6;
+}
+
+/* Scroll arrow bounce */
+.scroll-arrow {
+  animation: scroll-bounce 2s ease-in-out infinite;
+}
+
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+/* Glass card effect */
+.glass-card {
+  border: 1px solid var(--color-accent);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+/* Family card */
+.family-card {
+  border: 1px solid var(--color-accent);
+  border-radius: 14px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* Card backgrounds: contrast with section bg */
+.bg-background .glass-card,
+.bg-background .family-card {
+  background: var(--color-background-soft);
+}
+
+.bg-background-soft .glass-card,
+.bg-background-soft .family-card,
+.left-panel .family-card {
+  background: var(--color-background);
+}
+
+/* Scroll animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Buttons */
+.btn-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: 1px solid var(--color-button);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--color-foreground);
+  background: transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
+.btn-glass:hover {
+  background: var(--color-button);
+  border-color: var(--color-button);
+  color: white;
+}
+
+/* Hide scrollbar for carousel */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Drawer slide-up animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Location card image height */
+.h-44 {
+  height: calc(var(--spacing) * 90);
+}

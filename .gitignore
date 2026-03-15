@@ -1,0 +1,18 @@
+.idea/
+.DS_Store
+
+# Dependencies
+node_modules/
+.claude
+.cursor
+
+# Build
+frontend/.next/
+backend/dist/
+
+# Environment
+backend/.env
+
+# OS files
+.DS_Store
+Thumbs.db
