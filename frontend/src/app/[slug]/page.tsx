@@ -82,7 +82,7 @@ export default function SlugPage() {
             <main className="right-panel">
               <Hero guest={guest} settings={settings} />
               <Couple settings={settings} />
-              <Family />
+              <Family settings={settings} />
               <Locations settings={settings} />
               <RSVP guest={guest} settings={settings} />
               <Footer />

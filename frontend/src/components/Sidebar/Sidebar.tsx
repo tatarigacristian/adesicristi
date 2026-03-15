@@ -38,7 +38,7 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [settings]);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();

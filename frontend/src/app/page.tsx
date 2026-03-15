@@ -43,7 +43,7 @@ export default function Home() {
         <main className="right-panel">
           <Hero settings={settings} />
           <Couple settings={settings} />
-          <Family />
+          <Family settings={settings} />
           <Locations settings={settings} />
           <RSVP settings={settings} />
           <Footer />
