@@ -109,7 +109,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       className="snap-section content-section bg-background-soft animate-on-scroll"
     >
       <div className="w-full max-w-5xl mx-auto px-6">
-        <div className="text-center mb-2 sm:mb-10">
+        <div className="text-center mb-4 sm:mb-10">
           <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2 sm:mb-3">Noi doi</h2>
           <SmallFlourish className="mx-auto mb-1 sm:mb-3" />
           <p className="text-sm text-foreground">
