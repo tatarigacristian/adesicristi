@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-const WEDDING_DATE = new Date("2026-07-04T11:00:00");
+const DEFAULT_WEDDING_ISO = "2026-07-04T11:00:00";
 
 interface TimeLeft {
   days: number;
@@ -12,9 +12,9 @@ interface TimeLeft {
   seconds: number;
 }
 
-function calculateTimeLeft(): TimeLeft {
-  const diff = WEDDING_DATE.getTime() - Date.now();
-  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+function calculateTimeLeft(targetMs: number): TimeLeft | null {
+  const diff = targetMs - Date.now();
+  if (diff <= 0) return null;
 
   return {
     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
@@ -35,20 +35,37 @@ const units = [
   { key: "seconds", label: "sec" },
 ] as const;
 
-export default function Countdown({ variant = "section" }: { variant?: "section" | "sidebar" }) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
+export default function Countdown({
+  variant = "section",
+  weddingDateISO,
+}: {
+  variant?: "section" | "sidebar";
+  weddingDateISO?: string;
+}) {
+  const targetMs = useMemo(
+    () => new Date(weddingDateISO || DEFAULT_WEDDING_ISO).getTime(),
+    [weddingDateISO]
+  );
+
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null | undefined>(undefined);
   const ref = useScrollAnimation<HTMLElement>();
 
   useEffect(() => {
-    setTimeLeft(calculateTimeLeft());
-    const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
+    setTimeLeft(calculateTimeLeft(targetMs));
+    const timer = setInterval(() => setTimeLeft(calculateTimeLeft(targetMs)), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [targetMs]);
 
-  if (!timeLeft) {
+  // undefined = not yet mounted (SSR), null = countdown finished (wedding day)
+  if (timeLeft === undefined) {
     return variant === "sidebar" ? (
       <div className="bg-background rounded-xl px-5 py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)] border border-border-light/50 min-h-[6rem]" />
     ) : null;
+  }
+
+  // Hide on wedding day (countdown reached 0)
+  if (timeLeft === null) {
+    return null;
   }
 
   if (variant === "sidebar") {

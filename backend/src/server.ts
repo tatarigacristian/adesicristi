@@ -5,6 +5,7 @@ import { config } from './config/index.js';
 import { authRoutes } from './routes/auth.js';
 import { rsvpRoutes } from './routes/rsvp.js';
 import { guestRoutes } from './routes/guests.js';
+import { weddingSettingsRoutes } from './routes/wedding-settings.js';
 
 const fastify = Fastify({ logger: true });
 
@@ -21,6 +22,7 @@ async function start() {
   await fastify.register(authRoutes);
   await fastify.register(rsvpRoutes);
   await fastify.register(guestRoutes);
+  await fastify.register(weddingSettingsRoutes);
 
   fastify.get('/api/health', async () => {
     return { status: 'ok' };

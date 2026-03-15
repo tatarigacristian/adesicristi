@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { WeddingSettings, formatDate } from "@/utils/settings";
 
 interface LocationCard {
   title: string;
@@ -12,32 +13,63 @@ interface LocationCard {
   image: string;
 }
 
-const LOCATIONS: LocationCard[] = [
-  {
-    title: "Cununia Religioasa",
-    date: "4 Iulie 2026",
-    time: "ora 15:00",
-    address: "Adresa va fi comunicata ulterior",
-    googleMapsUrl: "https://maps.app.goo.gl/BpJMVU3vwg3QuLDr5",
-    image: "/images/spiritual.png",
-  },
-  {
-    title: "Transport",
-    date: "4 Iulie 2026",
-    time: "ora 18:00",
-    address: "Adresa va fi comunicata ulterior",
-    googleMapsUrl: "https://maps.app.goo.gl/zvSki9tUL6UGbsyU9",
-    image: "/images/bus.png",
-  },
-  {
-    title: "Petrecerea",
-    date: "4 Iulie 2026",
-    time: "ora 19:00",
-    address: "Adresa va fi comunicata ulterior",
-    googleMapsUrl: "https://maps.app.goo.gl/kpEz9hCmH5mY19s68",
-    image: "/images/party.png",
-  },
-];
+function buildLocations(settings: WeddingSettings | null): LocationCard[] {
+  if (!settings) {
+    return [
+      {
+        title: "Cununia Religioasa",
+        date: "4 Iulie 2026",
+        time: "ora 15:00",
+        address: "Adresa va fi comunicata ulterior",
+        googleMapsUrl: "https://maps.app.goo.gl/BpJMVU3vwg3QuLDr5",
+        image: "/images/spiritual.png",
+      },
+      {
+        title: "Transport",
+        date: "4 Iulie 2026",
+        time: "ora 18:00",
+        address: "Adresa va fi comunicata ulterior",
+        googleMapsUrl: "https://maps.app.goo.gl/zvSki9tUL6UGbsyU9",
+        image: "/images/bus.png",
+      },
+      {
+        title: "Petrecerea",
+        date: "4 Iulie 2026",
+        time: "ora 19:00",
+        address: "Adresa va fi comunicata ulterior",
+        googleMapsUrl: "https://maps.app.goo.gl/kpEz9hCmH5mY19s68",
+        image: "/images/party.png",
+      },
+    ];
+  }
+
+  return [
+    {
+      title: settings.ceremonie_descriere || "Cununia Religioasa",
+      date: settings.ceremonie_data ? formatDate(settings.ceremonie_data) : "4 Iulie 2026",
+      time: settings.ceremonie_ora ? `ora ${settings.ceremonie_ora}` : "",
+      address: settings.ceremonie_adresa || "Adresa va fi comunicata ulterior",
+      googleMapsUrl: settings.ceremonie_google_maps || "",
+      image: "/images/spiritual.png",
+    },
+    {
+      title: settings.transport_descriere || "Transport",
+      date: settings.transport_data ? formatDate(settings.transport_data) : "4 Iulie 2026",
+      time: settings.transport_ora ? `ora ${settings.transport_ora}` : "",
+      address: settings.transport_adresa || "Adresa va fi comunicata ulterior",
+      googleMapsUrl: settings.transport_google_maps || "",
+      image: "/images/bus.png",
+    },
+    {
+      title: settings.petrecere_descriere || "Petrecerea",
+      date: settings.petrecere_data ? formatDate(settings.petrecere_data) : "4 Iulie 2026",
+      time: settings.petrecere_ora ? `ora ${settings.petrecere_ora}` : "",
+      address: settings.petrecere_adresa || "Adresa va fi comunicata ulterior",
+      googleMapsUrl: settings.petrecere_google_maps || "",
+      image: "/images/party.png",
+    },
+  ];
+}
 
 function getWazeUrl(googleMapsUrl: string) {
   return `https://waze.com/ul?navigate=yes&ll=${encodeURIComponent(googleMapsUrl)}`;
@@ -66,7 +98,7 @@ function LocationCardContent({
           {loc.title}
         </h3>
         <p className="text-xs text-text-muted flex items-center justify-center gap-1 mb-1">
-          <span>&#128197;</span> {loc.date}, {loc.time}
+          <span>&#128197;</span> {loc.date}{loc.time ? `, ${loc.time}` : ""}
         </p>
         <p className="text-xs text-foreground/60 mb-4 leading-relaxed">
           {loc.address}
@@ -84,14 +116,14 @@ function LocationCardContent({
   );
 }
 
-export default function Locations() {
+export default function Locations({ settings }: { settings?: WeddingSettings | null }) {
   const ref = useScrollAnimation<HTMLElement>();
-  const [drawerLocation, setDrawerLocation] = useState<LocationCard | null>(
-    null
-  );
+  const [drawerLocation, setDrawerLocation] = useState<LocationCard | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
+
+  const locations = useMemo(() => buildLocations(settings ?? null), [settings]);
 
   function handleMapClick(loc: LocationCard) {
     if (window.innerWidth < 1024) {
@@ -128,14 +160,13 @@ export default function Locations() {
     return () => carousel.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Auto-play carousel every 3 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      const nextIndex = (activeIndex + 1) % LOCATIONS.length;
+      const nextIndex = (activeIndex + 1) % locations.length;
       scrollToIndex(nextIndex);
     }, 5000);
     return () => clearInterval(timer);
-  }, [activeIndex, scrollToIndex]);
+  }, [activeIndex, scrollToIndex, locations.length]);
 
   return (
     <>
@@ -161,7 +192,7 @@ export default function Locations() {
               className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              {LOCATIONS.map((loc) => (
+              {locations.map((loc) => (
                 <div
                   key={loc.title}
                   className="w-full flex-shrink-0 snap-center px-4"
@@ -171,13 +202,12 @@ export default function Locations() {
               ))}
             </div>
 
-            {/* Dot indicators */}
             <div className="flex items-center justify-center gap-2.5 mt-6">
-              {LOCATIONS.map((_, i) => (
+              {locations.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => scrollToIndex(i)}
-                  aria-label={`Go to ${LOCATIONS[i].title}`}
+                  aria-label={`Go to ${locations[i].title}`}
                   className={`rounded-full transition-all duration-300 cursor-pointer ${
                     activeIndex === i
                       ? "w-6 h-2 bg-accent-rose"
@@ -190,7 +220,7 @@ export default function Locations() {
 
           {/* Desktop grid */}
           <div className="hidden md:grid grid-cols-3 gap-5">
-            {LOCATIONS.map((loc) => (
+            {locations.map((loc) => (
               <LocationCardContent
                 key={loc.title}
                 loc={loc}

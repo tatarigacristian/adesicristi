@@ -10,6 +10,7 @@ import Locations from "@/components/Locations/Locations";
 import RSVP from "@/components/RSVP/RSVP";
 import Footer from "@/components/Footer/Footer";
 import MobileNav from "@/components/Navigation/MobileNav";
+import { WeddingSettings, fetchWeddingSettings, getCoupleNames } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -26,29 +27,36 @@ export default function SlugPage() {
   const params = useParams();
   const slug = params.slug as string;
   const [guest, setGuest] = useState<GuestData | null>(null);
+  const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchGuest() {
+    async function fetchData() {
       try {
-        const res = await fetch(`${API_URL}/api/guests/${slug}`);
-        if (res.ok) {
-          setGuest(await res.json());
+        const [guestRes, settingsData] = await Promise.all([
+          fetch(`${API_URL}/api/guests/${slug}`),
+          fetchWeddingSettings(),
+        ]);
+        if (guestRes.ok) {
+          setGuest(await guestRes.json());
         }
+        setSettings(settingsData);
       } catch {
         // silently fail, show default message
       } finally {
         setLoading(false);
       }
     }
-    fetchGuest();
+    fetchData();
   }, [slug]);
+
+  const couple = getCoupleNames(settings);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="script-font text-3xl text-text-heading mb-2">Ade & Cristi</p>
+          <p className="script-font text-3xl text-text-heading mb-2">{couple.display}</p>
           <p className="text-xs text-text-muted tracking-widest uppercase">Se incarca...</p>
         </div>
       </div>
@@ -59,13 +67,13 @@ export default function SlugPage() {
     <>
       <MobileNav />
       <div className="split-container">
-        <Sidebar />
+        <Sidebar settings={settings} />
         <main className="right-panel">
-          <Hero guest={guest} />
-          <Couple />
+          <Hero guest={guest} settings={settings} />
+          <Couple settings={settings} />
           <Family />
-          <Locations />
-          <RSVP guest={guest} />
+          <Locations settings={settings} />
+          <RSVP guest={guest} settings={settings} />
           <Footer />
         </main>
       </div>

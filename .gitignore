@@ -3,6 +3,8 @@
 
 # Dependencies
 node_modules/
+.claude
+.cursor
 
 # Build
 frontend/.next/

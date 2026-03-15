@@ -28,7 +28,7 @@ interface Guest {
   created_at: string;
 }
 
-type View = "login" | "guests" | "confirmari";
+type View = "login" | "guests" | "confirmari" | "setari";
 
 function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
@@ -668,6 +668,241 @@ function ConfirmariPanel({ token, onUnauth }: { token: string; onUnauth: () => v
   );
 }
 
+// ─── Settings Panel ─────────────────────────────────────
+
+interface WeddingSettingsData {
+  id: number;
+  nume_mire: string;
+  nume_mireasa: string;
+  ceremonie_data: string | null;
+  ceremonie_ora: string | null;
+  ceremonie_adresa: string | null;
+  ceremonie_google_maps: string | null;
+  ceremonie_descriere: string | null;
+  transport_data: string | null;
+  transport_ora: string | null;
+  transport_adresa: string | null;
+  transport_google_maps: string | null;
+  transport_descriere: string | null;
+  petrecere_data: string | null;
+  petrecere_ora: string | null;
+  petrecere_adresa: string | null;
+  petrecere_google_maps: string | null;
+  petrecere_descriere: string | null;
+  link_youtube_video: string | null;
+  updated_at: string;
+}
+
+function SettingsInput({ label, value, onChange, type = "text", placeholder }: {
+  label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string;
+}) {
+  return (
+    <div>
+      <label className="block text-xs text-text-muted mb-1 tracking-wide">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors"
+      />
+    </div>
+  );
+}
+
+function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="family-card">
+      <h3 className="serif-font text-lg text-text-heading mb-4">{title}</h3>
+      <div className="space-y-3">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => void }) {
+  const [settings, setSettings] = useState<WeddingSettingsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [form, setForm] = useState({
+    nume_mire: "",
+    nume_mireasa: "",
+    ceremonie_data: "",
+    ceremonie_ora: "",
+    ceremonie_adresa: "",
+    ceremonie_google_maps: "",
+    ceremonie_descriere: "",
+    transport_data: "",
+    transport_ora: "",
+    transport_adresa: "",
+    transport_google_maps: "",
+    transport_descriere: "",
+    petrecere_data: "",
+    petrecere_ora: "",
+    petrecere_adresa: "",
+    petrecere_google_maps: "",
+    petrecere_descriere: "",
+    link_youtube_video: "",
+  });
+
+  async function fetchSettings() {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/wedding-settings`);
+      if (res.ok) {
+        const data: WeddingSettingsData = await res.json();
+        setSettings(data);
+        setForm({
+          nume_mire: data.nume_mire || "",
+          nume_mireasa: data.nume_mireasa || "",
+          ceremonie_data: data.ceremonie_data ? data.ceremonie_data.split("T")[0] : "",
+          ceremonie_ora: data.ceremonie_ora || "",
+          ceremonie_adresa: data.ceremonie_adresa || "",
+          ceremonie_google_maps: data.ceremonie_google_maps || "",
+          ceremonie_descriere: data.ceremonie_descriere || "",
+          transport_data: data.transport_data ? data.transport_data.split("T")[0] : "",
+          transport_ora: data.transport_ora || "",
+          transport_adresa: data.transport_adresa || "",
+          transport_google_maps: data.transport_google_maps || "",
+          transport_descriere: data.transport_descriere || "",
+          petrecere_data: data.petrecere_data ? data.petrecere_data.split("T")[0] : "",
+          petrecere_ora: data.petrecere_ora || "",
+          petrecere_adresa: data.petrecere_adresa || "",
+          petrecere_google_maps: data.petrecere_google_maps || "",
+          petrecere_descriere: data.petrecere_descriere || "",
+          link_youtube_video: data.link_youtube_video || "",
+        });
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { fetchSettings(); }, []);
+
+  async function handleSave(e: FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setSaved(false);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/wedding-settings`, {
+        method: "PUT",
+        headers: authHeaders(token),
+        body: JSON.stringify(form),
+      });
+      if (res.status === 401) { onUnauth(); return; }
+      if (res.ok) {
+        const data = await res.json();
+        setSettings(data);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const updateForm = (field: string) => (value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-sm text-text-muted">Se incarca setarile...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="serif-font text-2xl text-text-heading">Setari eveniment</h2>
+        {settings && (
+          <p className="text-xs text-text-muted">
+            Ultima actualizare: {new Date(settings.updated_at).toLocaleDateString("ro-RO", {
+              day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
+            })}
+          </p>
+        )}
+      </div>
+
+      <form onSubmit={handleSave} className="space-y-6">
+        {/* Couple names */}
+        <SettingsSection title="Cuplu">
+          <div className="grid grid-cols-2 gap-3">
+            <SettingsInput label="Nume mireasa" value={form.nume_mireasa} onChange={updateForm("nume_mireasa")} placeholder="Ade" />
+            <SettingsInput label="Nume mire" value={form.nume_mire} onChange={updateForm("nume_mire")} placeholder="Cristi" />
+          </div>
+        </SettingsSection>
+
+        {/* Ceremonie */}
+        <SettingsSection title="Cununia Religioasa">
+          <SettingsInput label="Descriere / Titlu" value={form.ceremonie_descriere} onChange={updateForm("ceremonie_descriere")} placeholder="Cununia Religioasa" />
+          <div className="grid grid-cols-2 gap-3">
+            <SettingsInput label="Data" value={form.ceremonie_data} onChange={updateForm("ceremonie_data")} type="date" />
+            <SettingsInput label="Ora" value={form.ceremonie_ora} onChange={updateForm("ceremonie_ora")} type="time" />
+          </div>
+          <SettingsInput label="Adresa" value={form.ceremonie_adresa} onChange={updateForm("ceremonie_adresa")} placeholder="Adresa locatiei" />
+          <SettingsInput label="Link Google Maps" value={form.ceremonie_google_maps} onChange={updateForm("ceremonie_google_maps")} placeholder="https://maps.app.goo.gl/..." />
+        </SettingsSection>
+
+        {/* Transport */}
+        <SettingsSection title="Transport">
+          <SettingsInput label="Descriere / Titlu" value={form.transport_descriere} onChange={updateForm("transport_descriere")} placeholder="Transport" />
+          <div className="grid grid-cols-2 gap-3">
+            <SettingsInput label="Data" value={form.transport_data} onChange={updateForm("transport_data")} type="date" />
+            <SettingsInput label="Ora" value={form.transport_ora} onChange={updateForm("transport_ora")} type="time" />
+          </div>
+          <SettingsInput label="Adresa" value={form.transport_adresa} onChange={updateForm("transport_adresa")} placeholder="Adresa locatiei" />
+          <SettingsInput label="Link Google Maps" value={form.transport_google_maps} onChange={updateForm("transport_google_maps")} placeholder="https://maps.app.goo.gl/..." />
+        </SettingsSection>
+
+        {/* Petrecere */}
+        <SettingsSection title="Petrecerea">
+          <SettingsInput label="Descriere / Titlu" value={form.petrecere_descriere} onChange={updateForm("petrecere_descriere")} placeholder="Petrecerea" />
+          <div className="grid grid-cols-2 gap-3">
+            <SettingsInput label="Data" value={form.petrecere_data} onChange={updateForm("petrecere_data")} type="date" />
+            <SettingsInput label="Ora" value={form.petrecere_ora} onChange={updateForm("petrecere_ora")} type="time" />
+          </div>
+          <SettingsInput label="Adresa" value={form.petrecere_adresa} onChange={updateForm("petrecere_adresa")} placeholder="Adresa locatiei" />
+          <SettingsInput label="Link Google Maps" value={form.petrecere_google_maps} onChange={updateForm("petrecere_google_maps")} placeholder="https://maps.app.goo.gl/..." />
+        </SettingsSection>
+
+        {/* YouTube */}
+        <SettingsSection title="Video">
+          <SettingsInput
+            label="Link YouTube (embed format)"
+            value={form.link_youtube_video}
+            onChange={updateForm("link_youtube_video")}
+            placeholder="https://www.youtube.com/embed/..."
+          />
+        </SettingsSection>
+
+        {/* Save button */}
+        <div className="flex items-center gap-4">
+          <button
+            type="submit"
+            disabled={saving}
+            className="bg-accent text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-accent-light transition-colors disabled:opacity-50 cursor-pointer"
+          >
+            {saving ? "Se salveaza..." : "Salveaza setarile"}
+          </button>
+          {saved && (
+            <span className="text-sm text-green-600 font-medium">Salvat cu succes!</span>
+          )}
+        </div>
+      </form>
+    </div>
+  );
+}
+
 // ─── Sidebar Nav Items ───────────────────────────────────
 
 const NAV_ITEMS: { key: Exclude<View, "login">; label: string; icon: JSX.Element }[] = [
@@ -690,6 +925,16 @@ const NAV_ITEMS: { key: Exclude<View, "login">; label: string; icon: JSX.Element
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
         <polyline points="22 4 12 14.01 9 11.01" />
+      </svg>
+    ),
+  },
+  {
+    key: "setari",
+    label: "Setari",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
       </svg>
     ),
   },
@@ -791,6 +1036,7 @@ export default function AdminPage() {
         <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
           {view === "guests" && <GuestsPanel token={token} onUnauth={handleUnauth} />}
           {view === "confirmari" && <ConfirmariPanel token={token} onUnauth={handleUnauth} />}
+          {view === "setari" && <SettingsPanel token={token} onUnauth={handleUnauth} />}
         </div>
       </main>
     </div>

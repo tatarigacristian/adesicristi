@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, FormEvent, KeyboardEvent } from "react";
+import { useState, useEffect, useRef, useCallback, FormEvent, KeyboardEvent } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { WeddingSettings, getCoupleNames } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -16,7 +17,137 @@ interface GuestData {
   partner: { nume: string; prenume: string } | null;
 }
 
-export default function RSVP({ guest }: { guest?: GuestData | null }) {
+function formatICSDate(dateStr: string, timeStr: string): string {
+  // dateStr: "2026-07-03T21:00:00.000Z" or "2026-07-04", timeStr: "15:00"
+  const datePart = dateStr.split("T")[0].replace(/-/g, "");
+  const timePart = timeStr.replace(":", "") + "00";
+  return `${datePart}T${timePart}`;
+}
+
+function buildGoogleCalendarUrl(settings: WeddingSettings, couple: { display: string }): string {
+  const firstDate = settings.ceremonie_data?.split("T")[0].replace(/-/g, "") || "20260704";
+  const firstTime = (settings.ceremonie_ora || "15:00").replace(":", "") + "00";
+  // End: petrecere time + 5h or midnight
+  const lastTime = "235900";
+
+  const title = `Nunta ${couple.display}`;
+  const location = settings.petrecere_adresa || settings.ceremonie_adresa || "";
+  const details = [
+    settings.ceremonie_descriere ? `${settings.ceremonie_descriere}: ${settings.ceremonie_ora || ""}` : "",
+    settings.transport_descriere ? `${settings.transport_descriere}: ${settings.transport_ora || ""}` : "",
+    settings.petrecere_descriere ? `${settings.petrecere_descriere}: ${settings.petrecere_ora || ""}` : "",
+  ].filter(Boolean).join("\\n");
+
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: title,
+    dates: `${firstDate}T${firstTime}/${firstDate}T${lastTime}`,
+    details,
+    location,
+  });
+  return `https://www.google.com/calendar/render?${params.toString()}`;
+}
+
+function buildICSContent(settings: WeddingSettings, couple: { display: string }): string {
+  const firstDate = settings.ceremonie_data ? formatICSDate(settings.ceremonie_data, settings.ceremonie_ora || "15:00") : "20260704T150000";
+  const endDate = settings.petrecere_data ? formatICSDate(settings.petrecere_data, "23:59") : "20260704T235900";
+
+  const title = `Nunta ${couple.display}`;
+  const location = settings.petrecere_adresa || settings.ceremonie_adresa || "";
+  const description = [
+    settings.ceremonie_descriere ? `${settings.ceremonie_descriere}: ${settings.ceremonie_ora || ""}` : "",
+    settings.transport_descriere ? `${settings.transport_descriere}: ${settings.transport_ora || ""}` : "",
+    settings.petrecere_descriere ? `${settings.petrecere_descriere}: ${settings.petrecere_ora || ""}` : "",
+  ].filter(Boolean).join("\\n");
+
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//AdesiCristi//Wedding//RO",
+    "BEGIN:VEVENT",
+    `DTSTART:${firstDate}`,
+    `DTEND:${endDate}`,
+    `SUMMARY:${title}`,
+    `DESCRIPTION:${description}`,
+    `LOCATION:${location}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+}
+
+function AddToCalendar({ settings }: { settings: WeddingSettings }) {
+  const [open, setOpen] = useState(false);
+  const couple = getCoupleNames(settings);
+
+  const handleICS = useCallback(() => {
+    const ics = buildICSContent(settings, couple);
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `nunta-${couple.display.toLowerCase().replace(/\s+/g, "-")}.ics`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setOpen(false);
+  }, [settings, couple]);
+
+  const googleUrl = buildGoogleCalendarUrl(settings, couple);
+
+  return (
+    <div className="relative inline-block">
+      <button
+        onClick={() => setOpen(!open)}
+        className="btn-glass text-xs cursor-pointer inline-flex items-center gap-1.5"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+        Adauga in calendar
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-white rounded-xl shadow-lg border border-border-light p-2 min-w-[200px]">
+            <a
+              href={googleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-text-heading hover:bg-background-soft transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="3" width="20" height="19" rx="3" fill="#4285F4"/>
+                <rect x="5" y="10" width="4" height="4" rx="0.5" fill="#fff"/>
+                <rect x="10" y="10" width="4" height="4" rx="0.5" fill="#fff"/>
+                <rect x="15" y="10" width="4" height="4" rx="0.5" fill="#fff"/>
+                <rect x="5" y="15" width="4" height="4" rx="0.5" fill="#fff"/>
+                <rect x="10" y="15" width="4" height="4" rx="0.5" fill="#fff"/>
+              </svg>
+              Google Calendar
+            </a>
+            <button
+              onClick={handleICS}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-text-heading hover:bg-background-soft transition-colors cursor-pointer"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Apple / Outlook (.ics)
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default function RSVP({ guest, settings }: { guest?: GuestData | null; settings?: WeddingSettings | null }) {
   const sectionRef = useScrollAnimation<HTMLElement>();
   const [personCount, setPersonCount] = useState(0);
   const [name, setName] = useState("");
@@ -173,11 +304,16 @@ export default function RSVP({ guest }: { guest?: GuestData | null }) {
               Multumim pentru confirmare!
             </p>
             <p className="script-font text-4xl text-text-heading mb-4">Ade & Cristi</p>
-            <p className="text-sm text-foreground/70 mb-8">
+            <p className="text-sm text-foreground/70 mb-6">
               Va multumim din suflet ca ati confirmat prezenta.
               <br />
               Abia asteptam sa fiti alaturi de noi!
             </p>
+            {settings && (
+              <div className="mb-6">
+                <AddToCalendar settings={settings} />
+              </div>
+            )}
             <button
               onClick={handleCancel}
               disabled={cancelling}

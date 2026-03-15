@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 
 interface GuestData {
   nume: string;
@@ -10,8 +11,23 @@ interface GuestData {
   partner: { nume: string; prenume: string } | null;
 }
 
-export default function Hero({ guest }: { guest?: GuestData | null }) {
+export default function Hero({
+  guest,
+  settings,
+}: {
+  guest?: GuestData | null;
+  settings?: WeddingSettings | null;
+}) {
   const [isVisible, setIsVisible] = useState(false);
+
+  const couple = getCoupleNames(settings);
+  const dateDisplay = settings?.ceremonie_data
+    ? formatDate(settings.ceremonie_data)
+    : "4 Iulie 2026";
+
+  // Initials for monogram
+  const initialMireasa = couple.mireasa.charAt(0).toUpperCase();
+  const initialMire = couple.mire.charAt(0).toUpperCase();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -25,7 +41,6 @@ export default function Hero({ guest }: { guest?: GuestData | null }) {
 
   return (
     <section className="snap-section content-section bg-background relative overflow-hidden">
-      {/* Subtle decorative corner ornaments */}
       <div className="absolute top-8 left-8 w-16 h-16 border-t border-l border-accent/30 rounded-tl-sm" />
       <div className="absolute top-8 right-8 w-16 h-16 border-t border-r border-accent/30 rounded-tr-sm" />
       <div className="absolute bottom-8 left-8 w-16 h-16 border-b border-l border-accent/30 rounded-bl-sm" />
@@ -36,13 +51,13 @@ export default function Hero({ guest }: { guest?: GuestData | null }) {
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-        {/* Mobile-only hero info (hidden on desktop where sidebar shows it) */}
+        {/* Mobile-only hero info */}
         <div className="lg:hidden mb-10">
           <p className="text-[0.65rem] tracking-[0.4em] uppercase text-accent font-medium mb-4">
             Ne casatorim!
           </p>
           <h1 className="script-font text-5xl text-text-heading mb-5 leading-tight">
-            Ade & Cristi
+            {couple.display}
           </h1>
           <div className="elegant-divider">
             <span></span>
@@ -50,7 +65,7 @@ export default function Hero({ guest }: { guest?: GuestData | null }) {
             <span></span>
           </div>
           <p className="serif-font text-xl text-text-heading font-light mt-3 tracking-wide">
-            4 Iulie 2026
+            {dateDisplay}
           </p>
         </div>
 
@@ -63,7 +78,7 @@ export default function Hero({ guest }: { guest?: GuestData | null }) {
           <div className="monogram-ring w-32 h-32 mx-auto rounded-full flex items-center justify-center">
             <div className="w-[7rem] h-[7rem] rounded-full border border-accent/30 flex items-center justify-center bg-background">
               <span className="script-font text-4xl text-accent tracking-wide">
-                A <span className="serif-font text-lg text-accent/60 italic">&</span> C
+                {initialMireasa} <span className="serif-font text-lg text-accent/60 italic">&</span> {initialMire}
               </span>
             </div>
           </div>
