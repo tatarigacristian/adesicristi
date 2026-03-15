@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 
@@ -494,7 +494,7 @@ function buildStyles(s: WeddingSettings | null) {
   `;
 }
 
-export default function CardPage() {
+function CardPageContent() {
   const searchParams = useSearchParams();
   const guestId = searchParams.get("guestId");
   const token = typeof window !== "undefined" ? sessionStorage.getItem("admin_token") : null;
@@ -597,5 +597,13 @@ export default function CardPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function CardPage() {
+  return (
+    <Suspense fallback={<div className="print-page"><p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se încarcă...</p></div>}>
+      <CardPageContent />
+    </Suspense>
   );
 }
