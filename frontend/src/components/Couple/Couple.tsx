@@ -17,7 +17,7 @@ function getYoutubeId(url: string): string | null {
 const TIMELINE = [
   { date: "2021-12-24", label: "Ne-am cunoscut", icon: "sparkle" },
   { date: "2022-01-10", label: "Prima întâlnire", icon: "coffee" },
-  { date: "2022-02-02", label: "Împreună", icon: "heart" },
+  { date: "2022-02-02", label: "Am devenit un cuplu", icon: "heart" },
   { date: "2022-12-28", label: "Ne-am mutat împreună", icon: "home" },
   { date: "2023-05-02", label: "Logodna", icon: "ring" },
   { date: "", label: "Nunta", icon: "celebrate" },
