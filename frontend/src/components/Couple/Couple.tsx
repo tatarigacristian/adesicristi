@@ -195,7 +195,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-300 flex items-center justify-center shadow-lg">
+                      <div className="w-16 h-16 rounded-full bg-white/50 group-hover:bg-white/70 group-hover:scale-110 transition-all duration-300 flex items-center justify-center shadow-lg">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-button ml-1">
                           <path d="M8 5v14l11-7z" fill="currentColor" />
                         </svg>
