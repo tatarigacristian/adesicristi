@@ -5,11 +5,18 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+// Statements that don't work with the connection pool (already connected to DB)
+const SKIP_PATTERNS = [
+  /^CREATE\s+DATABASE/i,
+  /^USE\s+/i,
+  /^DROP\s+DATABASE/i,
+];
+
 export async function runMigrations() {
   const pool = getPool();
 
   // Ensure migrations tracking table exists
-  await pool.execute(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS _migrations (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL UNIQUE,
@@ -18,7 +25,7 @@ export async function runMigrations() {
   `);
 
   // Get already executed migrations
-  const [executed] = await pool.execute('SELECT name FROM _migrations ORDER BY name') as any[];
+  const [executed] = await pool.query('SELECT name FROM _migrations ORDER BY name') as any[];
   const executedNames = new Set(executed.map((r: any) => r.name));
 
   // Read migration files
@@ -40,10 +47,15 @@ export async function runMigrations() {
       .filter((s) => s.length > 0 && !s.startsWith('--'));
 
     for (const statement of statements) {
-      await pool.execute(statement);
+      // Skip statements that aren't compatible with pool connection
+      if (SKIP_PATTERNS.some((p) => p.test(statement))) {
+        console.log(`  Skipping: ${statement.substring(0, 50)}...`);
+        continue;
+      }
+      await pool.query(statement);
     }
 
-    await pool.execute('INSERT INTO _migrations (name) VALUES (?)', [file]);
+    await pool.query('INSERT INTO _migrations (name) VALUES (?)', [file]);
     console.log(`Migration complete: ${file}`);
   }
 }
