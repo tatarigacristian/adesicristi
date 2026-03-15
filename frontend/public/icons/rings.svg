@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#C4A484" stroke-width="1.5">
+  <!-- Wedding rings -->
+  <ellipse cx="24" cy="34" rx="14" ry="14"/>
+  <ellipse cx="40" cy="34" rx="14" ry="14"/>
+  <path d="M24 18l-2-6h4z" fill="#C4A484" stroke="none"/>
+  <path d="M40 18l-2-6h4z" fill="#C4A484" stroke="none"/>
+</svg>

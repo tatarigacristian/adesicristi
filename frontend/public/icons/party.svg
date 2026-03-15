@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#C4A484" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Party / Celebration icon -->
+  <path d="M12 58L22 8"/>
+  <path d="M22 8c8 6 16 6 24 0"/>
+  <path d="M14.5 42c7-4 14-4 21 0"/>
+  <path d="M13.5 48c7.5-4 15-4 22.5 0"/>
+  <!-- Confetti -->
+  <circle cx="44" cy="14" r="1.5" fill="#C4A484" stroke="none"/>
+  <circle cx="50" cy="22" r="1.5" fill="#C4A484" stroke="none"/>
+  <circle cx="54" cy="12" r="1" fill="#C4A484" stroke="none"/>
+  <path d="M48 8l2-4"/>
+  <path d="M54 18l4-2"/>
+  <path d="M42 22l-2 4"/>
+</svg>
