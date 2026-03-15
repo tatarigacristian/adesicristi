@@ -51,27 +51,19 @@ export default function Hero({
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-        {/* Mobile-only hero info */}
-        <div className="lg:hidden mb-6 sm:mb-10">
+        {/* Desktop-only hero info */}
+        <div className="hidden lg:block mb-10">
           <p className="text-[0.65rem] tracking-[0.4em] uppercase text-button font-medium mb-3">
             Ne căsătorim!
           </p>
-          <h1 className="script-font text-4xl sm:text-5xl text-text-heading mb-4 leading-tight">
+          <h1 className="script-font text-5xl text-text-heading mb-4 leading-tight">
             {couple.display}
           </h1>
-          <div className="elegant-divider">
-            <span></span>
-            <span className="heart-icon">&#9829;</span>
-            <span></span>
-          </div>
-          <p className="serif-font text-xl text-text-heading font-light mt-2 tracking-wide">
-            {dateDisplay}
-          </p>
         </div>
 
         {/* Monogram */}
         <div
-          className={`relative mb-6 sm:mb-10 transition-all duration-1000 delay-300 ease-out ${
+          className={`relative mb-4 sm:mb-10 transition-all duration-1000 delay-300 ease-out ${
             isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
           }`}
         >
@@ -92,6 +84,18 @@ export default function Hero({
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Mobile: heart divider + date after monogram */}
+        <div className="lg:hidden mb-4">
+          <div className="elegant-divider">
+            <span></span>
+            <span className="heart-icon">&#9829;</span>
+            <span></span>
+          </div>
+          <p className="serif-font text-xl text-text-heading font-light mt-2 tracking-wide">
+            {dateDisplay}
+          </p>
         </div>
 
         {/* Invitation text */}
