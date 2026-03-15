@@ -188,13 +188,11 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                     className="absolute inset-0 w-full h-full cursor-pointer group"
                     aria-label="Play video"
                   >
-                    {thumbnailUrl && (
-                      <img
-                        src={thumbnailUrl}
-                        alt="Video thumbnail"
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    )}
+                    <img
+                      src="/images/video-thumbnail.png"
+                      alt="Video thumbnail"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-300 flex items-center justify-center shadow-lg">
