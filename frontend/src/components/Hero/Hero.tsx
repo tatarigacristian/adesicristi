@@ -44,7 +44,7 @@ export default function Hero({
   return (
     <section className="snap-section content-section bg-background relative overflow-hidden">
       {/* Corner ornaments */}
-      <SectionCorners size="w-[40px] h-[40px] sm:w-[55px] sm:h-[55px]" offset={8} />
+      <SectionCorners size="w-[35px] h-[35px] sm:w-[55px] sm:h-[55px]" offset={16} />
 
       <div
         className={`max-w-lg mx-auto text-center transition-all duration-1000 ease-out ${

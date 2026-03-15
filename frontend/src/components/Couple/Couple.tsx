@@ -109,7 +109,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       className="snap-section content-section bg-background-soft animate-on-scroll"
     >
       <div className="w-full max-w-5xl mx-auto px-6">
-        <div className="text-center mb-10">
+        <div className="text-center mb-4 sm:mb-10">
           <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-3">Noi doi</h2>
           <SmallFlourish className="mx-auto mb-3" />
           <p className="text-sm text-foreground">
@@ -118,7 +118,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
         </div>
 
         {/* Mobile: stacked */}
-        <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-14">
+        <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-10 lg:gap-14">
 
           {/* Timeline — vertically centered with video on desktop */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-end lg:self-center">
@@ -199,8 +199,8 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
 
           {/* Video */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-start">
-            <div className="w-full max-w-xs glass-card !p-0 overflow-hidden">
-              <div className="relative w-full" style={{ paddingBottom: "155%" }}>
+            <div className="w-full max-w-[200px] sm:max-w-xs glass-card !p-0 overflow-hidden">
+              <div className="relative w-full" style={{ paddingBottom: "130%" }}>
                 {!playing ? (
                   <button
                     onClick={() => setPlaying(true)}

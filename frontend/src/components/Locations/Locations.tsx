@@ -88,18 +88,18 @@ function LocationCardContent({
   onMapClick: (loc: LocationCard) => void;
 }) {
   return (
-    <div className="glass-card overflow-hidden p-0">
+    <div className="overflow-hidden rounded-xl border border-accent">
       <img
         src={loc.image}
         alt={loc.title}
-        className="w-full h-36 sm:h-44 object-cover"
+        className="w-full h-96 sm:h-96 md:h-44 object-cover"
       />
-      <div className="p-5 text-center">
-        <h3 className="serif-font text-lg text-text-heading mb-2">
+      <div className="px-4 py-3 sm:p-5 text-center bg-accent-light">
+        <h3 className="serif-font text-base sm:text-lg text-text-heading mb-1">
           {loc.title}
         </h3>
-        <p className="text-xs text-text-muted flex items-center justify-center gap-1.5 mb-1">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button/60">
+        <p className="text-[0.7rem] text-text-muted flex items-center justify-center gap-1.5 mb-0.5">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button/60">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
             <line x1="16" y1="2" x2="16" y2="6" />
             <line x1="8" y1="2" x2="8" y2="6" />
@@ -107,13 +107,13 @@ function LocationCardContent({
           </svg>
           {loc.date}{loc.time ? `, ${loc.time}` : ""}
         </p>
-        <p className="text-xs text-foreground mb-4 leading-relaxed">
+        <p className="text-[0.7rem] text-foreground mb-2 leading-snug">
           {loc.address}
         </p>
         {loc.googleMapsUrl && (
           <button
             onClick={() => onMapClick(loc)}
-            className="btn-glass text-xs cursor-pointer"
+            className="btn-glass !py-1.5 !px-3 text-xs cursor-pointer"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -187,7 +187,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
         className="snap-section content-section bg-background-soft animate-on-scroll"
       >
         <div className="max-w-4xl mx-auto w-full">
-          <div className="text-center mb-4 sm:mb-10">
+          <div className="text-center mb-2 sm:mb-10">
             <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
               Detaliile evenimentului
             </h2>
