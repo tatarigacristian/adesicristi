@@ -42,6 +42,10 @@ interface WeddingSettings {
   petrecere_descriere: string | null;
   confirmare_pana_la: string | null;
   contact_info: string | null;
+  color_main: string | null;
+  color_second: string | null;
+  color_button: string | null;
+  color_text: string | null;
 }
 
 const defaultIntroLines = [
@@ -49,6 +53,119 @@ const defaultIntroLines = [
   "ÎN ZIUA ÎN CARE NE LEGĂM DESTINELE",
   "ȘI PĂȘIM ÎMPREUNĂ PE DRUMUL UNEI NOI VIEȚI.",
 ];
+
+/* ─── Color utilities ─── */
+function hexToRgb(hex: string) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return { r, g, b };
+}
+
+function lighten(hex: string, amount: number): string {
+  const { r, g, b } = hexToRgb(hex);
+  const f = amount / 100;
+  return `#${Math.min(255, Math.round(r + (255 - r) * f)).toString(16).padStart(2, "0")}${Math.min(255, Math.round(g + (255 - g) * f)).toString(16).padStart(2, "0")}${Math.min(255, Math.round(b + (255 - b) * f)).toString(16).padStart(2, "0")}`;
+}
+
+function darken(hex: string, amount: number): string {
+  const { r, g, b } = hexToRgb(hex);
+  const f = 1 - amount / 100;
+  return `#${Math.round(r * f).toString(16).padStart(2, "0")}${Math.round(g * f).toString(16).padStart(2, "0")}${Math.round(b * f).toString(16).padStart(2, "0")}`;
+}
+
+function buildPalette(settings: WeddingSettings) {
+  const bg = settings.color_main || "#FDFBF8";
+  const text = settings.color_text || "#2C2622";
+  const accent = settings.color_button || "#C4B5A0";
+  return {
+    primary: text,
+    secondary: lighten(text, 25),
+    muted: lighten(text, 45),
+    ornament: accent,
+    bg,
+    bgOuter: darken(bg, 5),
+  };
+}
+
+/* ─── SVG Decorative Elements ─── */
+function CornerOrnament({ style, color }: { style: React.CSSProperties; color: string }) {
+  return (
+    <svg style={{ position: "absolute", ...style }} viewBox="0 0 80 80" width="45" height="45" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke={color} strokeWidth="0.6" />
+      <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke={color} strokeWidth="0.5" />
+      <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke={color} strokeWidth="0.4" opacity="0.6" />
+      <circle cx="8" cy="8" r="1.2" fill={color} opacity="0.5" />
+    </svg>
+  );
+}
+
+function Flourish({ width = 200, color }: { width?: number; color: string }) {
+  return (
+    <svg viewBox="0 0 400 24" style={{ width, height: width * 0.06 }} xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="12" x2="140" y2="12" stroke={color} strokeWidth="0.5" />
+      <line x1="260" y1="12" x2="400" y2="12" stroke={color} strokeWidth="0.5" />
+      <path d="M160 12 Q170 4, 180 8 Q188 11, 196 6 L200 4 L204 6 Q212 11, 220 8 Q230 4, 240 12 Q230 20, 220 16 Q212 13, 204 18 L200 20 L196 18 Q188 13, 180 16 Q170 20, 160 12Z" fill="none" stroke={color} strokeWidth="0.6" />
+      <path d="M197 12 L200 9 L203 12 L200 15Z" fill={color} />
+    </svg>
+  );
+}
+
+function SmallFlourish({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 200 12" style={{ width: 120, height: 7 }} xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="6" x2="70" y2="6" stroke={color} strokeWidth="0.4" />
+      <line x1="130" y1="6" x2="200" y2="6" stroke={color} strokeWidth="0.4" />
+      <path d="M80 6 Q90 1, 100 6 Q110 11, 120 6" fill="none" stroke={color} strokeWidth="0.6" />
+      <circle cx="100" cy="6" r="1.5" fill={color} />
+    </svg>
+  );
+}
+
+function ChurchIcon({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="1" x2="12" y2="5" />
+      <line x1="10" y1="3" x2="14" y2="3" />
+      <path d="M7 10 L12 5 L17 10" />
+      <rect x="6" y="10" width="12" height="11" />
+      <path d="M10 21 L10 17 Q10 15, 12 15 Q14 15, 14 17 L14 21" />
+      <circle cx="12" cy="12.5" r="1" />
+      <line x1="4" y1="21" x2="20" y2="21" />
+    </svg>
+  );
+}
+
+function VenueIcon({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 20 L12 4 L22 20" />
+      <line x1="7" y1="20" x2="7" y2="13" />
+      <line x1="12" y1="20" x2="12" y2="8" />
+      <line x1="17" y1="20" x2="17" y2="13" />
+      <path d="M10 20 L10 17 Q10 16, 12 16 Q14 16, 14 17 L14 20" />
+      <line x1="1" y1="20" x2="23" y2="20" />
+    </svg>
+  );
+}
+
+function LocationIcon({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 16 16" style={{ width: 10, height: 10, verticalAlign: "middle", marginRight: 3 }} fill="none" stroke={color} strokeWidth="1.2" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 1.5 C5.5 1.5, 3.5 3.5, 3.5 6 C3.5 9, 8 14.5, 8 14.5 C8 14.5, 12.5 9, 12.5 6 C12.5 3.5, 10.5 1.5, 8 1.5Z" />
+      <circle cx="8" cy="6" r="1.8" />
+    </svg>
+  );
+}
+
+function ClockIcon({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 16 16" style={{ width: 10, height: 10, verticalAlign: "middle", marginRight: 3 }} fill="none" stroke={color} strokeWidth="1.2" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="6" />
+      <path d="M8 4.5 L8 8 L10.5 9.5" />
+    </svg>
+  );
+}
 
 function InvitatieContent() {
   const searchParams = useSearchParams();
@@ -95,11 +212,11 @@ function InvitatieContent() {
   }, [guestId, token]);
 
   if (loading) {
-    return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se încarcă...</p>;
+    return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se incarca...</p>;
   }
 
   if (!guest || !settings) {
-    return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Invitatul nu a fost găsit.</p>;
+    return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Invitatul nu a fost gasit.</p>;
   }
 
   const mireasa = settings.nume_mireasa || "Ade";
@@ -110,44 +227,56 @@ function InvitatieContent() {
   const ceremonieDateObj = settings.ceremonie_data ? new Date(settings.ceremonie_data) : null;
   const dayOfWeek = ceremonieDateObj
     ? ceremonieDateObj.toLocaleDateString("ro-RO", { weekday: "long" }).toUpperCase()
-    : "SÂMBĂTĂ";
+    : "SAMBATA";
   const dateFormatted = ceremonieDateObj
-    ? `${String(ceremonieDateObj.getDate()).padStart(2, "0")}/${String(ceremonieDateObj.getMonth() + 1).padStart(2, "0")}`
-    : "00/00";
+    ? `${String(ceremonieDateObj.getDate()).padStart(2, "0")}.${String(ceremonieDateObj.getMonth() + 1).padStart(2, "0")}`
+    : "00.00";
   const year = ceremonieDateObj ? ceremonieDateObj.getFullYear().toString() : "2026";
 
   const confirmareDate = settings.confirmare_pana_la
     ? new Date(settings.confirmare_pana_la).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })
     : "";
 
-  // Use guest intro_long or default text
   const introLines = guest.intro_long
     ? guest.intro_long.split("\n").filter((l) => l.trim())
     : defaultIntroLines;
 
-  const guestDisplayName = partner
-    ? guest.nume === partner.nume
-      ? `${guest.prenume} și ${partner.prenume} ${guest.nume}`
-      : `${guest.prenume} ${guest.nume} și ${partner.prenume} ${partner.nume}`
-    : `${guest.prenume} ${guest.nume}`;
+  const c = buildPalette(settings);
 
-  const s = {
+  const f = {
     mont: "'Montserrat', sans-serif" as const,
+    serif: "'Cormorant Garamond', serif" as const,
+    script: "'Alex Brush', cursive" as const,
     upper: "uppercase" as const,
   };
+
+  // Parents
+  const parintiMireasa = settings.tata_mireasa_prenume
+    ? `${settings.mama_mireasa_prenume} si ${settings.tata_mireasa_prenume} ${settings.tata_mireasa_nume}`
+    : settings.parinti_mireasa;
+  const parintiMire = settings.tata_mire_prenume
+    ? `${settings.mama_mire_prenume} si ${settings.tata_mire_prenume} ${settings.tata_mire_nume}`
+    : settings.parinti_mire;
+
+  // Nasi
+  const nasiText = settings.nas_prenume && settings.nasa_prenume
+    ? settings.nasa_nume === settings.nas_nume
+      ? `${settings.nasa_prenume} si ${settings.nas_prenume} ${settings.nas_nume}`
+      : `${settings.nasa_prenume} ${settings.nasa_nume} si ${settings.nas_prenume} ${settings.nas_nume}`
+    : null;
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Alex+Brush&family=Montserrat:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Alex+Brush&family=Montserrat:wght@300;400;500;600&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f5f5f5; font-family: 'Montserrat', sans-serif; }
+        body { background: ${c.bgOuter}; font-family: 'Montserrat', sans-serif; }
         .inv-page { display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; gap: 1.5rem; }
         .inv-actions { display: flex; gap: 0.75rem; }
-        .inv-btn { padding: 0.5rem 1.5rem; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'Montserrat', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; background: #333; color: #fff; }
-        .inv-btn:hover { background: #555; }
-        .inv-btn-secondary { background: #fff; color: #333; border: 1px solid #999; }
-        .inv-btn-secondary:hover { background: #f0f0f0; }
+        .inv-btn { padding: 0.5rem 1.5rem; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'Montserrat', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; background: ${c.secondary}; color: #fff; }
+        .inv-btn:hover { background: ${c.primary}; }
+        .inv-btn-secondary { background: ${c.bg}; color: ${c.secondary}; border: 1px solid ${c.ornament}; }
+        .inv-btn-secondary:hover { background: #f5f0ea; }
         @media print {
           body { background: white; }
           .inv-actions { display: none !important; }
@@ -157,155 +286,221 @@ function InvitatieContent() {
 
       <div className="inv-page">
         <div className="inv-actions">
-          <button className="inv-btn" onClick={() => window.print()}>Printează</button>
-          <button className="inv-btn inv-btn-secondary" onClick={() => window.close()}>Închide</button>
+          <button className="inv-btn" onClick={() => window.print()}>Printeaza</button>
+          <button className="inv-btn inv-btn-secondary" onClick={() => window.close()}>Inchide</button>
         </div>
 
+        {/* ─── Outer Card ─── */}
         <div
           style={{
-            width: "14cm",
-            minHeight: "20cm",
-            background: "#fff",
-            border: "1px solid #333",
-            padding: "1.8cm 1.5cm",
-            fontFamily: "'Cormorant Garamond', serif",
-            color: "#1a1a1a",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            textAlign: "center",
-            gap: "0.3cm",
+            width: "15cm",
+            minHeight: "21cm",
+            background: c.bg,
+            border: `1px solid ${c.ornament}`,
+            padding: "0.6cm",
+            position: "relative",
           }}
         >
-          {/* Monogram */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.4cm", marginBottom: "0.2cm" }}>
-            <span style={{ fontSize: "1.8rem", fontWeight: 300, letterSpacing: "0.1em" }}>{initialMireasa}</span>
-            <span style={{ fontSize: "1.2rem", fontWeight: 300, color: "#666" }}>|</span>
-            <span style={{ fontSize: "1.8rem", fontWeight: 300, letterSpacing: "0.1em" }}>{initialMire}</span>
-          </div>
+          {/* ─── Inner Border ─── */}
+          <div
+            style={{
+              border: `0.5px solid ${c.ornament}`,
+              padding: "1.8cm 1.5cm",
+              minHeight: "calc(21cm - 1.2cm)",
+              fontFamily: f.serif,
+              color: c.primary,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "0.4cm",
+              position: "relative",
+            }}
+          >
+            {/* Corner Ornaments */}
+            <CornerOrnament color={c.ornament} style={{ top: -2, left: -2 }} />
+            <CornerOrnament color={c.ornament} style={{ top: -2, right: -2, transform: "scaleX(-1)" }} />
+            <CornerOrnament color={c.ornament} style={{ bottom: -2, left: -2, transform: "scaleY(-1)" }} />
+            <CornerOrnament color={c.ornament} style={{ bottom: -2, right: -2, transform: "scale(-1, -1)" }} />
 
-          {/* Intro */}
-          <p style={{ fontSize: "0.55rem", fontFamily: s.mont, letterSpacing: "0.2em", textTransform: s.upper, fontWeight: 400, color: "#333" }}>
-            CU INIMILE PLINI DE BUCURIE,
-          </p>
+            {/* ─── Monogram ─── */}
+            <div style={{ position: "relative", marginBottom: "0.3cm", marginTop: "0.2cm" }}>
+              <svg viewBox="0 0 160 160" style={{ width: 120, height: 120 }} xmlns="http://www.w3.org/2000/svg">
+                <circle cx="80" cy="80" r="72" stroke={c.ornament} strokeWidth="0.5" fill="none" />
+                <circle cx="80" cy="80" r="68" stroke={c.ornament} strokeWidth="0.3" fill="none" />
+                {/* Top flourish */}
+                <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={c.ornament} opacity="0.7" />
+                {/* Bottom flourish */}
+                <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={c.ornament} opacity="0.7" />
+              </svg>
+              <div style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25cm",
+              }}>
+                <span style={{ fontFamily: f.serif, fontSize: "2.2rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>
+                  {initialMireasa}
+                </span>
+                <span style={{ fontFamily: f.script, fontSize: "1.2rem", color: c.muted }}>
+                  &amp;
+                </span>
+                <span style={{ fontFamily: f.serif, fontSize: "2.2rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>
+                  {initialMire}
+                </span>
+              </div>
+            </div>
 
-          <p style={{ fontSize: "0.55rem", fontFamily: s.mont, letterSpacing: "0.15em", textTransform: s.upper, fontWeight: 500, color: "#1a1a1a", marginTop: "0.2cm" }}>
-            ÎMPREUNĂ CU PĂRINȚII NOȘTRI,
-          </p>
+            {/* ─── Intro line ─── */}
+            <p style={{ fontSize: "0.5rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 400, color: c.secondary }}>
+              CU INIMILE PLINE DE BUCURIE,
+            </p>
 
-          {/* Parents */}
-          {(() => {
-            const parintiMireasa = settings.tata_mireasa_prenume
-              ? `${settings.tata_mireasa_prenume} și ${settings.mama_mireasa_prenume} ${settings.tata_mireasa_nume}`
-              : settings.parinti_mireasa;
-            const parintiMire = settings.tata_mire_prenume
-              ? `${settings.tata_mire_prenume} și ${settings.mama_mire_prenume} ${settings.tata_mire_nume}`
-              : settings.parinti_mire;
-            if (!parintiMireasa && !parintiMire) return null;
-            return (
-              <div style={{ display: "flex", justifyContent: "center", gap: "1.5cm", width: "100%", marginTop: "0.1cm" }}>
+            {/* ─── Parents Section ─── */}
+            <p style={{ fontSize: "0.5rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.primary, marginTop: "0.15cm" }}>
+              IMPREUNA CU PARINTII NOSTRI,
+            </p>
+
+            {(parintiMireasa || parintiMire) && (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.08cm", marginTop: "0.1cm" }}>
                 {parintiMireasa && (
-                  <p style={{ fontSize: "0.5rem", fontFamily: s.mont, letterSpacing: "0.1em", textTransform: s.upper, fontWeight: 400, color: "#444" }}>
+                  <p style={{ fontFamily: f.serif, fontSize: "0.75rem", fontWeight: 400, fontStyle: "italic", color: c.secondary, lineHeight: 1.6 }}>
                     {parintiMireasa}
                   </p>
                 )}
                 {parintiMire && (
-                  <p style={{ fontSize: "0.5rem", fontFamily: s.mont, letterSpacing: "0.1em", textTransform: s.upper, fontWeight: 400, color: "#444" }}>
+                  <p style={{ fontFamily: f.serif, fontSize: "0.75rem", fontWeight: 400, fontStyle: "italic", color: c.secondary, lineHeight: 1.6 }}>
                     {parintiMire}
                   </p>
                 )}
               </div>
-            );
-          })()}
+            )}
 
-          {/* Nasi */}
-          {(settings.nas_prenume || settings.nasa_prenume) && (
-            <>
-              <p style={{ fontSize: "0.55rem", fontFamily: s.mont, letterSpacing: "0.15em", textTransform: s.upper, fontWeight: 500, color: "#1a1a1a", marginTop: "0.15cm" }}>
-                ȘI ALĂTURI DE NAȘII,
-              </p>
-              <p style={{ fontSize: "0.5rem", fontFamily: s.mont, letterSpacing: "0.1em", textTransform: s.upper, fontWeight: 400, color: "#444" }}>
-                {settings.nasa_prenume} ȘI {settings.nas_prenume} {settings.nasa_nume === settings.nas_nume ? settings.nas_nume : `${settings.nasa_nume} & ${settings.nas_nume}`},
-              </p>
-            </>
-          )}
-
-          {/* Guest-specific invitation text (from intro_long) */}
-          <div style={{ marginTop: "0.3cm", lineHeight: 1.8 }}>
-            {introLines.map((line, i) => (
-              <p key={i} style={{ fontSize: "0.5rem", fontFamily: s.mont, letterSpacing: "0.12em", textTransform: s.upper, fontWeight: 400, color: "#333" }}>
-                {line}
-              </p>
-            ))}
-          </div>
-
-          {/* Divider */}
-          <div style={{ width: "5cm", height: "1px", background: "linear-gradient(to right, transparent, #999, transparent)", margin: "0.3cm 0" }} />
-
-          {/* Date */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.3cm" }}>
-            <span style={{ fontSize: "0.65rem", fontFamily: s.mont, letterSpacing: "0.2em", fontWeight: 600 }}>{dayOfWeek}</span>
-            <span style={{ fontSize: "0.65rem", fontWeight: 300, color: "#999" }}>|</span>
-            <span style={{ fontSize: "0.65rem", fontFamily: s.mont, letterSpacing: "0.15em", fontWeight: 600 }}>{dateFormatted}</span>
-            <span style={{ fontSize: "0.65rem", fontWeight: 300, color: "#999" }}>|</span>
-            <span style={{ fontSize: "0.65rem", fontFamily: s.mont, letterSpacing: "0.15em", fontWeight: 600 }}>{year}</span>
-          </div>
-
-          {/* Events */}
-          <div style={{ marginTop: "0.3cm", lineHeight: 2 }}>
-            {settings.ceremonie_ora && (
+            {/* ─── Nasi Section ─── */}
+            {nasiText && (
               <>
-                <p style={{ fontSize: "0.45rem", fontFamily: s.mont, letterSpacing: "0.15em", textTransform: s.upper, fontWeight: 500, color: "#1a1a1a" }}>
-                  {settings.ceremonie_descriere || "CUNUNIA RELIGIOASĂ"} — ORA {settings.ceremonie_ora}
+                <p style={{ fontSize: "0.5rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.primary, marginTop: "0.15cm" }}>
+                  SI ALATURI DE NASII,
                 </p>
-                {settings.ceremonie_adresa && (
-                  <p style={{ fontSize: "0.42rem", fontFamily: s.mont, letterSpacing: "0.1em", textTransform: s.upper, fontWeight: 300, color: "#555" }}>
-                    {settings.ceremonie_adresa}
-                  </p>
-                )}
+                <p style={{ fontFamily: f.serif, fontSize: "0.75rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                  {nasiText}
+                </p>
               </>
             )}
-            {settings.petrecere_ora && (
-              <>
-                <p style={{ fontSize: "0.45rem", fontFamily: s.mont, letterSpacing: "0.15em", textTransform: s.upper, fontWeight: 500, color: "#1a1a1a", marginTop: "0.15cm" }}>
-                  {settings.petrecere_descriere || "PETRECEREA"} — ORA {settings.petrecere_ora}
-                </p>
-                {settings.petrecere_adresa && (
-                  <p style={{ fontSize: "0.42rem", fontFamily: s.mont, letterSpacing: "0.1em", textTransform: s.upper, fontWeight: 300, color: "#555" }}>
-                    {settings.petrecere_adresa}
-                  </p>
-                )}
-              </>
-            )}
-          </div>
 
-          {/* Script closing */}
-          <p style={{ fontFamily: "'Alex Brush', cursive", fontSize: "1.4rem", color: "#1a1a1a", marginTop: "0.4cm" }}>
-            Vă așteptăm cu drag!
-          </p>
-
-          {/* RSVP */}
-          {confirmareDate && (
-            <div style={{ marginTop: "0.2cm" }}>
-              <p style={{ fontSize: "0.4rem", fontFamily: s.mont, letterSpacing: "0.12em", textTransform: s.upper, fontWeight: 400, color: "#555" }}>
-                VĂ RUGĂM SĂ NE CONFIRMAȚI PREZENȚA DUMNEAVOASTRĂ
-              </p>
-              <p style={{ fontSize: "0.4rem", fontFamily: s.mont, letterSpacing: "0.12em", textTransform: s.upper, fontWeight: 400, color: "#555" }}>
-                PÂNĂ ÎN DATA DE {confirmareDate.toUpperCase()}.
-              </p>
+            {/* ─── Flourish Divider ─── */}
+            <div style={{ margin: "0.2cm 0" }}>
+              <Flourish width={220} color={c.ornament} />
             </div>
-          )}
 
-          {/* Contact info */}
-          {settings.contact_info && (
-            <div style={{ marginTop: "0.3cm", borderTop: "1px solid #ddd", paddingTop: "0.2cm", width: "100%" }}>
-              {settings.contact_info.split("\n").map((line, i) => (
-                <p key={i} style={{ fontSize: "0.35rem", fontFamily: s.mont, letterSpacing: "0.08em", fontWeight: 400, color: "#666" }}>
+            {/* ─── Invitation Text ─── */}
+            <div style={{ lineHeight: 2.2, marginTop: "0.1cm" }}>
+              {introLines.map((line, i) => (
+                <p key={i} style={{ fontSize: "0.45rem", fontFamily: f.mont, letterSpacing: "0.18em", textTransform: f.upper, fontWeight: 300, color: c.secondary }}>
                   {line}
                 </p>
               ))}
             </div>
-          )}
+
+            {/* ─── Flourish Divider ─── */}
+            <div style={{ margin: "0.2cm 0" }}>
+              <Flourish width={220} color={c.ornament} />
+            </div>
+
+            {/* ─── Date ─── */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4cm", marginTop: "0.1cm" }}>
+              <span style={{ fontSize: "0.6rem", fontFamily: f.mont, letterSpacing: "0.3em", fontWeight: 600, color: c.primary }}>{dayOfWeek}</span>
+              <svg viewBox="0 0 4 20" style={{ width: 3, height: 16 }} xmlns="http://www.w3.org/2000/svg">
+                <line x1="2" y1="0" x2="2" y2="20" stroke={c.ornament} strokeWidth="0.8" />
+              </svg>
+              <span style={{ fontSize: "0.6rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{dateFormatted}</span>
+              <svg viewBox="0 0 4 20" style={{ width: 3, height: 16 }} xmlns="http://www.w3.org/2000/svg">
+                <line x1="2" y1="0" x2="2" y2="20" stroke={c.ornament} strokeWidth="0.8" />
+              </svg>
+              <span style={{ fontSize: "0.6rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{year}</span>
+            </div>
+
+            {/* ─── Events ─── */}
+            <div style={{ marginTop: "0.4cm", width: "100%" }}>
+              {settings.ceremonie_ora && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.1cm", marginBottom: "0.35cm" }}>
+                  <ChurchIcon color={c.muted} />
+                  <p style={{ fontSize: "0.48rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 500, color: c.primary, marginTop: "0.08cm" }}>
+                    {settings.ceremonie_descriere || "CUNUNIA RELIGIOASA"}
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4cm", marginTop: "0.05cm" }}>
+                    <span style={{ fontSize: "0.4rem", fontFamily: f.mont, letterSpacing: "0.12em", fontWeight: 400, color: c.muted, display: "flex", alignItems: "center" }}>
+                      <ClockIcon color={c.muted} /> {settings.ceremonie_ora}
+                    </span>
+                    {settings.ceremonie_adresa && (
+                      <span style={{ fontSize: "0.4rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 300, color: c.muted, display: "flex", alignItems: "center" }}>
+                        <LocationIcon color={c.muted} /> {settings.ceremonie_adresa}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {settings.ceremonie_ora && settings.petrecere_ora && (
+                <div style={{ display: "flex", justifyContent: "center", margin: "0.1cm 0" }}>
+                  <SmallFlourish color={c.ornament} />
+                </div>
+              )}
+
+              {settings.petrecere_ora && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.1cm" }}>
+                  <VenueIcon color={c.muted} />
+                  <p style={{ fontSize: "0.48rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 500, color: c.primary, marginTop: "0.08cm" }}>
+                    {settings.petrecere_descriere || "PETRECEREA"}
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4cm", marginTop: "0.05cm" }}>
+                    <span style={{ fontSize: "0.4rem", fontFamily: f.mont, letterSpacing: "0.12em", fontWeight: 400, color: c.muted, display: "flex", alignItems: "center" }}>
+                      <ClockIcon color={c.muted} /> {settings.petrecere_ora}
+                    </span>
+                    {settings.petrecere_adresa && (
+                      <span style={{ fontSize: "0.4rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 300, color: c.muted, display: "flex", alignItems: "center" }}>
+                        <LocationIcon color={c.muted} /> {settings.petrecere_adresa}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ─── Script Closing ─── */}
+            <p style={{ fontFamily: f.script, fontSize: "1.6rem", color: c.primary, marginTop: "0.5cm" }}>
+              Va asteptam cu drag!
+            </p>
+
+            {/* ─── RSVP ─── */}
+            {confirmareDate && (
+              <div style={{ marginTop: "0.2cm" }}>
+                <p style={{ fontSize: "0.38rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted, lineHeight: 2 }}>
+                  VA RUGAM SA NE CONFIRMATI PREZENTA DUMNEAVOASTRA
+                </p>
+                <p style={{ fontSize: "0.38rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted }}>
+                  PANA IN DATA DE {confirmareDate.toUpperCase()}.
+                </p>
+              </div>
+            )}
+
+            {/* ─── Contact ─── */}
+            {settings.contact_info && (
+              <div style={{ marginTop: "0.3cm", paddingTop: "0.2cm", width: "80%" }}>
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.15cm" }}>
+                  <SmallFlourish color={c.ornament} />
+                </div>
+                {settings.contact_info.split("\n").map((line, i) => (
+                  <p key={i} style={{ fontSize: "0.35rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
+                    {line}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>
@@ -314,7 +509,7 @@ function InvitatieContent() {
 
 export default function InvitatiePage() {
   return (
-    <Suspense fallback={<div style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se încarcă...</div>}>
+    <Suspense fallback={<div style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se incarca...</div>}>
       <InvitatieContent />
     </Suspense>
   );
