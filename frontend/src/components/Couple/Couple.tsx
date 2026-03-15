@@ -193,12 +193,13 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                       alt="Video thumbnail"
                       className="absolute inset-0 w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-white/50 group-hover:bg-white/70 group-hover:scale-110 transition-all duration-300 flex items-center justify-center shadow-lg">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-button ml-1">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                      <div className="flex items-center gap-2 bg-white/50 group-hover:bg-white/70 transition-all duration-300 rounded-full px-4 py-2 shadow-lg">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-button">
                           <path d="M8 5v14l11-7z" fill="currentColor" />
                         </svg>
+                        <span className="text-xs font-medium text-text-heading tracking-wide">Play video</span>
                       </div>
                     </div>
                   </button>
