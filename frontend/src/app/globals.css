@@ -99,7 +99,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1.5rem;
+  padding: 1.5rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .content-section {
+    padding: 3rem 1.5rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -181,8 +187,14 @@ body {
 .family-card {
   border: 1px solid var(--color-accent);
   border-radius: 14px;
-  padding: 2.5rem 2rem;
+  padding: 1.5rem 1rem;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+}
+
+@media (min-width: 640px) {
+  .family-card {
+    padding: 2.5rem 2rem;
+  }
 }
 
 /* Card backgrounds: contrast with section bg */

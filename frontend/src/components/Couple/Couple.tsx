@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
@@ -72,6 +72,8 @@ function TimelineIcon({ icon }: { icon: string }) {
 export default function Couple({ settings }: { settings?: WeddingSettings | null }) {
   const ref = useScrollAnimation<HTMLElement>();
   const [playing, setPlaying] = useState(false);
+  const [activeTimelineIndex, setActiveTimelineIndex] = useState(0);
+  const [timelineFading, setTimelineFading] = useState(false);
 
   const youtubeUrl = settings?.link_youtube_video || DEFAULT_YOUTUBE_URL;
   const videoId = getYoutubeId(youtubeUrl);
@@ -82,6 +84,17 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
   const embedSrc = videoId
     ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&playsinline=1`
     : youtubeUrl;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimelineFading(true);
+      setTimeout(() => {
+        setActiveTimelineIndex((prev) => (prev + 1) % TIMELINE.length);
+        setTimelineFading(false);
+      }, 400);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Use wedding date from settings for the last timeline entry
   const weddingDate = settings?.ceremonie_data?.split("T")[0] || "2026-07-04";
@@ -109,7 +122,49 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
 
           {/* Timeline — vertically centered with video on desktop */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-end lg:self-center">
-            <div className="relative pl-8">
+            {/* Mobile: single item with fade */}
+            <div className="lg:hidden flex flex-col items-center">
+              {(() => {
+                const item = timeline[activeTimelineIndex];
+                const isLast = activeTimelineIndex === timeline.length - 1;
+                return (
+                  <div
+                    className={`flex flex-col items-center text-center transition-opacity duration-400 ${
+                      timelineFading ? "opacity-0" : "opacity-100"
+                    }`}
+                  >
+                    <div
+                      className={`w-[36px] h-[36px] rounded-full flex items-center justify-center mb-3
+                        ${isLast ? "bg-button text-white" : "bg-button/70 text-white"}`}
+                    >
+                      <TimelineIcon icon={item.icon} />
+                    </div>
+                    <p className="text-[0.6rem] tracking-[0.2em] uppercase text-text-muted mb-1">
+                      {formatDate(item.date)}
+                    </p>
+                    <p className={`serif-font text-xl leading-snug ${isLast ? "text-button font-medium" : "text-text-heading"}`}>
+                      {item.label}
+                    </p>
+                  </div>
+                );
+              })()}
+              {/* Dots indicator */}
+              <div className="flex items-center gap-2 mt-4">
+                {timeline.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`rounded-full transition-all duration-300 ${
+                      activeTimelineIndex === i
+                        ? "w-5 h-1.5 bg-button"
+                        : "w-1.5 h-1.5 bg-border"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop: full vertical timeline */}
+            <div className="hidden lg:block relative pl-8">
               {/* Vertical line */}
               <div className="absolute left-[11px] top-2 bottom-2 w-px bg-button/20" />
 
@@ -118,7 +173,6 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                   const isLast = i === timeline.length - 1;
                   return (
                     <div key={i} className="relative flex items-start gap-4">
-                      {/* Dot on the line */}
                       <div
                         className={`absolute -left-8 top-0.5 w-[22px] h-[22px] rounded-full flex items-center justify-center
                           ${isLast
@@ -128,8 +182,6 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                       >
                         <TimelineIcon icon={item.icon} />
                       </div>
-
-                      {/* Content */}
                       <div className="pt-0">
                         <p className="text-[0.6rem] tracking-[0.2em] uppercase text-text-muted mb-0.5">
                           {formatDate(item.date)}

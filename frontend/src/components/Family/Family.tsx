@@ -42,20 +42,20 @@ export default function Family({
     >
       <div className="max-w-lg mx-auto w-full">
         {/* Section header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-4 sm:mb-10">
           <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
             Familie
           </h2>
           <SmallFlourish className="mx-auto" />
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
           {/* Nasi */}
           {hasNasi && (
             <div className="family-card text-center relative">
               <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-              <div className="text-button mb-4">
-                <svg viewBox="0 0 60 50" className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" strokeWidth="2">
+              <div className="text-button mb-2 sm:mb-4">
+                <svg viewBox="0 0 60 50" className="w-8 h-8 sm:w-12 sm:h-12 mx-auto" fill="none" stroke="currentColor" strokeWidth="2">
                   <ellipse cx="22" cy="25" rx="14" ry="16"/>
                   <ellipse cx="38" cy="25" rx="14" ry="16"/>
                 </svg>
@@ -74,8 +74,8 @@ export default function Family({
           {hasParinti && (
             <div className="family-card text-center relative">
               <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-              <div className="text-button mb-4">
-                <svg viewBox="0 0 50 45" className="w-12 h-12 mx-auto" fill="currentColor" stroke="none">
+              <div className="text-button mb-2 sm:mb-4">
+                <svg viewBox="0 0 50 45" className="w-8 h-8 sm:w-12 sm:h-12 mx-auto" fill="currentColor" stroke="none">
                   <path d="M25,40 C25,40 5,28 5,15 C5,8 12,4 19,8 C22,10 25,14 25,14 C25,14 28,10 31,8 C38,4 45,8 45,15 C45,28 25,40 25,40 Z" opacity="0.7"/>
                 </svg>
               </div>

@@ -44,7 +44,7 @@ export default function Hero({
   return (
     <section className="snap-section content-section bg-background relative overflow-hidden">
       {/* Corner ornaments */}
-      <SectionCorners size="w-[55px] h-[55px]" offset={20} />
+      <SectionCorners size="w-[40px] h-[40px] sm:w-[55px] sm:h-[55px]" offset={8} />
 
       <div
         className={`max-w-lg mx-auto text-center transition-all duration-1000 ease-out ${
@@ -52,11 +52,11 @@ export default function Hero({
         }`}
       >
         {/* Mobile-only hero info */}
-        <div className="lg:hidden mb-10">
-          <p className="text-[0.65rem] tracking-[0.4em] uppercase text-button font-medium mb-4">
+        <div className="lg:hidden mb-6 sm:mb-10">
+          <p className="text-[0.65rem] tracking-[0.4em] uppercase text-button font-medium mb-3">
             Ne căsătorim!
           </p>
-          <h1 className="script-font text-5xl text-text-heading mb-5 leading-tight">
+          <h1 className="script-font text-4xl sm:text-5xl text-text-heading mb-4 leading-tight">
             {couple.display}
           </h1>
           <div className="elegant-divider">
@@ -64,14 +64,14 @@ export default function Hero({
             <span className="heart-icon">&#9829;</span>
             <span></span>
           </div>
-          <p className="serif-font text-xl text-text-heading font-light mt-3 tracking-wide">
+          <p className="serif-font text-xl text-text-heading font-light mt-2 tracking-wide">
             {dateDisplay}
           </p>
         </div>
 
         {/* Monogram */}
         <div
-          className={`relative mb-10 transition-all duration-1000 delay-300 ease-out ${
+          className={`relative mb-6 sm:mb-10 transition-all duration-1000 delay-300 ease-out ${
             isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
           }`}
         >
@@ -100,11 +100,11 @@ export default function Hero({
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-5 font-medium">
+          <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-3 sm:mb-5 font-medium">
             Cu drag vă invităm
           </p>
 
-          <h2 className="serif-font text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-6">
+          <h2 className="serif-font text-xl sm:text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-4 sm:mb-6">
             Să petreceți alături de noi
             <br />
             cel mai important moment
@@ -112,7 +112,7 @@ export default function Hero({
             din viața noastră
           </h2>
 
-          <div className="flex items-center justify-center gap-4 my-6">
+          <div className="flex items-center justify-center gap-4 my-3 sm:my-6">
             <span className="block w-12 h-px bg-gradient-to-r from-transparent to-button/40" />
             <svg
               width="16"
@@ -129,7 +129,7 @@ export default function Hero({
             <span className="block w-12 h-px bg-gradient-to-l from-transparent to-button/40" />
           </div>
 
-          <p className="serif-font text-[0.95rem] leading-[1.9] text-foreground mt-6 max-w-md mx-auto">
+          <p className="serif-font text-[0.85rem] sm:text-[0.95rem] leading-[1.8] sm:leading-[1.9] text-foreground mt-4 sm:mt-6 max-w-md mx-auto">
             {guest ? (
               <>
                 {guest.intro_long ? (
@@ -150,7 +150,7 @@ export default function Hero({
 
         {/* Scroll hint */}
         <div
-          className={`mt-14 transition-all duration-1000 delay-700 ease-out ${
+          className={`mt-6 sm:mt-14 transition-all duration-1000 delay-700 ease-out ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >

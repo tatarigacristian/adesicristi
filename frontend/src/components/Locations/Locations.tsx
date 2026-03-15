@@ -92,7 +92,7 @@ function LocationCardContent({
       <img
         src={loc.image}
         alt={loc.title}
-        className="w-full h-44 object-cover"
+        className="w-full h-36 sm:h-44 object-cover"
       />
       <div className="p-5 text-center">
         <h3 className="serif-font text-lg text-text-heading mb-2">
@@ -187,7 +187,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
         className="snap-section content-section bg-background-soft animate-on-scroll"
       >
         <div className="max-w-4xl mx-auto w-full">
-          <div className="text-center mb-10">
+          <div className="text-center mb-4 sm:mb-10">
             <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
               Detaliile evenimentului
             </h2>
