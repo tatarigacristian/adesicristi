@@ -412,7 +412,7 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
         </div>
       )}
 
-      {/* Table */}
+      {/* Table (desktop) / Cards (mobile) */}
       <div className="family-card p-0 overflow-hidden">
         {paginated.length === 0 ? (
           <div className="px-6 py-12 text-center">
@@ -421,51 +421,37 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border-light bg-background-soft/50">
-                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Invitat</th>
-                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Slug</th>
-                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Partener (+1)</th>
-                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Notițe</th>
-                  <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Actiuni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginated.map((g) => {
-                  const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
-                  return (
-                    <tr key={g.id} className="border-b border-border-light/50 hover:bg-background-soft/30 transition-colors">
-                      <td className="px-4 py-3">
+          <>
+            {/* Mobile card view */}
+            <div className="md:hidden divide-y divide-border-light/50">
+              {paginated.map((g) => {
+                const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
+                return (
+                  <div key={g.id} className="px-4 py-3 space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
                         <span className="text-text-heading font-medium">{g.nume}</span>{" "}
                         <span className="text-foreground/70">{g.prenume}</span>
-                      </td>
-                      <td className="px-4 py-3 text-foreground/50 text-xs font-mono">{g.slug || "—"}</td>
-                      <td className="px-4 py-3">
-                        {partner ? (
-                          <span className="text-foreground/70">{partner.nume} {partner.prenume}</span>
-                        ) : (
-                          <span className="text-foreground/30">—</span>
+                        {g.slug && (
+                          <p className="text-xs text-foreground/50 font-mono mt-0.5">{g.slug}</p>
                         )}
-                      </td>
-                      <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{g.intro || "—"}</td>
-                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                      </div>
+                      <div className="flex items-center gap-2">
                         {g.slug && (
                           <>
                             <button onClick={() => window.open(`/${g.slug}`, '_blank')}
-                              className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
+                              className="text-foreground/50 hover:text-accent transition-colors cursor-pointer p-1"
                               title="Pagina invitatie">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                                 <polyline points="15 3 21 3 21 9" />
                                 <line x1="10" y1="14" x2="21" y2="3" />
                               </svg>
                             </button>
                             <button onClick={() => window.open(`/admin/card?guestId=${g.id}`, '_blank')}
-                              className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
+                              className="text-foreground/50 hover:text-accent transition-colors cursor-pointer p-1"
                               title="Carte de vizita">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
                                 <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
                                 <rect x="20" y="14" width="2" height="2" /><rect x="14" y="20" width="2" height="2" /><rect x="20" y="20" width="2" height="2" />
@@ -474,25 +460,102 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                           </>
                         )}
                         <button onClick={() => openEdit(g)}
-                          className="text-xs text-accent hover:text-accent-light transition-colors cursor-pointer mr-3">
+                          className="text-xs text-accent hover:text-accent-light transition-colors cursor-pointer p-1">
                           Editează
                         </button>
                         <button onClick={() => handleDelete(g.id)}
-                          className="text-xs text-accent-rose hover:text-accent-rose-light transition-colors cursor-pointer">
+                          className="text-xs text-accent-rose hover:text-accent-rose-light transition-colors cursor-pointer p-1">
                           Șterge
                         </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+                    {partner && (
+                      <p className="text-xs text-foreground/60">
+                        <span className="text-text-muted">+1:</span> {partner.nume} {partner.prenume}
+                      </p>
+                    )}
+                    {g.intro && (
+                      <p className="text-xs text-foreground/50 line-clamp-2">{g.intro}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop table view */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border-light bg-background-soft/50">
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Invitat</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Slug</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Partener (+1)</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Notițe</th>
+                    <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Actiuni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginated.map((g) => {
+                    const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
+                    return (
+                      <tr key={g.id} className="border-b border-border-light/50 hover:bg-background-soft/30 transition-colors">
+                        <td className="px-4 py-3">
+                          <span className="text-text-heading font-medium">{g.nume}</span>{" "}
+                          <span className="text-foreground/70">{g.prenume}</span>
+                        </td>
+                        <td className="px-4 py-3 text-foreground/50 text-xs font-mono">{g.slug || "—"}</td>
+                        <td className="px-4 py-3">
+                          {partner ? (
+                            <span className="text-foreground/70">{partner.nume} {partner.prenume}</span>
+                          ) : (
+                            <span className="text-foreground/30">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{g.intro || "—"}</td>
+                        <td className="px-4 py-3 text-right whitespace-nowrap">
+                          {g.slug && (
+                            <>
+                              <button onClick={() => window.open(`/${g.slug}`, '_blank')}
+                                className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
+                                title="Pagina invitatie">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+                                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                  <polyline points="15 3 21 3 21 9" />
+                                  <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                              </button>
+                              <button onClick={() => window.open(`/admin/card?guestId=${g.id}`, '_blank')}
+                                className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
+                                title="Carte de vizita">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+                                  <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
+                                  <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
+                                  <rect x="20" y="14" width="2" height="2" /><rect x="14" y="20" width="2" height="2" /><rect x="20" y="20" width="2" height="2" />
+                                </svg>
+                              </button>
+                            </>
+                          )}
+                          <button onClick={() => openEdit(g)}
+                            className="text-xs text-accent hover:text-accent-light transition-colors cursor-pointer mr-3">
+                            Editează
+                          </button>
+                          <button onClick={() => handleDelete(g.id)}
+                            className="text-xs text-accent-rose hover:text-accent-rose-light transition-colors cursor-pointer">
+                            Șterge
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
       {/* Footer: count + pagination */}
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
         <p className="text-xs text-text-muted">
           {filtered.length} din {mainGuests.length} invitati
         </p>
@@ -554,7 +617,7 @@ function ConfirmariPanel({ token, onUnauth }: { token: string; onUnauth: () => v
       <h2 className="serif-font text-2xl text-text-heading mb-6">Confirmări</h2>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
         <div className="family-card text-center">
           <p className="text-3xl serif-font text-text-heading">{totalGuests}</p>
           <p className="text-xs text-text-muted mt-1 tracking-wide">Invitati confirmati</p>
@@ -581,9 +644,9 @@ function ConfirmariPanel({ token, onUnauth }: { token: string; onUnauth: () => v
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table (desktop) / Cards (mobile) */}
       <div className="family-card p-0 overflow-hidden">
-        <div className="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-4 border-b border-border-light flex items-center justify-between">
           <h3 className="serif-font text-lg text-text-heading">Raspunsuri RSVP</h3>
           <button onClick={fetchRsvps}
             className="text-xs text-text-muted hover:text-text-heading transition-colors cursor-pointer">
@@ -597,47 +660,79 @@ function ConfirmariPanel({ token, onUnauth }: { token: string; onUnauth: () => v
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border-light bg-background-soft/50">
-                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Nume</th>
-                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Partener</th>
-                  <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Pers.</th>
-                  <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Status</th>
-                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Mesaj</th>
-                  <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Data</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginated.map((r) => (
-                  <tr key={r.id} className="border-b border-border-light/50 hover:bg-background-soft/30 transition-colors">
-                    <td className="px-4 py-3 text-text-heading font-medium">{r.name}</td>
-                    <td className="px-4 py-3 text-foreground/70">{r.partner_name || "—"}</td>
-                    <td className="px-4 py-3 text-center">{r.person_count}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                        r.attending ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
-                      }`}>
-                        {r.attending ? "Da" : "Nu"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{r.message || "—"}</td>
-                    <td className="px-4 py-3 text-foreground/50 text-xs whitespace-nowrap">
-                      {new Date(r.created_at).toLocaleDateString("ro-RO", {
-                        day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
-                      })}
-                    </td>
+          <>
+            {/* Mobile card view */}
+            <div className="md:hidden divide-y divide-border-light/50">
+              {paginated.map((r) => (
+                <div key={r.id} className="px-4 py-3 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-text-heading font-medium text-sm">{r.name}</span>
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                      r.attending ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
+                    }`}>
+                      {r.attending ? "Da" : "Nu"} ({r.person_count} pers.)
+                    </span>
+                  </div>
+                  {r.partner_name && (
+                    <p className="text-xs text-foreground/60">
+                      <span className="text-text-muted">Partener:</span> {r.partner_name}
+                    </p>
+                  )}
+                  {r.message && (
+                    <p className="text-xs text-foreground/50 line-clamp-2">{r.message}</p>
+                  )}
+                  <p className="text-xs text-foreground/40">
+                    {new Date(r.created_at).toLocaleDateString("ro-RO", {
+                      day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table view */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border-light bg-background-soft/50">
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Nume</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Partener</th>
+                    <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Pers.</th>
+                    <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Status</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Mesaj</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Data</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {paginated.map((r) => (
+                    <tr key={r.id} className="border-b border-border-light/50 hover:bg-background-soft/30 transition-colors">
+                      <td className="px-4 py-3 text-text-heading font-medium">{r.name}</td>
+                      <td className="px-4 py-3 text-foreground/70">{r.partner_name || "—"}</td>
+                      <td className="px-4 py-3 text-center">{r.person_count}</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                          r.attending ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
+                        }`}>
+                          {r.attending ? "Da" : "Nu"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{r.message || "—"}</td>
+                      <td className="px-4 py-3 text-foreground/50 text-xs whitespace-nowrap">
+                        {new Date(r.created_at).toLocaleDateString("ro-RO", {
+                          day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
       {/* Footer: count + pagination */}
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
         <p className="text-xs text-text-muted">
           {filtered.length} din {rsvps.length} raspunsuri
         </p>
@@ -857,7 +952,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-6">
         <h2 className="serif-font text-2xl text-text-heading">Setări eveniment</h2>
         {settings && (
           <p className="text-xs text-text-muted">
@@ -871,7 +966,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
       <form onSubmit={handleSave} className="space-y-6">
         {/* Couple names */}
         <SettingsSection title="Cuplu">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <SettingsInput label="Nume mireasa" value={form.nume_mireasa} onChange={updateForm("nume_mireasa")} placeholder="Ade" />
             <SettingsInput label="Nume mire" value={form.nume_mire} onChange={updateForm("nume_mire")} placeholder="Cristi" />
           </div>
@@ -879,11 +974,11 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
 
         {/* Nasi */}
         <SettingsSection title="Nașii">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <SettingsInput label="Prenume nașă" value={form.nasa_prenume} onChange={updateForm("nasa_prenume")} placeholder="Prenume" />
             <SettingsInput label="Nume nașă" value={form.nasa_nume} onChange={updateForm("nasa_nume")} placeholder="Nume" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <SettingsInput label="Prenume naș" value={form.nas_prenume} onChange={updateForm("nas_prenume")} placeholder="Prenume" />
             <SettingsInput label="Nume naș" value={form.nas_nume} onChange={updateForm("nas_nume")} placeholder="Nume" />
           </div>
@@ -892,7 +987,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
         {/* Ceremonie */}
         <SettingsSection title="Cununia Religioasă">
           <SettingsInput label="Descriere / Titlu" value={form.ceremonie_descriere} onChange={updateForm("ceremonie_descriere")} placeholder="Cununia Religioasă" />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <SettingsInput label="Data" value={form.ceremonie_data} onChange={updateForm("ceremonie_data")} type="date" />
             <SettingsInput label="Ora" value={form.ceremonie_ora} onChange={updateForm("ceremonie_ora")} type="time" />
           </div>
@@ -903,7 +998,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
         {/* Transport */}
         <SettingsSection title="Transport">
           <SettingsInput label="Descriere / Titlu" value={form.transport_descriere} onChange={updateForm("transport_descriere")} placeholder="Transport" />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <SettingsInput label="Data" value={form.transport_data} onChange={updateForm("transport_data")} type="date" />
             <SettingsInput label="Ora" value={form.transport_ora} onChange={updateForm("transport_ora")} type="time" />
           </div>
@@ -914,7 +1009,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
         {/* Petrecere */}
         <SettingsSection title="Petrecerea">
           <SettingsInput label="Descriere / Titlu" value={form.petrecere_descriere} onChange={updateForm("petrecere_descriere")} placeholder="Petrecerea" />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <SettingsInput label="Data" value={form.petrecere_data} onChange={updateForm("petrecere_data")} type="date" />
             <SettingsInput label="Ora" value={form.petrecere_ora} onChange={updateForm("petrecere_ora")} type="time" />
           </div>

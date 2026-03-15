@@ -18,7 +18,7 @@ const TIMELINE = [
   { date: "2022-01-10", label: "Prima întâlnire", icon: "coffee" },
   { date: "2022-02-02", label: "Împreună", icon: "heart" },
   { date: "2022-12-28", label: "Ne-am mutat împreună", icon: "home" },
-  { date: "2024-07-10", label: "Logodna", icon: "ring" },
+  { date: "2023-05-02", label: "Logodna", icon: "ring" },
   { date: "", label: "Nunta", icon: "celebrate" },
 ];
 
