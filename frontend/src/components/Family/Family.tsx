@@ -42,7 +42,7 @@ export default function Family({
     >
       <div className="max-w-lg mx-auto w-full">
         {/* Section header */}
-        <div className="text-center mb-4 sm:mb-10">
+        <div className="text-center mb-2 sm:mb-10">
           <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
             Familie
           </h2>
@@ -55,9 +55,15 @@ export default function Family({
             <div className="family-card text-center relative">
               <SectionCorners size="w-[25px] h-[25px]" offset={10} />
               <div className="text-button mb-2 sm:mb-4">
-                <svg viewBox="0 0 60 50" className="w-8 h-8 sm:w-12 sm:h-12 mx-auto" fill="none" stroke="currentColor" strokeWidth="2">
-                  <ellipse cx="22" cy="25" rx="14" ry="16"/>
-                  <ellipse cx="38" cy="25" rx="14" ry="16"/>
+                <svg viewBox="0 0 80 50" className="w-10 h-10 sm:w-14 sm:h-14 mx-auto" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="28" cy="27" rx="14" ry="16" strokeWidth="1.2" />
+                  <ellipse cx="52" cy="27" rx="14" ry="16" strokeWidth="1.2" />
+                  <ellipse cx="28" cy="27" rx="10" ry="12" strokeWidth="0.5" opacity="0.4" />
+                  <ellipse cx="52" cy="27" rx="10" ry="12" strokeWidth="0.5" opacity="0.4" />
+                  <path d="M28 8 L26 3 L28 5 L30 3 Z" fill="currentColor" opacity="0.6" />
+                  <path d="M52 8 L50 3 L52 5 L54 3 Z" fill="currentColor" opacity="0.6" />
+                  <circle cx="28" cy="11" r="1" fill="currentColor" opacity="0.5" />
+                  <circle cx="52" cy="11" r="1" fill="currentColor" opacity="0.5" />
                 </svg>
               </div>
               <h3 className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-3">
@@ -75,8 +81,12 @@ export default function Family({
             <div className="family-card text-center relative">
               <SectionCorners size="w-[25px] h-[25px]" offset={10} />
               <div className="text-button mb-2 sm:mb-4">
-                <svg viewBox="0 0 50 45" className="w-8 h-8 sm:w-12 sm:h-12 mx-auto" fill="currentColor" stroke="none">
-                  <path d="M25,40 C25,40 5,28 5,15 C5,8 12,4 19,8 C22,10 25,14 25,14 C25,14 28,10 31,8 C38,4 45,8 45,15 C45,28 25,40 25,40 Z" opacity="0.7"/>
+                <svg viewBox="0 0 50 48" className="w-10 h-10 sm:w-14 sm:h-14 mx-auto" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
+                  <path d="M25,38 C25,38 8,27 8,16 C8,10 13,7 18,10 C21,12 25,16 25,16 C25,16 29,12 32,10 C37,7 42,10 42,16 C42,27 25,38 25,38 Z" strokeWidth="0.6" opacity="0.4" />
+                  <path d="M20 4 Q22 1, 25 2 Q28 1, 30 4" strokeWidth="0.6" opacity="0.5" />
+                  <circle cx="21" cy="3" r="0.6" fill="currentColor" opacity="0.4" />
+                  <circle cx="29" cy="3" r="0.6" fill="currentColor" opacity="0.4" />
                 </svg>
               </div>
               <h3 className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-3">
