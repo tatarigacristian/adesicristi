@@ -5,14 +5,15 @@ import { useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://adesicristi.vercel.app";
 
 interface GuestData {
   id: number;
   nume: string;
   prenume: string;
   plus_one: boolean;
-  intro: string | null;
+  intro_short: string | null;
+  intro_long: string | null;
   slug: string | null;
   partner_id: number | null;
 }
@@ -157,8 +158,8 @@ function CardBack({
     ? `${guest.prenume} & ${partner.prenume}`
     : guest.prenume;
 
-  const introText = guest.intro
-    ? guest.intro
+  const introText = guest.intro_short
+    ? guest.intro_short
     : `Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială.`;
 
   const events = [

@@ -7,7 +7,8 @@ interface GuestData {
   nume: string;
   prenume: string;
   plus_one: boolean;
-  intro: string | null;
+  intro_short: string | null;
+  intro_long: string | null;
   partner: { nume: string; prenume: string } | null;
 }
 
@@ -122,21 +123,14 @@ export default function Hero({
           <p className="serif-font text-[0.95rem] leading-[1.9] text-foreground mt-6 max-w-md mx-auto">
             {guest ? (
               <>
-                Dragii nostri {guest.partner
-                  ? guest.nume === guest.partner.nume
-                    ? <>{guest.prenume} și {guest.partner.prenume} {guest.nume}</>
-                    : <>{guest.prenume} {guest.nume} și {guest.partner.prenume} {guest.partner.nume}</>
-                  : <>{guest.prenume} {guest.nume}</>}
-                , cu bucurie în suflet vă anunțăm că ne căsătorim!
-                {guest.intro ? (
-                  <> {guest.intro}</>
+                {guest.intro_long ? (
+                  <>{guest.intro_long}</>
                 ) : (
-                  <> Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment unic.</>
+                  <>Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment unic.</>
                 )}
               </>
             ) : (
               <>
-                Dragii noștri, cu bucurie în suflet vă anunțăm că ne căsătorim!
                 Ne-ar face o deosebită plăcere să fiți alături de noi în această zi
                 specială, să împărtășim împreună emoția și fericirea acestui moment
                 unic.

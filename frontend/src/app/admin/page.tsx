@@ -30,7 +30,8 @@ interface Guest {
   nume: string;
   prenume: string;
   plus_one: boolean;
-  intro: string | null;
+  intro_short: string | null;
+  intro_long: string | null;
   slug: string | null;
   partner_id: number | null;
   created_at: string;
@@ -227,7 +228,7 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
   const [guests, setGuests] = useState<Guest[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editGuest, setEditGuest] = useState<Guest | null>(null);
-  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro: "", slug: "", partner_nume: "", partner_prenume: "" });
+  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "" });
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<GuestFilter>("all");
@@ -260,7 +261,8 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
           g.nume.toLowerCase().includes(q) ||
           g.prenume.toLowerCase().includes(q) ||
           (g.slug && g.slug.toLowerCase().includes(q)) ||
-          (g.intro && g.intro.toLowerCase().includes(q)) ||
+          (g.intro_short && g.intro_short.toLowerCase().includes(q)) ||
+          (g.intro_long && g.intro_long.toLowerCase().includes(q)) ||
           (partner && (partner.nume.toLowerCase().includes(q) || partner.prenume.toLowerCase().includes(q)))
         );
       });
@@ -285,7 +287,7 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
 
   function openNew() {
     setEditGuest(null);
-    setForm({ nume: "", prenume: "", plus_one: false, intro: "", slug: "", partner_nume: "", partner_prenume: "" });
+    setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "" });
     setShowForm(true);
   }
 
@@ -297,7 +299,8 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
       nume: g.nume,
       prenume: g.prenume,
       plus_one: g.plus_one,
-      intro: g.intro || "",
+      intro_short: g.intro_short || "",
+      intro_long: g.intro_long || "",
       slug: g.slug || "",
       partner_nume: partner?.nume || "",
       partner_prenume: partner?.prenume || "",
@@ -377,7 +380,7 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                   className="w-4 h-4 accent-accent" />
                 <label htmlFor="plus_one" className="text-sm text-foreground">Plus one</label>
               </div>
-              {form.plus_one && (
+              {!!form.plus_one && (
                 <div className="grid grid-cols-2 gap-3 pl-6 border-l-2 border-accent/20">
                   <div>
                     <label className="block text-xs text-text-muted mb-1">Nume partener</label>
@@ -392,11 +395,18 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                 </div>
               )}
               <div>
-                <label className="block text-xs text-text-muted mb-1">Introducere / Notițe</label>
-                <textarea value={form.intro} onChange={(e) => { if (e.target.value.length <= 200) setForm({ ...form, intro: e.target.value }); }}
+                <label className="block text-xs text-text-muted mb-1">Intro scurt (card QR)</label>
+                <textarea value={form.intro_short} onChange={(e) => { if (e.target.value.length <= 200) setForm({ ...form, intro_short: e.target.value }); }}
                   maxLength={200}
+                  rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
+                <p className="text-xs text-text-muted text-right mt-1">{form.intro_short.length}/200</p>
+              </div>
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Intro lung (pagina invitație)</label>
+                <textarea value={form.intro_long} onChange={(e) => { if (e.target.value.length <= 500) setForm({ ...form, intro_long: e.target.value }); }}
+                  maxLength={500}
                   rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
-                <p className="text-xs text-text-muted text-right mt-1">{form.intro.length}/200</p>
+                <p className="text-xs text-text-muted text-right mt-1">{form.intro_long.length}/500</p>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={saving}
@@ -475,8 +485,8 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                         <span className="text-text-muted">+1:</span> {partner.nume} {partner.prenume}
                       </p>
                     )}
-                    {g.intro && (
-                      <p className="text-xs text-foreground/50 line-clamp-2">{g.intro}</p>
+                    {(g.intro_short || g.intro_long) && (
+                      <p className="text-xs text-foreground/50 line-clamp-2">{g.intro_short || g.intro_long}</p>
                     )}
                   </div>
                 );
@@ -512,7 +522,7 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                             <span className="text-foreground/30">—</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{g.intro || "—"}</td>
+                        <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{g.intro_short || g.intro_long || "—"}</td>
                         <td className="px-4 py-3 text-right whitespace-nowrap">
                           {g.slug && (
                             <>

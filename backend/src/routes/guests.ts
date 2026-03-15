@@ -7,7 +7,8 @@ interface GuestBody {
   nume: string;
   prenume: string;
   plus_one: boolean;
-  intro?: string;
+  intro_short?: string;
+  intro_long?: string;
   slug?: string;
   partner_nume?: string;
   partner_prenume?: string;
@@ -21,7 +22,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
     // Get main guest by slug
     const [rows] = await pool.execute<RowDataPacket[]>(
-      'SELECT id, nume, prenume, plus_one, intro, partner_id FROM guests WHERE slug = ?',
+      'SELECT id, nume, prenume, plus_one, intro_short, intro_long, partner_id FROM guests WHERE slug = ?',
       [slug]
     );
 
@@ -47,7 +48,8 @@ export async function guestRoutes(fastify: FastifyInstance) {
       nume: guest.nume,
       prenume: guest.prenume,
       plus_one: guest.plus_one,
-      intro: guest.intro,
+      intro_short: guest.intro_short,
+      intro_long: guest.intro_long,
       partner: partner ? { nume: partner.nume, prenume: partner.prenume } : null,
     };
   });
@@ -63,10 +65,14 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
   // Create guest
   fastify.post<{ Body: GuestBody }>('/api/admin/guests', { preHandler: authenticate }, async (request, reply) => {
-    const { nume, prenume, plus_one, intro, slug, partner_nume, partner_prenume } = request.body;
+    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume } = request.body;
 
     if (!nume || !prenume) {
       return reply.status(400).send({ error: 'Nume si prenume sunt obligatorii' });
+    }
+
+    if (intro_long && intro_long.length > 500) {
+      return reply.status(400).send({ error: 'Intro lung nu poate depasi 500 de caractere' });
     }
 
     if (plus_one && (!partner_nume || !partner_prenume)) {
@@ -91,16 +97,16 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
       // Create main guest
       const [result] = await conn.execute<ResultSetHeader>(
-        'INSERT INTO guests (nume, prenume, plus_one, intro, slug) VALUES (?, ?, ?, ?, ?)',
-        [nume, prenume, plus_one ?? false, intro || null, slug || null]
+        'INSERT INTO guests (nume, prenume, plus_one, intro_short, intro_long, slug) VALUES (?, ?, ?, ?, ?, ?)',
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slug || null]
       );
       const mainId = result.insertId;
 
       // If plus_one, create partner and link them
       if (plus_one && partner_nume && partner_prenume) {
         const [partnerResult] = await conn.execute<ResultSetHeader>(
-          'INSERT INTO guests (nume, prenume, plus_one, intro, slug, partner_id) VALUES (?, ?, FALSE, ?, NULL, ?)',
-          [partner_nume, partner_prenume, intro || null, mainId]
+          'INSERT INTO guests (nume, prenume, plus_one, intro_short, intro_long, slug, partner_id) VALUES (?, ?, FALSE, ?, ?, NULL, ?)',
+          [partner_nume, partner_prenume, intro_short || null, intro_long || null, mainId]
         );
         const partnerId = partnerResult.insertId;
 
@@ -124,10 +130,14 @@ export async function guestRoutes(fastify: FastifyInstance) {
   // Update guest
   fastify.put<{ Params: { id: string }; Body: GuestBody }>('/api/admin/guests/:id', { preHandler: authenticate }, async (request, reply) => {
     const { id } = request.params;
-    const { nume, prenume, plus_one, intro, slug, partner_nume, partner_prenume } = request.body;
+    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume } = request.body;
 
     if (!nume || !prenume) {
       return reply.status(400).send({ error: 'Nume si prenume sunt obligatorii' });
+    }
+
+    if (intro_long && intro_long.length > 500) {
+      return reply.status(400).send({ error: 'Intro lung nu poate depasi 500 de caractere' });
     }
 
     if (plus_one && (!partner_nume || !partner_prenume)) {
@@ -162,8 +172,8 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
       // Update main guest
       await conn.execute(
-        'UPDATE guests SET nume = ?, prenume = ?, plus_one = ?, intro = ?, slug = ? WHERE id = ?',
-        [nume, prenume, plus_one ?? false, intro || null, slug || null, id]
+        'UPDATE guests SET nume = ?, prenume = ?, plus_one = ?, intro_short = ?, intro_long = ?, slug = ? WHERE id = ?',
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slug || null, id]
       );
 
       if (plus_one && partner_nume && partner_prenume) {
@@ -176,8 +186,8 @@ export async function guestRoutes(fastify: FastifyInstance) {
         } else {
           // Create new partner
           const [partnerResult] = await conn.execute<ResultSetHeader>(
-            'INSERT INTO guests (nume, prenume, plus_one, intro, slug, partner_id) VALUES (?, ?, FALSE, ?, NULL, ?)',
-            [partner_nume, partner_prenume, intro || null, id]
+            'INSERT INTO guests (nume, prenume, plus_one, intro_short, intro_long, slug, partner_id) VALUES (?, ?, FALSE, ?, ?, NULL, ?)',
+            [partner_nume, partner_prenume, intro_short || null, intro_long || null, id]
           );
           await conn.execute(
             'UPDATE guests SET partner_id = ? WHERE id = ?',

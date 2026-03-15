@@ -13,7 +13,8 @@ interface GuestData {
   nume: string;
   prenume: string;
   plus_one: boolean;
-  intro: string | null;
+  intro_short: string | null;
+  intro_long: string | null;
   partner: { nume: string; prenume: string } | null;
 }
 

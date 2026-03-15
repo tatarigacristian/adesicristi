@@ -6,10 +6,13 @@ import { authRoutes } from './routes/auth.js';
 import { rsvpRoutes } from './routes/rsvp.js';
 import { guestRoutes } from './routes/guests.js';
 import { weddingSettingsRoutes } from './routes/wedding-settings.js';
+import { runMigrations } from './db/migrate.js';
 
 const fastify = Fastify({ logger: true });
 
 async function start() {
+  // Run pending migrations before starting
+  await runMigrations();
   await fastify.register(cors, {
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
