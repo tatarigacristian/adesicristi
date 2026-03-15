@@ -31,6 +31,12 @@ CREATE TABLE IF NOT EXISTS wedding_settings (
   -- YouTube
   link_youtube_video VARCHAR(500) NULL,
 
+  -- Theme colors
+  color_main VARCHAR(7) NOT NULL DEFAULT '#FDF8F7',
+  color_second VARCHAR(7) NOT NULL DEFAULT '#C4A484',
+  color_button VARCHAR(7) NOT NULL DEFAULT '#C4A484',
+  color_text VARCHAR(7) NOT NULL DEFAULT '#3A3A3A',
+
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 

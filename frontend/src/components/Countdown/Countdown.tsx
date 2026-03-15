@@ -59,7 +59,7 @@ export default function Countdown({
   // undefined = not yet mounted (SSR), null = countdown finished (wedding day)
   if (timeLeft === undefined) {
     return variant === "sidebar" ? (
-      <div className="bg-background rounded-xl px-5 py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)] border border-border-light/50 min-h-[6rem]" />
+      <div className="family-card rounded-xl !px-5 !py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)] min-h-[6rem]" />
     ) : null;
   }
 
@@ -70,7 +70,7 @@ export default function Countdown({
 
   if (variant === "sidebar") {
     return (
-      <div className="bg-background rounded-xl px-5 py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)] border border-border-light/50">
+      <div className="family-card rounded-xl !px-5 !py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
         <p className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-4 font-medium">
           Au mai ramas
         </p>
@@ -86,7 +86,7 @@ export default function Countdown({
                 </span>
               </div>
               {i < units.length - 1 && (
-                <span className="text-xl text-accent/40 -mt-4">:</span>
+                <span className="text-xl text-button/70 -mt-4">:</span>
               )}
             </div>
           ))}

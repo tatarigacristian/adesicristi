@@ -29,6 +29,7 @@ export async function weddingSettingsRoutes(fastify: FastifyInstance) {
       'transport_data', 'transport_ora', 'transport_adresa', 'transport_google_maps', 'transport_descriere',
       'petrecere_data', 'petrecere_ora', 'petrecere_adresa', 'petrecere_google_maps', 'petrecere_descriere',
       'link_youtube_video',
+      'color_main', 'color_second', 'color_button', 'color_text',
     ];
 
     const setClauses: string[] = [];

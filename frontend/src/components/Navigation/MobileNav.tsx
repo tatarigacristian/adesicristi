@@ -40,7 +40,7 @@ export default function MobileNav() {
               key={item.href}
               href={item.href}
               onClick={(e) => handleClick(e, item.href)}
-              className="text-sm tracking-[0.2em] uppercase text-text-heading hover:text-accent-rose transition-colors"
+              className="text-sm tracking-[0.2em] uppercase text-text-heading hover:text-button transition-colors"
             >
               {item.label}
             </a>

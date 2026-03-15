@@ -284,7 +284,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Loading state
   if (formState === "loading") {
     return (
-      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background-soft">
+      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="glass-card py-12">
             <p className="text-sm text-text-muted">Se incarca...</p>
@@ -297,14 +297,14 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Confirmed state — show confirmation + cancel option
   if (formState === "confirmed") {
     return (
-      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background-soft">
+      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="glass-card py-12">
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Multumim pentru confirmare!
             </p>
             <p className="script-font text-4xl text-text-heading mb-4">Ade & Cristi</p>
-            <p className="text-sm text-foreground/70 mb-6">
+            <p className="text-sm text-foreground mb-6">
               Va multumim din suflet ca ati confirmat prezenta.
               <br />
               Abia asteptam sa fiti alaturi de noi!
@@ -317,7 +317,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             <button
               onClick={handleCancel}
               disabled={cancelling}
-              className="text-xs text-text-muted hover:text-accent-rose transition-colors cursor-pointer underline underline-offset-2 disabled:opacity-50"
+              className="text-xs text-text-muted hover:text-button transition-colors cursor-pointer underline underline-offset-2 disabled:opacity-50"
             >
               {cancelling ? "Se anuleaza..." : "Anuleaza prezenta"}
             </button>
@@ -330,14 +330,14 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Cancelled state
   if (formState === "cancelled") {
     return (
-      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background-soft">
+      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="glass-card py-12">
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Prezenta anulata
             </p>
             <p className="script-font text-4xl text-text-heading mb-4">Ne pare rau</p>
-            <p className="text-sm text-foreground/70">
+            <p className="text-sm text-foreground">
               Regretam ca nu veti putea fi alaturi de noi.
               <br />
               Va dorim numai bine!
@@ -351,14 +351,14 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Declined state (submitted "Nu pot sa particip")
   if (formState === "declined") {
     return (
-      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background-soft">
+      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="glass-card py-12">
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Am primit raspunsul tau
             </p>
             <p className="script-font text-4xl text-text-heading mb-4">Ne pare rau</p>
-            <p className="text-sm text-foreground/70">
+            <p className="text-sm text-foreground">
               Regretam ca nu veti putea fi alaturi de noi.
               <br />
               Va dorim numai bine!
@@ -373,7 +373,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     <section
       id="rsvp"
       ref={sectionRef}
-      className="snap-section content-section bg-background-soft animate-on-scroll"
+      className="snap-section content-section bg-background animate-on-scroll"
     >
       <div className="max-w-lg mx-auto w-full">
         <div className="glass-card">
@@ -409,7 +409,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 <option value={2}>Doua persoane</option>
               </select>
               {errors.personCount && (
-                <p className="text-xs text-accent-rose mt-1">{errors.personCount}</p>
+                <p className="text-xs text-button mt-1">{errors.personCount}</p>
               )}
             </div>
 
@@ -436,7 +436,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                                focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
                   />
                   {errors.name && (
-                    <p className="text-xs text-accent-rose mt-1">{errors.name}</p>
+                    <p className="text-xs text-button mt-1">{errors.name}</p>
                   )}
                 </div>
 
@@ -461,7 +461,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                                  focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
                     />
                     {errors.partnerName && (
-                      <p className="text-xs text-accent-rose mt-1">{errors.partnerName}</p>
+                      <p className="text-xs text-button mt-1">{errors.partnerName}</p>
                     )}
                   </div>
                 )}
@@ -487,7 +487,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
 
             {/* Error message */}
             {formState === "error" && (
-              <p className="text-xs text-accent-rose text-center">
+              <p className="text-xs text-button text-center">
                 A aparut o eroare. Te rog incearca din nou.
               </p>
             )}
@@ -498,8 +498,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 type="button"
                 onClick={() => handleSubmit(true)}
                 disabled={isDisabled}
-                className="flex-1 bg-accent text-white py-2.5 px-4 rounded-lg text-sm font-medium
-                           hover:bg-accent-light transition-colors disabled:opacity-50"
+                className="flex-1 bg-button text-white py-2.5 px-4 rounded-lg text-sm font-medium
+                           hover:bg-button-hover transition-colors disabled:opacity-50"
               >
                 {formState === "submitting" ? "Se trimite..." : "Da, confirm prezenta"}
               </button>
@@ -507,7 +507,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 type="button"
                 onClick={() => handleSubmit(false)}
                 disabled={isDisabled}
-                className="flex-1 border border-border py-2.5 px-4 rounded-lg text-sm
+                className="flex-1 border border-button py-2.5 px-4 rounded-lg text-sm
                            text-foreground hover:bg-background-soft transition-colors disabled:opacity-50"
               >
                 Nu pot sa particip

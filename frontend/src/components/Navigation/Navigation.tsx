@@ -66,8 +66,8 @@ export default function Navigation() {
                 onClick={(e) => handleClick(e, item.href)}
                 className={`text-xs md:text-sm font-medium transition-colors px-2 py-1 ${
                   activeSection === item.href.slice(1)
-                    ? "text-accent"
-                    : "text-foreground hover:text-accent"
+                    ? "text-button"
+                    : "text-foreground hover:text-button"
                 }`}
               >
                 {item.label}

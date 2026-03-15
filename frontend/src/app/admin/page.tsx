@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, FormEvent } from "react";
-import QRCode from "qrcode";
+import { useState, useEffect, useMemo, FormEvent } from "react";
+import { fetchWeddingSettings, applyThemeColors } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const PAGE_SIZE = 10;
 
 interface RsvpEntry {
@@ -75,7 +74,7 @@ function Pagination({
             onClick={() => onPageChange(p)}
             className={`px-2.5 py-1.5 text-xs rounded-md border transition-colors cursor-pointer ${
               p === page
-                ? "bg-accent text-white border-accent"
+                ? "bg-button text-white border-button"
                 : "border-border-light text-text-muted hover:bg-background-soft"
             }`}
           >
@@ -134,7 +133,7 @@ function FilterButton({
       onClick={onClick}
       className={`px-3 py-1.5 text-xs rounded-full border transition-colors cursor-pointer whitespace-nowrap ${
         active
-          ? "bg-accent text-white border-accent"
+          ? "bg-button text-white border-button"
           : "border-border-light text-text-muted hover:border-accent/50 hover:text-text-heading"
       }`}
     >
@@ -202,7 +201,7 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
           </div>
           {error && <p className="text-xs text-accent-rose text-center">{error}</p>}
           <button type="submit" disabled={loading}
-            className="w-full bg-accent text-white py-2.5 rounded-lg text-sm font-medium hover:bg-accent-light transition-colors disabled:opacity-50 cursor-pointer">
+            className="w-full bg-button text-white py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer">
             {loading ? "Se conecteaza..." : "Intra in cont"}
           </button>
         </form>
@@ -221,7 +220,6 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
   const [editGuest, setEditGuest] = useState<Guest | null>(null);
   const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro: "", slug: "", partner_nume: "", partner_prenume: "" });
   const [saving, setSaving] = useState(false);
-  const [qrData, setQrData] = useState<{ slug: string; dataUrl: string } | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<GuestFilter>("all");
   const [page, setPage] = useState(1);
@@ -315,30 +313,12 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
     fetchGuests();
   }
 
-  const handleGenerateQR = useCallback(async (slug: string) => {
-    const url = `${SITE_URL}/${slug}`;
-    const dataUrl = await QRCode.toDataURL(url, {
-      width: 512,
-      margin: 2,
-      color: { dark: "#2c2c2c", light: "#ffffff" },
-    });
-    setQrData({ slug, dataUrl });
-  }, []);
-
-  function handleDownloadQR() {
-    if (!qrData) return;
-    const link = document.createElement("a");
-    link.download = `qr-${qrData.slug}.png`;
-    link.href = qrData.dataUrl;
-    link.click();
-  }
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="serif-font text-2xl text-text-heading">Invitati</h2>
         <button onClick={openNew}
-          className="bg-accent text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent-light transition-colors cursor-pointer">
+          className="bg-button text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
           + Adauga invitat
         </button>
       </div>
@@ -409,7 +389,7 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={saving}
-                  className="flex-1 bg-accent text-white py-2.5 rounded-lg text-sm font-medium hover:bg-accent-light transition-colors disabled:opacity-50 cursor-pointer">
+                  className="flex-1 bg-button text-white py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer">
                   {saving ? "Se salveaza..." : "Salveaza"}
                 </button>
                 <button type="button" onClick={() => setShowForm(false)}
@@ -418,28 +398,6 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* QR Modal */}
-      {qrData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-          onClick={() => setQrData(null)}>
-          <div className="bg-white rounded-xl p-6 w-full max-w-xs text-center" onClick={(e) => e.stopPropagation()}>
-            <h3 className="serif-font text-lg text-text-heading mb-1">Cod QR</h3>
-            <p className="text-xs text-text-muted mb-4 font-mono">{SITE_URL}/{qrData.slug}</p>
-            <img src={qrData.dataUrl} alt={`QR code for ${qrData.slug}`} className="w-48 h-48 mx-auto mb-4" />
-            <div className="flex gap-3">
-              <button onClick={handleDownloadQR}
-                className="flex-1 bg-accent text-white py-2.5 rounded-lg text-sm font-medium hover:bg-accent-light transition-colors cursor-pointer">
-                Descarca PNG
-              </button>
-              <button onClick={() => setQrData(null)}
-                className="flex-1 border border-border py-2.5 rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer">
-                Inchide
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -484,9 +442,9 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                       <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{g.intro || "—"}</td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         {g.slug && (
-                          <button onClick={() => handleGenerateQR(g.slug!)}
+                          <button onClick={() => window.open(`/admin/card?guestId=${g.id}`, '_blank')}
                             className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
-                            title="Genereaza QR">
+                            title="Carte de vizita">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
                               <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
                               <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
@@ -690,7 +648,41 @@ interface WeddingSettingsData {
   petrecere_google_maps: string | null;
   petrecere_descriere: string | null;
   link_youtube_video: string | null;
+  color_main: string;
+  color_second: string;
+  color_button: string;
+  color_text: string;
   updated_at: string;
+}
+
+function ColorPicker({ label, value, onChange }: {
+  label: string; value: string; onChange: (v: string) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="relative">
+        <input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-10 h-10 rounded-lg border border-border-light cursor-pointer p-0.5"
+          style={{ backgroundColor: value }}
+        />
+      </div>
+      <div className="flex-1">
+        <label className="block text-xs text-text-muted mb-1 tracking-wide">{label}</label>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="#000000"
+          maxLength={7}
+          className="w-full border border-border-light rounded-lg px-3 py-2 text-sm bg-white font-mono
+                     focus:outline-none focus:border-accent transition-colors"
+        />
+      </div>
+    </div>
+  );
 }
 
 function SettingsInput({ label, value, onChange, type = "text", placeholder }: {
@@ -745,6 +737,10 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
     petrecere_google_maps: "",
     petrecere_descriere: "",
     link_youtube_video: "",
+    color_main: "#FDF8F7",
+    color_second: "#C4A484",
+    color_button: "#C4A484",
+    color_text: "#3A3A3A",
   });
 
   async function fetchSettings() {
@@ -773,6 +769,10 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
           petrecere_google_maps: data.petrecere_google_maps || "",
           petrecere_descriere: data.petrecere_descriere || "",
           link_youtube_video: data.link_youtube_video || "",
+          color_main: data.color_main || "#FDF8F7",
+          color_second: data.color_second || "#C4A484",
+          color_button: data.color_button || "#C4A484",
+          color_text: data.color_text || "#3A3A3A",
         });
       }
     } catch {
@@ -798,6 +798,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
       if (res.ok) {
         const data = await res.json();
         setSettings(data);
+        applyThemeColors(data);
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
       }
@@ -885,12 +886,28 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
           />
         </SettingsSection>
 
+        {/* Colors */}
+        <SettingsSection title="Culori tema">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ColorPicker label="Culoare principala (fundal)" value={form.color_main} onChange={updateForm("color_main")} />
+            <ColorPicker label="Culoare secundara (accent)" value={form.color_second} onChange={updateForm("color_second")} />
+            <ColorPicker label="Culoare butoane" value={form.color_button} onChange={updateForm("color_button")} />
+            <ColorPicker label="Culoare text" value={form.color_text} onChange={updateForm("color_text")} />
+          </div>
+          <div className="mt-3 flex gap-2">
+            <div className="flex-1 rounded-lg h-12 border border-border-light" style={{ backgroundColor: form.color_main }} />
+            <div className="flex-1 rounded-lg h-12 border border-border-light" style={{ backgroundColor: form.color_second }} />
+            <div className="flex-1 rounded-lg h-12 border border-border-light" style={{ backgroundColor: form.color_button }} />
+            <div className="flex-1 rounded-lg h-12 border border-border-light" style={{ backgroundColor: form.color_text }} />
+          </div>
+        </SettingsSection>
+
         {/* Save button */}
         <div className="flex items-center gap-4">
           <button
             type="submit"
             disabled={saving}
-            className="bg-accent text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-accent-light transition-colors disabled:opacity-50 cursor-pointer"
+            className="bg-button text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer"
           >
             {saving ? "Se salveaza..." : "Salveaza setarile"}
           </button>
@@ -905,7 +922,7 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
 
 // ─── Sidebar Nav Items ───────────────────────────────────
 
-const NAV_ITEMS: { key: Exclude<View, "login">; label: string; icon: JSX.Element }[] = [
+const NAV_ITEMS: { key: Exclude<View, "login">; label: string; icon: React.ReactNode }[] = [
   {
     key: "guests",
     label: "Invitati",
@@ -953,6 +970,7 @@ export default function AdminPage() {
       setToken(saved);
       setView("guests");
     }
+    fetchWeddingSettings().then((s) => applyThemeColors(s));
   }, []);
 
   function handleLogin(jwt: string) {

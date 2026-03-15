@@ -14,8 +14,8 @@ const NAV_ITEMS = [
 export default function Sidebar({ settings }: { settings?: WeddingSettings | null }) {
   const [activeSection, setActiveSection] = useState("");
 
-  const couple = getCoupleNames(settings);
-  const weddingDateISO = getWeddingDateISO(settings);
+  const couple = getCoupleNames(settings ?? null);
+  const weddingDateISO = getWeddingDateISO(settings ?? null);
   const dateDisplay = settings?.ceremonie_data
     ? formatDate(settings.ceremonie_data)
     : "4 Iulie 2026";
@@ -49,7 +49,7 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
   return (
     <aside className="left-panel">
       <div className="flex flex-col items-center text-center px-8 w-full">
-        <p className="text-[0.8rem] tracking-[0.35em] uppercase text-foreground/50 serif-font font-medium mb-2">
+        <p className="text-[0.8rem] tracking-[0.35em] uppercase text-button serif-font font-medium mb-2">
           Ne casatorim!
         </p>
 
@@ -67,7 +67,7 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
           {dateDisplay}
         </p>
 
-        <div className="flex flex-col items-center gap-0.5 text-foreground/50 mb-8">
+        <div className="flex flex-col items-center gap-0.5 text-button mb-8">
           <div className="flex items-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -88,7 +88,7 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
                 <span
                   className={`w-2 h-2 rounded-full transition-colors duration-300 ${
                     activeSection === item.href.slice(1)
-                      ? "bg-accent-rose"
+                      ? "bg-button"
                       : "bg-border"
                   }`}
                 />

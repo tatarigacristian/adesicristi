@@ -100,7 +100,7 @@ function LocationCardContent({
         <p className="text-xs text-text-muted flex items-center justify-center gap-1 mb-1">
           <span>&#128197;</span> {loc.date}{loc.time ? `, ${loc.time}` : ""}
         </p>
-        <p className="text-xs text-foreground/60 mb-4 leading-relaxed">
+        <p className="text-xs text-foreground mb-4 leading-relaxed">
           {loc.address}
         </p>
         {loc.googleMapsUrl && (
@@ -173,7 +173,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
       <section
         id="locations"
         ref={ref}
-        className="snap-section content-section bg-background animate-on-scroll"
+        className="snap-section content-section bg-background-soft animate-on-scroll"
       >
         <div className="max-w-4xl mx-auto w-full">
           <div className="text-center mb-10">
@@ -210,8 +210,8 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                   aria-label={`Go to ${locations[i].title}`}
                   className={`rounded-full transition-all duration-300 cursor-pointer ${
                     activeIndex === i
-                      ? "w-6 h-2 bg-accent-rose"
-                      : "w-2 h-2 bg-border hover:bg-accent/50"
+                      ? "w-6 h-2 bg-button"
+                      : "w-2 h-2 bg-border hover:bg-button/50"
                   }`}
                 />
               ))}

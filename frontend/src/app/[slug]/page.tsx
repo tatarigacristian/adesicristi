@@ -10,7 +10,7 @@ import Locations from "@/components/Locations/Locations";
 import RSVP from "@/components/RSVP/RSVP";
 import Footer from "@/components/Footer/Footer";
 import MobileNav from "@/components/Navigation/MobileNav";
-import { WeddingSettings, fetchWeddingSettings, getCoupleNames } from "@/utils/settings";
+import { WeddingSettings, fetchWeddingSettings, getCoupleNames, applyThemeColors } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -28,7 +28,7 @@ export default function SlugPage() {
   const slug = params.slug as string;
   const [guest, setGuest] = useState<GuestData | null>(null);
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -41,10 +41,11 @@ export default function SlugPage() {
           setGuest(await guestRes.json());
         }
         setSettings(settingsData);
+        applyThemeColors(settingsData);
       } catch {
         // silently fail, show default message
       } finally {
-        setLoading(false);
+        requestAnimationFrame(() => setReady(true));
       }
     }
     fetchData();
@@ -52,31 +53,42 @@ export default function SlugPage() {
 
   const couple = getCoupleNames(settings);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <p className="script-font text-3xl text-text-heading mb-2">{couple.display}</p>
-          <p className="text-xs text-text-muted tracking-widest uppercase">Se incarca...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
-      <MobileNav />
-      <div className="split-container">
-        <Sidebar settings={settings} />
-        <main className="right-panel">
-          <Hero guest={guest} settings={settings} />
-          <Couple settings={settings} />
-          <Family />
-          <Locations settings={settings} />
-          <RSVP guest={guest} settings={settings} />
-          <Footer />
-        </main>
-      </div>
+      {/* Blur overlay until theme colors are applied */}
+      <div
+        className={`fixed inset-0 z-[100] bg-white/80 backdrop-blur-sm transition-opacity duration-500 pointer-events-none ${
+          ready ? "opacity-0" : "opacity-100"
+        }`}
+        style={{ willChange: "opacity" }}
+        onTransitionEnd={(e) => {
+          if (ready) (e.currentTarget as HTMLElement).style.display = "none";
+        }}
+      />
+
+      {!ready ? (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <p className="script-font text-3xl text-text-heading mb-2">{couple.display}</p>
+            <p className="text-xs text-text-muted tracking-widest uppercase">Se incarca...</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <MobileNav />
+          <div className="split-container">
+            <Sidebar settings={settings} />
+            <main className="right-panel">
+              <Hero guest={guest} settings={settings} />
+              <Couple settings={settings} />
+              <Family />
+              <Locations settings={settings} />
+              <RSVP guest={guest} settings={settings} />
+              <Footer />
+            </main>
+          </div>
+        </>
+      )}
     </>
   );
 }
