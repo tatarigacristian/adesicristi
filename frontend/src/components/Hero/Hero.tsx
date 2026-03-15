@@ -51,15 +51,6 @@ export default function Hero({
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-        {/* Desktop-only hero info */}
-        <div className="hidden lg:block mb-10">
-          <p className="text-[0.65rem] tracking-[0.4em] uppercase text-button font-medium mb-3">
-            Ne căsătorim!
-          </p>
-          <h1 className="script-font text-5xl text-text-heading mb-4 leading-tight">
-            {couple.display}
-          </h1>
-        </div>
 
         {/* Monogram */}
         <div
