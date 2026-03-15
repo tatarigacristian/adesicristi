@@ -24,6 +24,9 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "Ade & Cristi - 4 Iulie 2026",
   description: "Sunteți invitați la nunta noastră!",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
