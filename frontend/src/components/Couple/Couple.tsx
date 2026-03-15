@@ -118,7 +118,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
         </div>
 
         {/* Mobile: stacked */}
-        <div className="flex flex-col lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14">
+        <div className="flex flex-col-reverse lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14">
 
           {/* Timeline — vertically centered with video on desktop */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-end lg:self-center">
