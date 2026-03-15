@@ -34,12 +34,13 @@ export async function weddingSettingsRoutes(fastify: FastifyInstance) {
     ];
 
     const setClauses: string[] = [];
-    const values: unknown[] = [];
+    const values: (string | number | null)[] = [];
 
     for (const field of fields) {
       if (field in body) {
         setClauses.push(`${field} = ?`);
-        values.push(body[field] === '' ? null : body[field]);
+        const val = body[field];
+        values.push(val === '' ? null : val as string | number | null);
       }
     }
 
