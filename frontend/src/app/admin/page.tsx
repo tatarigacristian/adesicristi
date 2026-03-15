@@ -37,7 +37,7 @@ interface Guest {
   created_at: string;
 }
 
-type View = "login" | "guests" | "confirmari" | "setari";
+type View = "login" | "guests" | "confirmari" | "invitatie" | "setari";
 
 function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
@@ -779,6 +779,10 @@ interface WeddingSettingsData {
   petrecere_google_maps: string | null;
   petrecere_descriere: string | null;
   link_youtube_video: string | null;
+  parinti_mireasa: string | null;
+  parinti_mire: string | null;
+  confirmare_pana_la: string | null;
+  contact_info: string | null;
   color_main: string;
   color_second: string;
   color_button: string;
@@ -872,6 +876,10 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
     petrecere_google_maps: "",
     petrecere_descriere: "",
     link_youtube_video: "",
+    parinti_mireasa: "",
+    parinti_mire: "",
+    confirmare_pana_la: "",
+    contact_info: "",
     color_main: "#FDF8F7",
     color_second: "#C4A484",
     color_button: "#C4A484",
@@ -908,6 +916,10 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
           petrecere_google_maps: data.petrecere_google_maps || "",
           petrecere_descriere: data.petrecere_descriere || "",
           link_youtube_video: data.link_youtube_video || "",
+          parinti_mireasa: data.parinti_mireasa || "",
+          parinti_mire: data.parinti_mire || "",
+          confirmare_pana_la: data.confirmare_pana_la ? data.confirmare_pana_la.split("T")[0] : "",
+          contact_info: data.contact_info || "",
           color_main: data.color_main || "#FDF8F7",
           color_second: data.color_second || "#C4A484",
           color_button: data.color_button || "#C4A484",
@@ -1028,6 +1040,29 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
           <SettingsInput label="Link Google Maps" value={form.petrecere_google_maps} onChange={updateForm("petrecere_google_maps")} placeholder="https://maps.app.goo.gl/..." />
         </SettingsSection>
 
+        {/* Parinti */}
+        <SettingsSection title="Părinți">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <SettingsInput label="Părinți mireasă" value={form.parinti_mireasa} onChange={updateForm("parinti_mireasa")} placeholder="Vasile și Veronica Pop" />
+            <SettingsInput label="Părinți mire" value={form.parinti_mire} onChange={updateForm("parinti_mire")} placeholder="Alexandru și Marieta Budai" />
+          </div>
+        </SettingsSection>
+
+        {/* Confirmare */}
+        <SettingsSection title="Confirmare invitație">
+          <SettingsInput label="Confirmare până la" value={form.confirmare_pana_la} onChange={updateForm("confirmare_pana_la")} type="date" />
+          <div>
+            <label className="block text-xs text-text-muted mb-1 tracking-wide">Info contact (pentru invitație)</label>
+            <textarea
+              value={form.contact_info}
+              onChange={(e) => setForm((prev) => ({ ...prev, contact_info: e.target.value }))}
+              rows={3}
+              placeholder={"Vasile Pop: 0744 486 168 | Alexandru Budai: 0745 123 456"}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none"
+            />
+          </div>
+        </SettingsSection>
+
         {/* YouTube */}
         <SettingsSection title="Video">
           <SettingsInput
@@ -1072,6 +1107,229 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
   );
 }
 
+// ─── Invitatie Panel ─────────────────────────────────────
+
+function InvitatiePanel() {
+  const [settings, setSettings] = useState<WeddingSettingsData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/wedding-settings`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => { if (data) setSettings(data); })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-sm text-text-muted">Se încarcă...</p>
+      </div>
+    );
+  }
+
+  if (!settings) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-sm text-text-muted">Completează setările evenimentului mai întâi.</p>
+      </div>
+    );
+  }
+
+  const mireasa = settings.nume_mireasa || "Ade";
+  const mire = settings.nume_mire || "Cristi";
+  const initialMireasa = mireasa.charAt(0).toUpperCase();
+  const initialMire = mire.charAt(0).toUpperCase();
+
+  const ceremonieDateObj = settings.ceremonie_data ? new Date(settings.ceremonie_data) : null;
+  const dayOfWeek = ceremonieDateObj
+    ? ceremonieDateObj.toLocaleDateString("ro-RO", { weekday: "long" }).toUpperCase()
+    : "SÂMBĂTĂ";
+  const dateFormatted = ceremonieDateObj
+    ? `${String(ceremonieDateObj.getDate()).padStart(2, "0")}/${String(ceremonieDateObj.getMonth() + 1).padStart(2, "0")}`
+    : "00/00";
+  const year = ceremonieDateObj ? ceremonieDateObj.getFullYear().toString() : "2026";
+
+  const confirmareDate = settings.confirmare_pana_la
+    ? new Date(settings.confirmare_pana_la).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })
+    : "";
+
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+        <h2 className="serif-font text-2xl text-text-heading">Invitație clasică</h2>
+        <button
+          onClick={() => {
+            const el = document.getElementById("invitatie-print");
+            if (!el) return;
+            const w = window.open("", "_blank");
+            if (!w) return;
+            w.document.write(`<!DOCTYPE html><html><head><title>Invitație</title>
+              <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Alex+Brush&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+              <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; }
+                @media print { body { background: white; } }
+              </style>
+            </head><body>${el.outerHTML}</body></html>`);
+            w.document.close();
+            setTimeout(() => w.print(), 500);
+          }}
+          className="bg-button text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer"
+        >
+          Printează
+        </button>
+      </div>
+
+      <div className="flex justify-center">
+        <div
+          id="invitatie-print"
+          style={{
+            width: "14cm",
+            minHeight: "20cm",
+            background: "#fff",
+            border: "1px solid #333",
+            padding: "1.8cm 1.5cm",
+            fontFamily: "'Cormorant Garamond', serif",
+            color: "#1a1a1a",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            gap: "0.3cm",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+          }}
+        >
+          {/* Monogram */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4cm", marginBottom: "0.2cm" }}>
+            <span style={{ fontSize: "1.8rem", fontWeight: 300, letterSpacing: "0.1em" }}>{initialMireasa}</span>
+            <span style={{ fontSize: "1.2rem", fontWeight: 300, color: "#666" }}>|</span>
+            <span style={{ fontSize: "1.8rem", fontWeight: 300, letterSpacing: "0.1em" }}>{initialMire}</span>
+          </div>
+
+          {/* Intro text */}
+          <p style={{ fontSize: "0.55rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 400, color: "#333" }}>
+            CU INIMILE PLINI DE BUCURIE,
+          </p>
+
+          <p style={{ fontSize: "0.55rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 500, color: "#1a1a1a", marginTop: "0.2cm" }}>
+            ÎMPREUNĂ CU PĂRINȚII NOȘTRI,
+          </p>
+
+          {/* Parents */}
+          {(settings.parinti_mireasa || settings.parinti_mire) && (
+            <div style={{ display: "flex", justifyContent: "center", gap: "1.5cm", width: "100%", marginTop: "0.1cm" }}>
+              {settings.parinti_mireasa && (
+                <p style={{ fontSize: "0.5rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 400, color: "#444" }}>
+                  {settings.parinti_mireasa}
+                </p>
+              )}
+              {settings.parinti_mire && (
+                <p style={{ fontSize: "0.5rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 400, color: "#444" }}>
+                  {settings.parinti_mire}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Nasi */}
+          {(settings.nas_prenume || settings.nasa_prenume) && (
+            <>
+              <p style={{ fontSize: "0.55rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 500, color: "#1a1a1a", marginTop: "0.15cm" }}>
+                ȘI ALĂTURI DE NAȘII,
+              </p>
+              <p style={{ fontSize: "0.5rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 400, color: "#444" }}>
+                {settings.nasa_prenume} ȘI {settings.nas_prenume} {settings.nasa_nume === settings.nas_nume ? settings.nas_nume : `${settings.nasa_nume} & ${settings.nas_nume}`},
+              </p>
+            </>
+          )}
+
+          {/* Invitation text */}
+          <div style={{ marginTop: "0.3cm", lineHeight: 1.8 }}>
+            <p style={{ fontSize: "0.5rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 400, color: "#333" }}>
+              AVEM PLĂCEREA DE A VĂ INVITA SĂ FIȚI ALĂTURI DE NOI
+            </p>
+            <p style={{ fontSize: "0.5rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 400, color: "#333" }}>
+              ÎN ZIUA ÎN CARE NE LEGĂM DESTINELE
+            </p>
+            <p style={{ fontSize: "0.5rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 400, color: "#333" }}>
+              ȘI PĂȘIM ÎMPREUNĂ PE DRUMUL UNEI NOI VIEȚI.
+            </p>
+          </div>
+
+          {/* Divider line */}
+          <div style={{ width: "5cm", height: "1px", background: "linear-gradient(to right, transparent, #999, transparent)", margin: "0.3cm 0" }} />
+
+          {/* Date */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.3cm" }}>
+            <span style={{ fontSize: "0.65rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.2em", fontWeight: 600 }}>{dayOfWeek}</span>
+            <span style={{ fontSize: "0.65rem", fontWeight: 300, color: "#999" }}>|</span>
+            <span style={{ fontSize: "0.65rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.15em", fontWeight: 600 }}>{dateFormatted}</span>
+            <span style={{ fontSize: "0.65rem", fontWeight: 300, color: "#999" }}>|</span>
+            <span style={{ fontSize: "0.65rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.15em", fontWeight: 600 }}>{year}</span>
+          </div>
+
+          {/* Events */}
+          <div style={{ marginTop: "0.3cm", lineHeight: 2 }}>
+            {settings.ceremonie_ora && (
+              <>
+                <p style={{ fontSize: "0.45rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 500, color: "#1a1a1a" }}>
+                  {settings.ceremonie_descriere || "CUNUNIA RELIGIOASĂ"} — ORA {settings.ceremonie_ora}
+                </p>
+                {settings.ceremonie_adresa && (
+                  <p style={{ fontSize: "0.42rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 300, color: "#555" }}>
+                    {settings.ceremonie_adresa}
+                  </p>
+                )}
+              </>
+            )}
+            {settings.petrecere_ora && (
+              <>
+                <p style={{ fontSize: "0.45rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 500, color: "#1a1a1a", marginTop: "0.15cm" }}>
+                  {settings.petrecere_descriere || "PETRECEREA"} — ORA {settings.petrecere_ora}
+                </p>
+                {settings.petrecere_adresa && (
+                  <p style={{ fontSize: "0.42rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 300, color: "#555" }}>
+                    {settings.petrecere_adresa}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Script closing */}
+          <p style={{ fontFamily: "'Alex Brush', cursive", fontSize: "1.4rem", color: "#1a1a1a", marginTop: "0.4cm" }}>
+            Vă așteptăm cu drag!
+          </p>
+
+          {/* RSVP */}
+          {confirmareDate && (
+            <div style={{ marginTop: "0.2cm" }}>
+              <p style={{ fontSize: "0.4rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 400, color: "#555" }}>
+                VĂ RUGĂM SĂ NE CONFIRMAȚI PREZENȚA DUMNEAVOASTRĂ
+              </p>
+              <p style={{ fontSize: "0.4rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 400, color: "#555" }}>
+                PÂNĂ ÎN DATA DE {confirmareDate.toUpperCase()}.
+              </p>
+            </div>
+          )}
+
+          {/* Contact info */}
+          {settings.contact_info && (
+            <div style={{ marginTop: "0.3cm", borderTop: "1px solid #ddd", paddingTop: "0.2cm", width: "100%" }}>
+              {settings.contact_info.split("\n").map((line, i) => (
+                <p key={i} style={{ fontSize: "0.35rem", fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.08em", fontWeight: 400, color: "#666" }}>
+                  {line}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Sidebar Nav Items ───────────────────────────────────
 
 const NAV_ITEMS: { key: Exclude<View, "login">; label: string; icon: React.ReactNode }[] = [
@@ -1094,6 +1352,19 @@ const NAV_ITEMS: { key: Exclude<View, "login">; label: string; icon: React.React
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
         <polyline points="22 4 12 14.01 9 11.01" />
+      </svg>
+    ),
+  },
+  {
+    key: "invitatie",
+    label: "Invitație",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
       </svg>
     ),
   },
@@ -1209,6 +1480,7 @@ export default function AdminPage() {
         <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
           {view === "guests" && <GuestsPanel token={token} onUnauth={handleUnauth} />}
           {view === "confirmari" && <ConfirmariPanel token={token} onUnauth={handleUnauth} />}
+          {view === "invitatie" && <InvitatiePanel />}
           {view === "setari" && <SettingsPanel token={token} onUnauth={handleUnauth} />}
         </div>
       </main>
