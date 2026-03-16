@@ -212,13 +212,14 @@ function CardBack({
 
         <p className="card-label" style={{ marginBottom: "0.1cm" }}>Invitatie</p>
 
-        {/* Flourish */}
-        <svg viewBox="0 0 200 12" style={{ width: 70, height: 4, marginBottom: "0.1cm" }} xmlns="http://www.w3.org/2000/svg">
-          <line x1="0" y1="6" x2="60" y2="6" stroke={accent} strokeWidth="0.5" opacity="0.5" />
-          <line x1="140" y1="6" x2="200" y2="6" stroke={accent} strokeWidth="0.5" opacity="0.5" />
-          <path d="M70 6 Q85 0, 100 6 Q115 12, 130 6" fill="none" stroke={accent} strokeWidth="0.6" opacity="0.6" />
-          <circle cx="100" cy="6" r="1.5" fill={accent} opacity="0.5" />
-        </svg>
+        {/* Heart divider */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: "0.1cm" }}>
+          <span style={{ display: "block", width: 25, height: 0.5, background: accent, opacity: 0.3 }} />
+          <svg viewBox="0 0 50 48" style={{ width: 10, height: 10 }} fill="none" stroke={accent} xmlns="http://www.w3.org/2000/svg">
+            <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill={accent} fillOpacity="0.15" />
+          </svg>
+          <span style={{ display: "block", width: 25, height: 0.5, background: accent, opacity: 0.3 }} />
+        </div>
 
         <p className="card-greeting">
           {partner ? "Dragii nostri" : "Draga"} {guestNames},
@@ -247,11 +248,13 @@ function CardBack({
 
         {/* Closing */}
         <div className="card-back-footer">
-          <svg viewBox="0 0 200 12" style={{ width: 60, height: 4, margin: "0.05cm auto 0.08cm" }} xmlns="http://www.w3.org/2000/svg">
-            <line x1="0" y1="6" x2="60" y2="6" stroke={accent} strokeWidth="0.5" opacity="0.4" />
-            <line x1="140" y1="6" x2="200" y2="6" stroke={accent} strokeWidth="0.5" opacity="0.4" />
-            <circle cx="100" cy="6" r="1.2" fill={accent} opacity="0.4" />
-          </svg>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, margin: "0.05cm auto 0.08cm" }}>
+            <span style={{ display: "block", width: 20, height: 0.5, background: accent, opacity: 0.3 }} />
+            <svg viewBox="0 0 50 48" style={{ width: 8, height: 8 }} fill="none" stroke={accent} xmlns="http://www.w3.org/2000/svg">
+              <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill={accent} fillOpacity="0.15" />
+            </svg>
+            <span style={{ display: "block", width: 20, height: 0.5, background: accent, opacity: 0.3 }} />
+          </div>
           <p className="card-back-names">{mireasa} & {mire}</p>
         </div>
       </div>
