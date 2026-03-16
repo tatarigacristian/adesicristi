@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, FormEvent, KeyboardEvent } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { WeddingSettings, getCoupleNames } from "@/utils/settings";
+import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import Flourish from "@/components/Ornaments/Flourish";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
@@ -570,6 +570,23 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               </button>
             </div>
           </form>
+        </div>
+
+        {/* Info below form */}
+        <div className="text-center mt-3 sm:mt-6">
+          {settings?.confirmare_pana_la && (
+            <p className="text-xs text-text-muted mb-2">
+              Vă rugăm să ne confirmați prezența până la data de{" "}
+              <span className="font-semibold text-text-heading">{formatDate(settings.confirmare_pana_la)}</span>
+            </p>
+          )}
+          <p className="text-xs text-text-muted">
+            Ade{" "}
+            <a href="tel:0755776372" className="text-button underline underline-offset-2">0755 776 372</a>
+            {" "}&bull;{" "}
+            Cristi{" "}
+            <a href="tel:0747340944" className="text-button underline underline-offset-2">0747 340 944</a>
+          </p>
         </div>
       </div>
     </section>
