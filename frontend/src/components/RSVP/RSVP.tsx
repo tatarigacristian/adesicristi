@@ -390,7 +390,6 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   return (
     <section
       id="rsvp"
-      ref={sectionRef}
       className="content-section bg-background"
     >
       <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
