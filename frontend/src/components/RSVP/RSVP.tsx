@@ -347,8 +347,6 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             <p className="script-font text-4xl text-text-heading mb-4">Ne pare rău</p>
             <p className="text-sm text-foreground">
               Regretăm că nu veți putea fi alături de noi.
-              <br />
-              Vă dorim numai bine!
             </p>
           </div>
         </div>
@@ -369,8 +367,6 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             <p className="script-font text-4xl text-text-heading mb-4">Ne pare rău</p>
             <p className="text-sm text-foreground">
               Regretăm că nu veți putea fi alături de noi.
-              <br />
-              Vă dorim numai bine!
             </p>
           </div>
         </div>
