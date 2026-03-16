@@ -112,9 +112,28 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
         <div className="text-center mb-4 sm:mb-10">
           <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2 sm:mb-3">Noi doi</h2>
           <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
-          <p className="text-sm text-foreground">
-            Povestea noastră de dragoste
-          </p>
+
+          {/* Mobile: timeline in header */}
+          <div className="lg:hidden flex flex-col items-center">
+            {(() => {
+              const item = timeline[activeTimelineIndex];
+              const isLast = activeTimelineIndex === timeline.length - 1;
+              return (
+                <div
+                  className={`flex flex-col items-center text-center transition-opacity duration-400 ${
+                    timelineFading ? "opacity-0" : "opacity-100"
+                  }`}
+                >
+                  <p className="text-[0.6rem] tracking-[0.2em] uppercase text-text-muted mb-1">
+                    {formatDate(item.date)}
+                  </p>
+                  <p className={`serif-font text-xl leading-snug ${isLast ? "text-button font-medium" : "text-text-heading"}`}>
+                    {item.label}
+                  </p>
+                </div>
+              );
+            })()}
+          </div>
         </div>
 
         {/* Mobile: stacked */}
@@ -122,27 +141,6 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
 
           {/* Timeline — vertically centered with video on desktop */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-end lg:self-center">
-            {/* Mobile: single item with fade, no icons/dots */}
-            <div className="lg:hidden flex flex-col items-center">
-              {(() => {
-                const item = timeline[activeTimelineIndex];
-                const isLast = activeTimelineIndex === timeline.length - 1;
-                return (
-                  <div
-                    className={`flex flex-col items-center text-center transition-opacity duration-400 ${
-                      timelineFading ? "opacity-0" : "opacity-100"
-                    }`}
-                  >
-                    <p className="text-[0.6rem] tracking-[0.2em] uppercase text-text-muted mb-1">
-                      {formatDate(item.date)}
-                    </p>
-                    <p className={`serif-font text-xl leading-snug ${isLast ? "text-button font-medium" : "text-text-heading"}`}>
-                      {item.label}
-                    </p>
-                  </div>
-                );
-              })()}
-            </div>
 
             {/* Desktop: full vertical timeline */}
             <div className="hidden lg:block relative pl-8">
