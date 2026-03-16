@@ -16,6 +16,7 @@ interface LocationCard {
   address: string;
   googleMapsUrl: string;
   image: string;
+  imagePosition?: string;
 }
 
 function buildLocations(settings: WeddingSettings | null): LocationCard[] {
@@ -36,6 +37,7 @@ function buildLocations(settings: WeddingSettings | null): LocationCard[] {
         address: "Adresa va fi comunicată ulterior",
         googleMapsUrl: "https://maps.app.goo.gl/zvSki9tUL6UGbsyU9",
         image: "/images/bus.png",
+        imagePosition: "top",
       },
       {
         title: "Petrecerea",
@@ -64,6 +66,7 @@ function buildLocations(settings: WeddingSettings | null): LocationCard[] {
       address: settings.transport_adresa || "Adresa va fi comunicată ulterior",
       googleMapsUrl: settings.transport_google_maps || "",
       image: "/images/bus.png",
+      imagePosition: "top",
     },
     {
       title: settings.petrecere_descriere || "Petrecerea",
@@ -96,7 +99,7 @@ function LocationCardContent({
       <img
         src={loc.image}
         alt={loc.title}
-        className="w-full h-56 sm:h-72 md:h-80 object-cover object-center"
+        className={`w-full h-56 sm:h-72 md:h-80 object-cover ${loc.imagePosition === "top" ? "object-top" : "object-center"}`}
       />
       <SectionCorners size="w-[25px] h-[25px]" offset={10} />
       <div className="px-4 py-3 sm:p-5 text-center">
