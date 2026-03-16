@@ -34,6 +34,8 @@ export interface WeddingSettings {
   tata_mire_prenume: string | null;
   mama_mire_nume: string | null;
   mama_mire_prenume: string | null;
+  telefon_mireasa: string | null;
+  telefon_mire: string | null;
   confirmare_pana_la: string | null;
   contact_info: string | null;
   color_main: string;

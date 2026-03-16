@@ -987,6 +987,8 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
     tata_mire_prenume: "",
     mama_mire_nume: "",
     mama_mire_prenume: "",
+    telefon_mireasa: "",
+    telefon_mire: "",
     confirmare_pana_la: "",
     contact_info: "",
     color_main: "#FDF8F7",
@@ -1035,6 +1037,8 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
           tata_mire_prenume: data.tata_mire_prenume || "",
           mama_mire_nume: data.mama_mire_nume || "",
           mama_mire_prenume: data.mama_mire_prenume || "",
+          telefon_mireasa: data.telefon_mireasa || "",
+          telefon_mire: data.telefon_mire || "",
           confirmare_pana_la: data.confirmare_pana_la ? data.confirmare_pana_la.split("T")[0] : "",
           contact_info: data.contact_info || "",
           color_main: data.color_main || "#FDF8F7",
@@ -1184,6 +1188,10 @@ function SettingsPanel({ token, onUnauth }: { token: string; onUnauth: () => voi
         {/* Confirmare */}
         <SettingsSection title="Confirmare invitație">
           <SettingsInput label="Confirmare până la" value={form.confirmare_pana_la} onChange={updateForm("confirmare_pana_la")} type="date" />
+          <div className="grid grid-cols-2 gap-4">
+            <SettingsInput label="Telefon mireasă" value={form.telefon_mireasa} onChange={updateForm("telefon_mireasa")} placeholder="0755 776 372" />
+            <SettingsInput label="Telefon mire" value={form.telefon_mire} onChange={updateForm("telefon_mire")} placeholder="0747 340 944" />
+          </div>
           <div>
             <label className="block text-xs text-text-muted mb-1 tracking-wide">Info contact (pentru invitație)</label>
             <textarea

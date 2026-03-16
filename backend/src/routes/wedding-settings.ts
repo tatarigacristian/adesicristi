@@ -33,6 +33,7 @@ export async function weddingSettingsRoutes(fastify: FastifyInstance) {
       'parinti_mireasa', 'parinti_mire',
       'tata_mireasa_nume', 'tata_mireasa_prenume', 'mama_mireasa_nume', 'mama_mireasa_prenume',
       'tata_mire_nume', 'tata_mire_prenume', 'mama_mire_nume', 'mama_mire_prenume',
+      'telefon_mireasa', 'telefon_mire',
       'confirmare_pana_la', 'contact_info',
       'color_main', 'color_second', 'color_button', 'color_text',
     ];

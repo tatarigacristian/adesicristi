@@ -591,16 +591,22 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             <span className="block w-8 h-px bg-button/20" />
           </div>
 
-          <div className="flex justify-center gap-6">
-            <a href="tel:0755776372" className="flex flex-col items-center gap-0.5 group">
-              <span className="text-[0.65rem] text-text-muted">Ade</span>
-              <span className="text-xs text-button group-hover:text-button-hover transition-colors">0755 776 372</span>
-            </a>
-            <a href="tel:0747340944" className="flex flex-col items-center gap-0.5 group">
-              <span className="text-[0.65rem] text-text-muted">Cristi</span>
-              <span className="text-xs text-button group-hover:text-button-hover transition-colors">0747 340 944</span>
-            </a>
-          </div>
+          {(settings?.telefon_mireasa || settings?.telefon_mire) && (
+            <div className="flex justify-center gap-6">
+              {settings.telefon_mireasa && (
+                <a href={`tel:${settings.telefon_mireasa.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
+                  <span className="text-[0.65rem] text-text-muted">{couple.mireasa}</span>
+                  <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mireasa}</span>
+                </a>
+              )}
+              {settings.telefon_mire && (
+                <a href={`tel:${settings.telefon_mire.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
+                  <span className="text-[0.65rem] text-text-muted">{couple.mire}</span>
+                  <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mire}</span>
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </section>
