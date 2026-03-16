@@ -364,9 +364,9 @@ function InvitatieContent() {
               <span style={{ display: "block", width: 40, height: 0.5, background: c.ornament, opacity: 0.4 }} />
             </div>
 
-            {/* ─── Date (serif) ─── */}
-            <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>
-              {ceremonieDateObj ? ceremonieDateObj.toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" }) : "4 iulie 2026"}
+            {/* ─── Guest greeting ─── */}
+            <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 400, color: c.primary, letterSpacing: "0.03em" }}>
+              {partner ? "Dragii noștri" : "Dragă"} {partner ? `${guest.prenume} & ${partner.prenume}` : `${guest.prenume} ${guest.nume}`},
             </p>
 
             {/* ─── "Cu drag vă invităm" ─── */}
