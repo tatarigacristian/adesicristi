@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
-import { useSlideTo } from "@/context/SwiperContext";
+import { useSwiper, useSlideTo } from "@/context/SwiperContext";
 
 interface GuestData {
   nume: string;
@@ -22,6 +22,7 @@ export default function Hero({
   settings?: WeddingSettings | null;
 }) {
   const [isVisible, setIsVisible] = useState(false);
+  const swiper = useSwiper();
   const slideTo = useSlideTo();
 
   const couple = getCoupleNames(settings ?? null);
@@ -39,7 +40,12 @@ export default function Hero({
   }, []);
 
   const handleClick = () => {
-    slideTo("couple");
+    if (swiper) {
+      slideTo("couple");
+    } else {
+      const el = document.getElementById("couple");
+      el?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
