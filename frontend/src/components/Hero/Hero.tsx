@@ -101,10 +101,6 @@ export default function Hero({
 
           <h2 className="serif-font text-xl sm:text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-4 sm:mb-6">
             Să petreceți alături de noi
-            <br />
-            cel mai important moment
-            <br />
-            din viața noastră
           </h2>
 
           <div className="flex items-center justify-center gap-3 my-3 sm:my-6">
