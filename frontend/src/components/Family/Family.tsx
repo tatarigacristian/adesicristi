@@ -46,19 +46,19 @@ export default function Family({
           <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
             Familie
           </h2>
-          <SmallFlourish className="mx-auto mb-[30px] sm:mb-0" />
-          <p className="text-xs text-text-muted leading-relaxed mt-2 sm:mt-3">
+          <SmallFlourish className="mx-auto mb-2 sm:mb-0" />
+          <p className="text-xs text-text-muted leading-relaxed">
             Alături de cei dragi nouă
           </p>
         </div>
 
-        <div className="flex flex-col gap-6 sm:gap-6 mt-auto sm:mt-0">
+        <div className="flex flex-col gap-3 sm:gap-6 mt-auto sm:mt-0">
           {/* Nasi */}
           {hasNasi && (
             <div className="family-card text-center relative">
               <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-              <div className="text-button mb-2 sm:mb-4">
-                <svg viewBox="0 0 80 50" className="w-10 h-10 sm:w-14 sm:h-14 mx-auto" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <div className="text-button mb-1 sm:mb-4">
+                <svg viewBox="0 0 80 50" className="w-8 h-8 sm:w-14 sm:h-14 mx-auto" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
                   <ellipse cx="28" cy="27" rx="14" ry="16" strokeWidth="1.2" />
                   <ellipse cx="52" cy="27" rx="14" ry="16" strokeWidth="1.2" />
                   <ellipse cx="28" cy="27" rx="10" ry="12" strokeWidth="0.5" opacity="0.4" />
@@ -69,10 +69,10 @@ export default function Family({
                   <circle cx="52" cy="11" r="1" fill="currentColor" opacity="0.5" />
                 </svg>
               </div>
-              <h3 className="text-[0.7rem] tracking-[0.3em] uppercase text-text-heading font-semibold mb-3">
+              <h3 className="text-[0.7rem] tracking-[0.3em] uppercase text-text-heading font-semibold mb-2">
                 Împreună cu nașii
               </h3>
-              <Flourish size="sm" className="mx-auto mb-4" />
+              <Flourish size="sm" className="mx-auto mb-2" />
               <p className="script-font text-2xl text-text-heading">
                 {nasNume}
               </p>
@@ -94,8 +94,8 @@ export default function Family({
           {hasParinti && (
             <div className="family-card text-center relative">
               <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-              <div className="text-button mb-2 sm:mb-4">
-                <svg viewBox="0 0 50 48" className="w-10 h-10 sm:w-14 sm:h-14 mx-auto" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <div className="text-button mb-1 sm:mb-4">
+                <svg viewBox="0 0 50 48" className="w-8 h-8 sm:w-14 sm:h-14 mx-auto" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
                   <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
                   <path d="M25,38 C25,38 8,27 8,16 C8,10 13,7 18,10 C21,12 25,16 25,16 C25,16 29,12 32,10 C37,7 42,10 42,16 C42,27 25,38 25,38 Z" strokeWidth="0.6" opacity="0.4" />
                   <path d="M20 4 Q22 1, 25 2 Q28 1, 30 4" strokeWidth="0.6" opacity="0.5" />
@@ -103,10 +103,10 @@ export default function Family({
                   <circle cx="29" cy="3" r="0.6" fill="currentColor" opacity="0.4" />
                 </svg>
               </div>
-              <h3 className="text-[0.7rem] tracking-[0.3em] uppercase text-text-heading font-semibold mb-3">
+              <h3 className="text-[0.7rem] tracking-[0.3em] uppercase text-text-heading font-semibold mb-2">
                 Dragii noștri părinți
               </h3>
-              <Flourish size="sm" className="mx-auto mb-4" />
+              <Flourish size="sm" className="mx-auto mb-2" />
               {parintiMireasa && (
                 <p className="script-font text-2xl text-text-heading leading-relaxed">
                   {parintiMireasa}
