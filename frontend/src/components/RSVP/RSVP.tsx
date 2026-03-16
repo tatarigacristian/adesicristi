@@ -345,9 +345,15 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               Prezența anulată
             </p>
             <p className="script-font text-4xl text-text-heading mb-4">Ne pare rău</p>
-            <p className="text-sm text-foreground">
+            <p className="text-sm text-foreground mb-6">
               Regretăm că nu veți putea fi alături de noi.
             </p>
+            <button
+              onClick={() => setFormState("idle")}
+              className="bg-button text-white py-2.5 px-6 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer"
+            >
+              Confirmă prezența
+            </button>
           </div>
         </div>
       </section>
@@ -365,9 +371,15 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               Am primit răspunsul tău
             </p>
             <p className="script-font text-4xl text-text-heading mb-4">Ne pare rău</p>
-            <p className="text-sm text-foreground">
+            <p className="text-sm text-foreground mb-6">
               Regretăm că nu veți putea fi alături de noi.
             </p>
+            <button
+              onClick={() => setFormState("idle")}
+              className="bg-button text-white py-2.5 px-6 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer"
+            >
+              Confirmă prezența
+            </button>
           </div>
         </div>
       </section>
