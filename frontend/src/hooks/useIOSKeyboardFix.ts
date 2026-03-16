@@ -1,150 +1,85 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
-import type { Swiper as SwiperType } from "swiper";
+import { useEffect, useRef } from "react";
 
 /**
- * Fixes iOS Safari viewport shift when virtual keyboard opens/closes
- * inside a vertical Swiper layout.
- *
- * The problem: iOS Safari doesn't resize the layout viewport when the keyboard
- * opens. Instead it shifts the visual viewport upward via visualViewport.offsetTop.
- * When the keyboard dismisses, this offset often doesn't reset, leaving the page
- * stuck in a shifted position.
- *
- * This hook:
- * 1. Disables Swiper touch/swiping while an input is focused (prevents Swiper
- *    from fighting with iOS's viewport adjustments)
- * 2. On keyboard dismiss (focusout), forces a scroll correction and tells
- *    Swiper to recalculate
- * 3. Uses visualViewport resize events to detect keyboard open/close
+ * Fixes iOS Chrome bug where the viewport height stays "stuck" after
+ * the virtual keyboard closes. A pinch-zoom (resize event) fixes it,
+ * so this hook simulates that recalculation on keyboard dismiss.
  */
-export function useIOSKeyboardFix(swiper: SwiperType | null) {
-  const isIOSRef = useRef(false);
+export function useIOSKeyboardFix() {
   const keyboardOpenRef = useRef(false);
-  const activeSlideIndexRef = useRef(0);
 
-  // Detect iOS
   useEffect(() => {
-    if (typeof navigator !== "undefined") {
-      isIOSRef.current =
-        /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    }
-  }, []);
+    // Only run on iOS
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (!isIOS) return;
 
-  const handleFocusIn = useCallback(
-    (e: FocusEvent) => {
-      if (!isIOSRef.current || !swiper) return;
-
+    const handleFocusIn = (e: FocusEvent) => {
       const target = e.target as HTMLElement;
-      const isFormInput =
+      if (
         target.tagName === "INPUT" ||
         target.tagName === "TEXTAREA" ||
-        target.tagName === "SELECT";
-
-      if (!isFormInput) return;
-
-      keyboardOpenRef.current = true;
-      activeSlideIndexRef.current = swiper.activeIndex;
-
-      // Disable Swiper touch movement while keyboard is open
-      // This prevents Swiper from interfering with iOS viewport adjustments
-      swiper.allowTouchMove = false;
-
-      // Also disable mousewheel to prevent accidental slide changes
-      if (swiper.mousewheel) {
-        swiper.mousewheel.disable();
+        target.tagName === "SELECT"
+      ) {
+        keyboardOpenRef.current = true;
       }
-    },
-    [swiper]
-  );
+    };
 
-  const handleFocusOut = useCallback(
-    (e: FocusEvent) => {
-      if (!isIOSRef.current || !swiper) return;
+    const forceViewportRecalc = () => {
+      // Force the browser to recalculate viewport height
+      // This mimics what a pinch-zoom (resize) does
+      const panel = document.querySelector(".right-panel") as HTMLElement;
+      if (panel) {
+        // Briefly set a fixed height then remove it to trigger reflow
+        const h = panel.offsetHeight;
+        panel.style.height = h + "px";
+        // Force a synchronous reflow
+        void panel.offsetHeight;
+        panel.style.height = "";
+      }
 
-      // Check if focus is moving to another form input (e.g. tabbing between fields)
-      // In that case, don't run the keyboard-dismiss fix
-      const relatedTarget = e.relatedTarget as HTMLElement | null;
+      // Also reset any stuck scroll position on the window
+      window.scrollTo(0, 0);
+    };
+
+    const handleFocusOut = (e: FocusEvent) => {
+      if (!keyboardOpenRef.current) return;
+
+      // Skip if focus moves to another input
+      const related = e.relatedTarget as HTMLElement | null;
       if (
-        relatedTarget &&
-        (relatedTarget.tagName === "INPUT" ||
-          relatedTarget.tagName === "TEXTAREA" ||
-          relatedTarget.tagName === "SELECT")
+        related &&
+        (related.tagName === "INPUT" ||
+          related.tagName === "TEXTAREA" ||
+          related.tagName === "SELECT")
       ) {
         return;
       }
 
+      keyboardOpenRef.current = false;
+
+      // Wait for keyboard dismiss animation to complete
+      setTimeout(forceViewportRecalc, 300);
+    };
+
+    // Also catch keyboard dismiss via the Done button / swipe gesture
+    // which may not fire focusout
+    const handleViewportResize = () => {
       if (!keyboardOpenRef.current) return;
-      keyboardOpenRef.current = false;
 
-      // Give iOS time to dismiss the keyboard and settle the viewport
-      setTimeout(() => {
-        // Force scroll correction - this is the key fix for the stuck viewport
-        window.scrollTo(0, 0);
+      const vv = window.visualViewport;
+      if (!vv) return;
 
-        // Additional nudge to force Safari to recalculate layout
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-
-        // Force a tiny scroll bounce to unstick the visual viewport
-        window.scrollBy(0, 1);
-        window.scrollBy(0, -1);
-
-        // Re-enable Swiper
-        swiper.allowTouchMove = true;
-        if (swiper.mousewheel) {
-          swiper.mousewheel.enable();
-        }
-
-        // Force Swiper to go back to the correct slide
-        // (in case iOS's viewport shift confused Swiper's position tracking)
-        swiper.slideTo(activeSlideIndexRef.current, 0);
-
-        // Tell Swiper to recalculate its dimensions
-        swiper.update();
-      }, 300);
-    },
-    [swiper]
-  );
-
-  // VisualViewport resize handler - detects keyboard open/close
-  const handleViewportResize = useCallback(() => {
-    if (!isIOSRef.current || !swiper) return;
-
-    const vv = window.visualViewport;
-    if (!vv) return;
-
-    // When keyboard opens, visualViewport.height shrinks significantly
-    // When it closes, it returns close to window.innerHeight
-    const heightDiff = window.innerHeight - vv.height;
-    const keyboardLikelyOpen = heightDiff > 150; // keyboard is typically 250-350px
-
-    if (!keyboardLikelyOpen && keyboardOpenRef.current) {
-      // Keyboard just closed but focusout didn't fire (can happen with
-      // keyboard dismiss button or swipe-down gesture)
-      keyboardOpenRef.current = false;
-
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-        window.scrollBy(0, 1);
-        window.scrollBy(0, -1);
-
-        swiper.allowTouchMove = true;
-        if (swiper.mousewheel) {
-          swiper.mousewheel.enable();
-        }
-        swiper.slideTo(activeSlideIndexRef.current, 0);
-        swiper.update();
-      }, 100);
-    }
-  }, [swiper]);
-
-  useEffect(() => {
-    if (!swiper) return;
+      const heightDiff = window.innerHeight - vv.height;
+      if (heightDiff < 150) {
+        // Keyboard closed
+        keyboardOpenRef.current = false;
+        setTimeout(forceViewportRecalc, 100);
+      }
+    };
 
     document.addEventListener("focusin", handleFocusIn, true);
     document.addEventListener("focusout", handleFocusOut, true);
@@ -161,5 +96,5 @@ export function useIOSKeyboardFix(swiper: SwiperType | null) {
         vv.removeEventListener("resize", handleViewportResize);
       }
     };
-  }, [swiper, handleFocusIn, handleFocusOut, handleViewportResize]);
+  }, []);
 }
