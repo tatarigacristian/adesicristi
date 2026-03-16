@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 
@@ -70,7 +69,6 @@ function TimelineIcon({ icon }: { icon: string }) {
 }
 
 export default function Couple({ settings }: { settings?: WeddingSettings | null }) {
-  const ref = useScrollAnimation<HTMLElement>();
   const [playing, setPlaying] = useState(false);
   const [activeTimelineIndex, setActiveTimelineIndex] = useState(0);
   const [timelineFading, setTimelineFading] = useState(false);
@@ -105,7 +103,6 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
   return (
     <section
       id="couple"
-      ref={ref}
       className="content-section bg-background-soft"
     >
       <div className="w-full max-w-5xl mx-auto px-6 flex-1 flex flex-col sm:block">

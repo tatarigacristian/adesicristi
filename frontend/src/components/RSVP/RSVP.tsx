@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, FormEvent, KeyboardEvent } from "react";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import Flourish from "@/components/Ornaments/Flourish";
@@ -152,7 +151,6 @@ function AddToCalendar({ settings }: { settings: WeddingSettings }) {
 }
 
 export default function RSVP({ guest, settings }: { guest?: GuestData | null; settings?: WeddingSettings | null }) {
-  const sectionRef = useScrollAnimation<HTMLElement>();
   const couple = getCoupleNames(settings ?? null);
   const [personCount, setPersonCount] = useState(0);
   const [name, setName] = useState("");
@@ -292,7 +290,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Loading state
   if (formState === "loading") {
     return (
-      <section id="rsvp" ref={sectionRef} className="content-section bg-background !justify-center">
+      <section id="rsvp" className="content-section bg-background !justify-center">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
             <SectionCorners size="w-[25px] h-[25px]" offset={10} />
@@ -306,7 +304,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Confirmed state — show confirmation + cancel option
   if (formState === "confirmed") {
     return (
-      <section id="rsvp" ref={sectionRef} className="content-section bg-background !justify-center">
+      <section id="rsvp" className="content-section bg-background !justify-center">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
             <SectionCorners size="w-[25px] h-[25px]" offset={10} />
@@ -340,7 +338,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Cancelled state
   if (formState === "cancelled") {
     return (
-      <section id="rsvp" ref={sectionRef} className="content-section bg-background !justify-center">
+      <section id="rsvp" className="content-section bg-background !justify-center">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
             <SectionCorners size="w-[25px] h-[25px]" offset={10} />
@@ -366,7 +364,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Declined state (submitted "Nu pot sa particip")
   if (formState === "declined") {
     return (
-      <section id="rsvp" ref={sectionRef} className="content-section bg-background !justify-center">
+      <section id="rsvp" className="content-section bg-background !justify-center">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
             <SectionCorners size="w-[25px] h-[25px]" offset={10} />

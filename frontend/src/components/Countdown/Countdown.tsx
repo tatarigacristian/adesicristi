@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 
 const DEFAULT_WEDDING_ISO = "2026-07-04T11:00:00";
@@ -49,7 +48,6 @@ export default function Countdown({
   );
 
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null | undefined>(undefined);
-  const ref = useScrollAnimation<HTMLElement>();
 
   useEffect(() => {
     setTimeLeft(calculateTimeLeft(targetMs));
@@ -100,7 +98,6 @@ export default function Countdown({
   return (
     <section
       id="countdown"
-      ref={ref}
       className="content-section bg-background-soft"
     >
       <div className="text-center">

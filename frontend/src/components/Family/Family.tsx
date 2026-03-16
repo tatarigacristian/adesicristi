@@ -1,6 +1,5 @@
 "use client";
 
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings } from "@/utils/settings";
 import Flourish from "@/components/Ornaments/Flourish";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
@@ -11,8 +10,6 @@ export default function Family({
 }: {
   settings?: WeddingSettings | null;
 }) {
-  const ref = useScrollAnimation<HTMLElement>();
-
   // Nasi
   const nasNume = settings?.nas_prenume && settings?.nasa_prenume
     ? settings.nasa_nume === settings.nas_nume
@@ -37,7 +34,6 @@ export default function Family({
   return (
     <section
       id="family"
-      ref={ref}
       className="content-section bg-background"
     >
       <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">

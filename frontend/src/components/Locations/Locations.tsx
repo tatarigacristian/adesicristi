@@ -4,7 +4,6 @@ import { useState, useMemo, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
@@ -136,7 +135,6 @@ function LocationCardContent({
 }
 
 export default function Locations({ settings }: { settings?: WeddingSettings | null }) {
-  const ref = useScrollAnimation<HTMLElement>();
   const [drawerLocation, setDrawerLocation] = useState<LocationCard | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
@@ -159,7 +157,6 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
     <>
       <section
         id="locations"
-        ref={ref}
         className="content-section bg-background-soft"
       >
         <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col sm:block">
