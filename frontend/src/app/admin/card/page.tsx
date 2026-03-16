@@ -135,7 +135,7 @@ function CardFront({
             <div className="card-qr">
               <img src={qrDataUrl} alt="QR Code" style={{ width: "2cm", height: "2cm" }} />
             </div>
-            <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.28rem", letterSpacing: "0.2em", textTransform: "uppercase" as const, color: muted, marginTop: "0.08cm", fontWeight: 500 }}>
+            <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.08cm" }}>
               Scanați codul
             </p>
           </div>
