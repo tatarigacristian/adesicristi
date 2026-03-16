@@ -225,15 +225,6 @@ function CardBack({
           {partner ? "Dragii nostri" : "Draga"} {guestNames},
         </p>
 
-        {(settings.nas_prenume || settings.nasa_prenume) && (
-          <p className="card-nasi">
-            impreuna cu nasii {settings.nasa_prenume} & {settings.nas_prenume}{" "}
-            {settings.nasa_nume === settings.nas_nume
-              ? settings.nasa_nume
-              : `${settings.nasa_nume} & ${settings.nas_nume}`}
-          </p>
-        )}
-
         <p className="card-message">{introText}</p>
 
         <div className="card-events-row">
@@ -249,6 +240,14 @@ function CardBack({
         {/* Closing - positioned at bottom like date on front */}
         <div className="card-back-footer" style={{ marginTop: "auto" }}>
           <p className="card-back-names">{mireasa} & {mire}</p>
+          {(settings.nas_prenume || settings.nasa_prenume) && (
+            <p className="card-nasi" style={{ marginBottom: 0, marginTop: "0.03cm" }}>
+              impreuna cu nasii {settings.nasa_prenume} & {settings.nas_prenume}{" "}
+              {settings.nasa_nume === settings.nas_nume
+                ? settings.nasa_nume
+                : `${settings.nasa_nume} & ${settings.nas_nume}`}
+            </p>
+          )}
         </div>
       </div>
     </div>
