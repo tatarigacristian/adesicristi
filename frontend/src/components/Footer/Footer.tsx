@@ -1,8 +1,6 @@
 "use client";
 
-import Flourish from "@/components/Ornaments/Flourish";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
-import SectionCorners from "@/components/Ornaments/SectionCorners";
 import { WeddingSettings, getCoupleNames } from "@/utils/settings";
 
 export default function Footer({ settings }: { settings?: WeddingSettings | null }) {
@@ -10,20 +8,21 @@ export default function Footer({ settings }: { settings?: WeddingSettings | null
 
   return (
     <section className="content-section bg-background-soft">
-      <div className="relative text-center px-8 py-16 sm:py-20 glass-card max-w-lg mx-auto w-full">
-        <SectionCorners size="w-[25px] h-[25px]" offset={10} />
+      <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
+        {/* Section header */}
+        <div className="text-center mb-2 sm:mb-10">
+          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+            Vă mulțumim din suflet
+          </h2>
+          <SmallFlourish className="mx-auto mb-[30px] sm:mb-0" />
+        </div>
 
-        <p className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-4">
-          Vă mulțumim din suflet
-        </p>
-
-        <Flourish size="sm" className="mx-auto mb-6" />
-
-        <p className="script-font text-4xl text-text-heading mb-6">
-          {couple.display}
-        </p>
-
-        <Flourish size="sm" className="mx-auto" />
+        {/* Names at bottom */}
+        <div className="text-center mt-auto sm:mt-0">
+          <p className="script-font text-5xl text-text-heading">
+            {couple.display}
+          </p>
+        </div>
       </div>
     </section>
   );
