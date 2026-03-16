@@ -72,7 +72,7 @@ export default function Countdown({
   if (variant === "sidebar") {
     return (
       <div className="relative family-card rounded-xl !px-5 !py-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-        <SectionCorners size="w-[30px] h-[30px]" offset={0} />
+        <SectionCorners size="w-[25px] h-[25px]" offset={10} />
         <p className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-4 font-medium">
           Au mai ramas
         </p>

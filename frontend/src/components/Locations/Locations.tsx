@@ -95,7 +95,7 @@ function LocationCardContent({
         alt={loc.title}
         className="w-full h-96 sm:h-96 md:h-80 object-cover"
       />
-      <SectionCorners size="w-[30px] h-[30px]" offset={0} />
+      <SectionCorners size="w-[25px] h-[25px]" offset={10} />
       <div className="px-4 py-3 sm:p-5 text-center">
         <h3 className="serif-font text-base sm:text-lg text-text-heading mb-1">
           {loc.title}

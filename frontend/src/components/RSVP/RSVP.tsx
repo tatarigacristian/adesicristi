@@ -292,7 +292,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
-            <SectionCorners size="w-[30px] h-[30px]" offset={0} />
+            <SectionCorners size="w-[25px] h-[25px]" offset={10} />
             <p className="text-sm text-text-muted">Se încarcă...</p>
           </div>
         </div>
@@ -306,7 +306,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
-            <SectionCorners size="w-[30px] h-[30px]" offset={0} />
+            <SectionCorners size="w-[25px] h-[25px]" offset={10} />
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Mulțumim pentru confirmare!
             </p>
@@ -340,7 +340,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
-            <SectionCorners size="w-[30px] h-[30px]" offset={0} />
+            <SectionCorners size="w-[25px] h-[25px]" offset={10} />
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Prezența anulată
             </p>
@@ -362,7 +362,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
-            <SectionCorners size="w-[30px] h-[30px]" offset={0} />
+            <SectionCorners size="w-[25px] h-[25px]" offset={10} />
             <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
               Am primit răspunsul tău
             </p>
@@ -386,7 +386,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     >
       <div className="max-w-lg mx-auto w-full">
         <div className="relative glass-card">
-          <SectionCorners size="w-[30px] h-[30px]" offset={0} />
+          <SectionCorners size="w-[25px] h-[25px]" offset={10} />
           <div className="text-center mb-6">
             <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
               Confirmare

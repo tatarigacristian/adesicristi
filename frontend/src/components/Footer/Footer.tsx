@@ -11,7 +11,7 @@ export default function Footer({ settings }: { settings?: WeddingSettings | null
   return (
     <section className="snap-section content-section bg-background-soft min-h-[50vh]">
       <div className="relative text-center px-8 py-10 glass-card">
-        <SectionCorners size="w-[30px] h-[30px]" offset={0} />
+        <SectionCorners size="w-[25px] h-[25px]" offset={10} />
 
         <SmallFlourish className="mx-auto mb-6" />
 
