@@ -166,6 +166,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const nameRef = useRef<HTMLInputElement>(null);
   const partnerRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
+  const initialCheckDone = useRef(false);
 
   // Auto-fill from guest data
   useEffect(() => {
@@ -179,9 +180,10 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     }
   }, [guest]);
 
-  // Check existing RSVP for this guest
+  // Check existing RSVP for this guest (only once on mount)
   useEffect(() => {
-    if (!guest) return;
+    if (!guest || initialCheckDone.current) return;
+    initialCheckDone.current = true;
     async function checkExistingRsvp() {
       try {
         const res = await fetch(`${API_URL}/api/rsvp/guest/${guest!.id}`);
