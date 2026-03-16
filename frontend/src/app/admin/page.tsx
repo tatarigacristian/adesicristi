@@ -231,6 +231,7 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
   const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "" });
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<Guest | null>(null);
+  const [invitatiePicker, setInvitatiePicker] = useState<Guest | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<GuestFilter>("all");
@@ -460,6 +461,68 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
         </div>
       )}
 
+      {/* Invitation type picker modal */}
+      {invitatiePicker && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+          onClick={() => setInvitatiePicker(null)}>
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+            <h3 className="serif-font text-lg text-text-heading mb-1 text-center">Alege tipul invitației</h3>
+            <p className="text-xs text-text-muted text-center mb-5">
+              {invitatiePicker.prenume} {invitatiePicker.nume}
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => { window.open(`/admin/card?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                  <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
+                  <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
+                </svg>
+                <div>
+                  <p className="text-sm font-medium text-text-heading">Carte de vizită cu QR</p>
+                  <p className="text-xs text-text-muted">Format carte de vizită cu cod QR</p>
+                </div>
+              </button>
+              <button
+                onClick={() => { window.open(`/admin/invitatie?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+                <div>
+                  <p className="text-sm font-medium text-text-heading">Invitație clasică V1</p>
+                  <p className="text-xs text-text-muted">Text personalizat per invitat</p>
+                </div>
+              </button>
+              <button
+                onClick={() => { window.open(`/admin/invitatie-v2?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="12" y1="11" x2="12" y2="17" />
+                  <line x1="9" y1="14" x2="15" y2="14" />
+                </svg>
+                <div>
+                  <p className="text-sm font-medium text-text-heading">Invitație clasică V2</p>
+                  <p className="text-xs text-text-muted">Părinți și nași, text generic</p>
+                </div>
+              </button>
+            </div>
+            <button onClick={() => setInvitatiePicker(null)}
+              className="w-full mt-4 py-2 text-xs text-text-muted hover:text-text-heading transition-colors cursor-pointer">
+              Închide
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Table (desktop) / Cards (mobile) */}
       <div className="family-card p-0 overflow-hidden">
         {paginated.length === 0 ? (
@@ -496,33 +559,14 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                                 <line x1="10" y1="14" x2="21" y2="3" />
                               </svg>
                             </button>
-                            <button onClick={() => window.open(`/admin/card?guestId=${g.id}`, '_blank')}
+                            <button onClick={() => setInvitatiePicker(g)}
                               className="text-foreground/50 hover:text-accent transition-colors cursor-pointer p-1"
-                              title="Carte de vizita">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
-                                <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
-                                <rect x="20" y="14" width="2" height="2" /><rect x="14" y="20" width="2" height="2" /><rect x="20" y="20" width="2" height="2" />
-                              </svg>
-                            </button>
-                            <button onClick={() => window.open(`/admin/invitatie?guestId=${g.id}`, '_blank')}
-                              className="text-foreground/50 hover:text-accent transition-colors cursor-pointer p-1"
-                              title="Invitatie clasica">
+                              title="Invitații">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                                 <polyline points="14 2 14 8 20 8" />
                                 <line x1="16" y1="13" x2="8" y2="13" />
                                 <line x1="16" y1="17" x2="8" y2="17" />
-                              </svg>
-                            </button>
-                            <button onClick={() => window.open(`/admin/invitatie-v2?guestId=${g.id}`, '_blank')}
-                              className="text-foreground/50 hover:text-accent transition-colors cursor-pointer p-1"
-                              title="Invitatie clasica v2">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="12" y1="11" x2="12" y2="17" />
-                                <line x1="9" y1="14" x2="15" y2="14" />
                               </svg>
                             </button>
                           </>
@@ -600,33 +644,14 @@ function GuestsPanel({ token, onUnauth }: { token: string; onUnauth: () => void 
                                   <line x1="10" y1="14" x2="21" y2="3" />
                                 </svg>
                               </button>
-                              <button onClick={() => window.open(`/admin/card?guestId=${g.id}`, '_blank')}
+                              <button onClick={() => setInvitatiePicker(g)}
                                 className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
-                                title="Carte de vizita">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
-                                  <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
-                                  <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
-                                  <rect x="20" y="14" width="2" height="2" /><rect x="14" y="20" width="2" height="2" /><rect x="20" y="20" width="2" height="2" />
-                                </svg>
-                              </button>
-                              <button onClick={() => window.open(`/admin/invitatie?guestId=${g.id}`, '_blank')}
-                                className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
-                                title="Invitatie clasica">
+                                title="Invitații">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
                                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                                   <polyline points="14 2 14 8 20 8" />
                                   <line x1="16" y1="13" x2="8" y2="13" />
                                   <line x1="16" y1="17" x2="8" y2="17" />
-                                </svg>
-                              </button>
-                              <button onClick={() => window.open(`/admin/invitatie-v2?guestId=${g.id}`, '_blank')}
-                                className="text-xs text-foreground/50 hover:text-accent transition-colors cursor-pointer mr-3"
-                                title="Invitatie clasica v2">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                  <polyline points="14 2 14 8 20 8" />
-                                  <line x1="12" y1="11" x2="12" y2="17" />
-                                  <line x1="9" y1="14" x2="15" y2="14" />
                                 </svg>
                               </button>
                             </>
