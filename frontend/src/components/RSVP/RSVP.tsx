@@ -398,18 +398,17 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
         <div className="relative glass-card !p-4 sm:!p-8 mt-auto sm:mt-0">
           <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-          <div className="text-center mb-3 sm:mb-6">
+          <div className="text-center mb-2 sm:mb-6">
             <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-1">
               Confirmare
             </h2>
-            <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
-            <p className="text-xs text-text-muted leading-relaxed">
-              Vă așteptăm cu drag!<br />
-              Completați formularul de mai jos pentru a ne anunța decizia.
+            <SmallFlourish className="mx-auto mb-1 sm:mb-3" />
+            <p className="text-xs text-text-muted leading-snug">
+              Vă așteptăm cu drag!
             </p>
           </div>
 
-          <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-3 sm:space-y-4">
+          <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-2 sm:space-y-4">
             {/* Person count */}
             <div>
               <label className="block text-xs text-text-muted mb-1 tracking-wide">
@@ -423,7 +422,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 }}
                 onKeyDown={handleKeyDown}
                 disabled={isDisabled}
-                className="w-full border border-border-light rounded-lg px-3 py-2.5 text-base sm:text-sm bg-white
+                className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
                            focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
               >
                 <option value={0}>Alege număr persoane</option>
@@ -437,7 +436,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
 
             {/* Names row */}
             {personCount > 0 && (
-              <div className={`grid gap-4 ${personCount === 2 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
+              <div className={`grid gap-2 sm:gap-4 ${personCount === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
                 <div>
                   <label className="block text-xs text-text-muted mb-1 tracking-wide">
                     Numele tău
@@ -454,7 +453,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     disabled={isDisabled}
                     placeholder="Nume"
                     enterKeyHint="next"
-                    className="w-full border border-border-light rounded-lg px-3 py-2.5 text-base sm:text-sm bg-white
+                    className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
                                focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
                   />
                   {errors.name && (
@@ -479,7 +478,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                       disabled={isDisabled}
                       placeholder="Partener"
                       enterKeyHint="next"
-                      className="w-full border border-border-light rounded-lg px-3 py-2.5 text-sm bg-white
+                      className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-sm bg-white
                                  focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
                     />
                     {errors.partnerName && (
@@ -502,7 +501,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 disabled={isDisabled}
                 rows={2}
                 enterKeyHint="enter"
-                className="w-full border border-border-light rounded-lg px-3 py-2.5 text-base sm:text-sm bg-white
+                className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
                            focus:outline-none focus:border-accent transition-colors resize-none disabled:opacity-50"
               />
             </div>
@@ -520,7 +519,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 type="button"
                 onClick={() => handleSubmit(true)}
                 disabled={isDisabled}
-                className="flex-1 bg-button text-white py-2.5 px-4 rounded-lg text-sm font-medium
+                className="flex-1 bg-button text-white py-2 sm:py-2.5 px-4 rounded-lg text-sm font-medium
                            hover:bg-button-hover transition-colors disabled:opacity-50"
               >
                 {formState === "submitting" ? "Se trimite..." : "Da, confirm prezența"}
@@ -529,7 +528,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 type="button"
                 onClick={() => handleSubmit(false)}
                 disabled={isDisabled}
-                className="flex-1 border border-button py-2.5 px-4 rounded-lg text-sm
+                className="flex-1 border border-button py-2 sm:py-2.5 px-4 rounded-lg text-sm
                            text-foreground hover:bg-background-soft transition-colors disabled:opacity-50"
               >
                 Nu pot să particip
