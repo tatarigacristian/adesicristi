@@ -20,6 +20,13 @@
   --font-sans: var(--font-montserrat);
 }
 
+html, body {
+  overflow: hidden;
+  height: 100%;
+  position: fixed;
+  width: 100%;
+}
+
 html {
   scroll-behavior: auto;
 }
