@@ -41,25 +41,36 @@ export default function SwiperLayout({
     setSwiperInstance(swiper);
   }, []);
 
-  // Drive container height from visualViewport — the only value iOS Chrome
-  // reports correctly after keyboard dismiss. CSS vh/dvh can get stuck.
+  // iOS Chrome: vh/dvh get stuck after keyboard dismiss.
+  // Use visualViewport.height but only update when keyboard is CLOSED
+  // (height increases back to full), not when it opens (height shrinks).
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
 
-    const setHeight = () => {
-      const h = window.visualViewport?.height ?? window.innerHeight;
-      panel.style.height = `${h}px`;
-      swiperInstance?.update();
+    const fullHeight = window.visualViewport?.height ?? window.innerHeight;
+    panel.style.height = `${fullHeight}px`;
+
+    const lastFullHeight = { current: fullHeight };
+
+    const onResize = () => {
+      const vv = window.visualViewport;
+      if (!vv) return;
+      const h = vv.height;
+      // Only update when viewport grows back (keyboard closed / orientation)
+      // Ignore when it shrinks (keyboard opening)
+      if (h >= lastFullHeight.current * 0.85) {
+        lastFullHeight.current = h;
+        panel.style.height = `${h}px`;
+        swiperInstance?.update();
+      }
     };
 
-    setHeight();
-
-    window.visualViewport?.addEventListener("resize", setHeight);
-    window.addEventListener("orientationchange", () => setTimeout(setHeight, 200));
+    window.visualViewport?.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", () => setTimeout(onResize, 200));
 
     return () => {
-      window.visualViewport?.removeEventListener("resize", setHeight);
+      window.visualViewport?.removeEventListener("resize", onResize);
     };
   }, [swiperInstance]);
 
