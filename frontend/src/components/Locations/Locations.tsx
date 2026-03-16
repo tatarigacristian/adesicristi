@@ -99,7 +99,7 @@ function LocationCardContent({
       <img
         src={loc.image}
         alt={loc.title}
-        className={`w-full h-56 sm:h-72 md:h-80 object-cover ${loc.imagePosition === "top" ? "object-top" : "object-center"}`}
+        className={`w-full h-[234px] sm:h-[298px] md:h-[330px] object-cover ${loc.imagePosition === "top" ? "object-top" : "object-center"}`}
       />
       <SectionCorners size="w-[25px] h-[25px]" offset={10} />
       <div className="px-4 py-3 sm:p-5 text-center">
