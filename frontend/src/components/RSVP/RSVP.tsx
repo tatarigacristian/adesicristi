@@ -423,7 +423,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 }}
                 onKeyDown={handleKeyDown}
                 disabled={isDisabled}
-                className="w-full border border-border-light rounded-lg px-3 py-2.5 text-sm bg-white
+                className="w-full border border-border-light rounded-lg px-3 py-2.5 text-base sm:text-sm bg-white
                            focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
               >
                 <option value={0}>Alege număr persoane</option>
@@ -454,7 +454,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     disabled={isDisabled}
                     placeholder="Nume"
                     enterKeyHint="next"
-                    className="w-full border border-border-light rounded-lg px-3 py-2.5 text-sm bg-white
+                    className="w-full border border-border-light rounded-lg px-3 py-2.5 text-base sm:text-sm bg-white
                                focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
                   />
                   {errors.name && (
@@ -502,7 +502,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 disabled={isDisabled}
                 rows={3}
                 enterKeyHint="enter"
-                className="w-full border border-border-light rounded-lg px-3 py-2.5 text-sm bg-white
+                className="w-full border border-border-light rounded-lg px-3 py-2.5 text-base sm:text-sm bg-white
                            focus:outline-none focus:border-accent transition-colors resize-none disabled:opacity-50"
               />
             </div>
