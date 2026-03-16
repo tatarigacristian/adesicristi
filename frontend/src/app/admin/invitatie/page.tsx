@@ -432,43 +432,33 @@ function InvitatieContent() {
               <span style={{ fontSize: "0.55rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{year}</span>
             </div>
 
-            {/* ─── Events (card style - icon + title + time & address inline) ─── */}
-            <div style={{ display: "flex", justifyContent: "center", gap: "0.8cm", marginTop: "0.2cm", width: "100%" }}>
+            {/* ─── Events (matching card style: icon → time → address) ─── */}
+            <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm", marginTop: "0.2cm", width: "100%" }}>
               {settings.ceremonie_ora && (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.05cm", flex: 1 }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
                   <ChurchIcon color={c.muted} />
-                  <p style={{ fontSize: "0.42rem", fontFamily: f.mont, letterSpacing: "0.18em", textTransform: f.upper, fontWeight: 500, color: c.primary, marginTop: "0.04cm" }}>
-                    {settings.ceremonie_descriere || "CUNUNIA RELIGIOASA"}
+                  <p style={{ fontSize: "0.5rem", fontFamily: f.mont, fontWeight: 500, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>
+                    ora {settings.ceremonie_ora}
                   </p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.3cm", marginTop: "0.03cm" }}>
-                    <span style={{ fontSize: "0.34rem", fontFamily: f.mont, fontWeight: 400, color: c.muted, display: "flex", alignItems: "center" }}>
-                      <ClockIcon color={c.muted} /> {settings.ceremonie_ora}
-                    </span>
-                    {settings.ceremonie_adresa && (
-                      <span style={{ fontSize: "0.34rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, display: "flex", alignItems: "center" }}>
-                        <LocationIcon color={c.muted} /> {settings.ceremonie_adresa}
-                      </span>
-                    )}
-                  </div>
+                  {settings.ceremonie_adresa && (
+                    <p style={{ fontSize: "0.38rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
+                      {settings.ceremonie_adresa}
+                    </p>
+                  )}
                 </div>
               )}
 
               {settings.petrecere_ora && (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.05cm", flex: 1 }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
                   <VenueIcon color={c.muted} />
-                  <p style={{ fontSize: "0.42rem", fontFamily: f.mont, letterSpacing: "0.18em", textTransform: f.upper, fontWeight: 500, color: c.primary, marginTop: "0.04cm" }}>
-                    {settings.petrecere_descriere || "PETRECEREA"}
+                  <p style={{ fontSize: "0.5rem", fontFamily: f.mont, fontWeight: 500, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>
+                    ora {settings.petrecere_ora}
                   </p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.3cm", marginTop: "0.03cm" }}>
-                    <span style={{ fontSize: "0.34rem", fontFamily: f.mont, fontWeight: 400, color: c.muted, display: "flex", alignItems: "center" }}>
-                      <ClockIcon color={c.muted} /> {settings.petrecere_ora}
-                    </span>
-                    {settings.petrecere_adresa && (
-                      <span style={{ fontSize: "0.34rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, display: "flex", alignItems: "center" }}>
-                        <LocationIcon color={c.muted} /> {settings.petrecere_adresa}
-                      </span>
-                    )}
-                  </div>
+                  {settings.petrecere_adresa && (
+                    <p style={{ fontSize: "0.38rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
+                      {settings.petrecere_adresa}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
