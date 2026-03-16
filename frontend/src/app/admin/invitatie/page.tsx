@@ -37,6 +37,8 @@ interface WeddingSettings {
   ceremonie_ora: string | null;
   ceremonie_adresa: string | null;
   ceremonie_descriere: string | null;
+  transport_ora: string | null;
+  transport_adresa: string | null;
   petrecere_ora: string | null;
   petrecere_adresa: string | null;
   petrecere_descriere: string | null;
