@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useSlideTo } from "@/context/SwiperContext";
 
 const NAV_ITEMS = [
-  { label: "Noi doi", href: "#couple" },
-  { label: "Familie", href: "#family" },
-  { label: "Locatii", href: "#locations" },
-  { label: "Confirma prezenta", href: "#rsvp" },
+  { label: "Noi doi", sectionId: "couple" },
+  { label: "Familie", sectionId: "family" },
+  { label: "Locatii", sectionId: "locations" },
+  { label: "Confirma prezenta", sectionId: "rsvp" },
 ];
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
+  const slideTo = useSlideTo();
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
+  const handleClick = (sectionId: string) => {
     setOpen(false);
-    const target = document.querySelector(href);
-    target?.scrollIntoView({ behavior: "smooth" });
+    slideTo(sectionId);
   };
 
   return (
@@ -36,14 +36,13 @@ export default function MobileNav() {
       {open && (
         <div className="fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-6">
           {NAV_ITEMS.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              onClick={(e) => handleClick(e, item.href)}
-              className="text-sm tracking-[0.2em] uppercase text-text-heading hover:text-button transition-colors"
+            <button
+              key={item.sectionId}
+              onClick={() => handleClick(item.sectionId)}
+              className="text-sm tracking-[0.2em] uppercase text-text-heading hover:text-button transition-colors cursor-pointer"
             >
               {item.label}
-            </a>
+            </button>
           ))}
         </div>
       )}

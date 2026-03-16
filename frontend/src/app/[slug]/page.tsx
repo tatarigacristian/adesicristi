@@ -2,14 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Sidebar from "@/components/Sidebar/Sidebar";
-import Hero from "@/components/Hero/Hero";
-import Couple from "@/components/Couple/Couple";
-import Family from "@/components/Family/Family";
-import Locations from "@/components/Locations/Locations";
-import RSVP from "@/components/RSVP/RSVP";
-import Footer from "@/components/Footer/Footer";
-import MobileNav from "@/components/Navigation/MobileNav";
+import SwiperLayout from "@/components/Layout/SwiperLayout";
 import { WeddingSettings, fetchWeddingSettings, getCoupleNames, applyThemeColors } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
@@ -75,20 +68,7 @@ export default function SlugPage() {
           </div>
         </div>
       ) : (
-        <>
-          <MobileNav />
-          <div className="split-container">
-            <Sidebar settings={settings} />
-            <main className="right-panel">
-              <Hero guest={guest} settings={settings} />
-              <Couple settings={settings} />
-              <Family settings={settings} />
-              <Locations settings={settings} />
-              <RSVP guest={guest} settings={settings} />
-              <Footer settings={settings} />
-            </main>
-          </div>
-        </>
+        <SwiperLayout settings={settings} guest={guest} />
       )}
     </>
   );

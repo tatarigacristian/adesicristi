@@ -168,66 +168,6 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const initialCheckDone = useRef(false);
   const [skipAnimation, setSkipAnimation] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
-
-  // Disable scroll snap when form inputs are focused (prevents iOS repositioning)
-  // On blur, keep snap disabled until the next scroll, then re-enable it at the right position
-  useEffect(() => {
-    const form = formRef.current;
-    if (!form) return;
-    const panel = document.querySelector(".right-panel") as HTMLElement | null;
-    if (!panel) return;
-
-    let snapDisabled = false;
-
-    const disableSnap = () => {
-      if (!snapDisabled) {
-        snapDisabled = true;
-        panel.style.scrollSnapType = "none";
-      }
-    };
-
-    const onBlur = (e: FocusEvent) => {
-      // If focus moves to another input within the form, don't do anything
-      if (e.relatedTarget && form.contains(e.relatedTarget as Node)) return;
-
-      // Wait for iOS keyboard to fully dismiss, then snap to nearest section
-      setTimeout(() => {
-        if (!snapDisabled) return;
-
-        // Find nearest section
-        const sections = panel.querySelectorAll(".snap-section");
-        const scrollPos = panel.scrollTop;
-        let nearestTop = 0;
-        let minDist = Infinity;
-        sections.forEach((sec) => {
-          const top = (sec as HTMLElement).offsetTop;
-          const dist = Math.abs(top - scrollPos);
-          if (dist < minDist) {
-            minDist = dist;
-            nearestTop = top;
-          }
-        });
-
-        // Scroll to exact section top position
-        panel.scrollTo({ top: nearestTop, behavior: "smooth" });
-
-        // Re-enable snap after scroll settles
-        setTimeout(() => {
-          panel.style.scrollSnapType = "";
-          snapDisabled = false;
-        }, 600);
-      }, 400);
-    };
-
-    form.addEventListener("focusin", disableSnap);
-    form.addEventListener("focusout", onBlur);
-    return () => {
-      form.removeEventListener("focusin", disableSnap);
-      form.removeEventListener("focusout", onBlur);
-      panel.style.scrollSnapType = "";
-    };
-  }, [formState]);
 
   // Auto-fill from guest data
   useEffect(() => {
@@ -352,7 +292,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Loading state
   if (formState === "loading") {
     return (
-      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background !items-center">
+      <section id="rsvp" ref={sectionRef} className="content-section bg-background !items-center">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
             <SectionCorners size="w-[25px] h-[25px]" offset={10} />
@@ -366,7 +306,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Confirmed state — show confirmation + cancel option
   if (formState === "confirmed") {
     return (
-      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background !items-center">
+      <section id="rsvp" ref={sectionRef} className="content-section bg-background !items-center">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
             <SectionCorners size="w-[25px] h-[25px]" offset={10} />
@@ -400,7 +340,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Cancelled state
   if (formState === "cancelled") {
     return (
-      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background !items-center">
+      <section id="rsvp" ref={sectionRef} className="content-section bg-background !items-center">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
             <SectionCorners size="w-[25px] h-[25px]" offset={10} />
@@ -426,7 +366,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   // Declined state (submitted "Nu pot sa particip")
   if (formState === "declined") {
     return (
-      <section id="rsvp" ref={sectionRef} className="snap-section content-section bg-background !items-center">
+      <section id="rsvp" ref={sectionRef} className="content-section bg-background !items-center">
         <div className="max-w-lg mx-auto w-full text-center">
           <div className="relative glass-card py-12">
             <SectionCorners size="w-[25px] h-[25px]" offset={10} />
@@ -453,7 +393,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     <section
       id="rsvp"
       ref={sectionRef}
-      className={`snap-section content-section bg-background${skipAnimation ? "" : " animate-on-scroll"}`}
+      className={`content-section bg-background${skipAnimation ? "" : " animate-on-scroll"}`}
     >
       <div className="max-w-lg mx-auto w-full">
         <div className="relative glass-card">
@@ -469,7 +409,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </p>
           </div>
 
-          <form ref={formRef} onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-4">
+          <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-4">
             {/* Person count */}
             <div>
               <label className="block text-xs text-text-muted mb-1 tracking-wide">

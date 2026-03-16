@@ -106,7 +106,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
     <section
       id="couple"
       ref={ref}
-      className="snap-section content-section bg-background-soft animate-on-scroll"
+      className="content-section bg-background-soft animate-on-scroll"
     >
       <div className="w-full max-w-5xl mx-auto px-6">
         <div className="text-center mb-4 sm:mb-10">

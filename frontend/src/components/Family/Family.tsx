@@ -38,7 +38,7 @@ export default function Family({
     <section
       id="family"
       ref={ref}
-      className="snap-section content-section bg-background animate-on-scroll"
+      className="content-section bg-background animate-on-scroll"
     >
       <div className="max-w-lg mx-auto w-full">
         {/* Section header */}

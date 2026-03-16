@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
+import { useSlideTo } from "@/context/SwiperContext";
 
 interface GuestData {
   nume: string;
@@ -21,6 +22,7 @@ export default function Hero({
   settings?: WeddingSettings | null;
 }) {
   const [isVisible, setIsVisible] = useState(false);
+  const slideTo = useSlideTo();
 
   const couple = getCoupleNames(settings ?? null);
   const dateDisplay = settings?.ceremonie_data
@@ -37,12 +39,11 @@ export default function Hero({
   }, []);
 
   const handleClick = () => {
-    const target = document.getElementById("couple");
-    target?.scrollIntoView({ behavior: "smooth" });
+    slideTo("couple");
   };
 
   return (
-    <section className="snap-section content-section bg-background relative overflow-hidden">
+    <section className="content-section bg-background relative overflow-hidden">
       {/* Corner ornaments */}
       <SectionCorners size="w-[35px] h-[35px] sm:w-[55px] sm:h-[55px]" offset={16} />
 

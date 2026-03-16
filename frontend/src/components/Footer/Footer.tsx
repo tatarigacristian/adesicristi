@@ -9,7 +9,7 @@ export default function Footer({ settings }: { settings?: WeddingSettings | null
   const couple = getCoupleNames(settings ?? null);
 
   return (
-    <section className="snap-section content-section bg-background-soft min-h-[50vh]">
+    <section className="content-section bg-background-soft">
       <div className="relative text-center px-8 py-16 sm:py-20 glass-card max-w-lg mx-auto w-full">
         <SectionCorners size="w-[25px] h-[25px]" offset={10} />
 

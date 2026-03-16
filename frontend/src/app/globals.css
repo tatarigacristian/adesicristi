@@ -54,14 +54,22 @@ body {
   display: none;
 }
 
-/* Right panel - scrollable content with snap */
+/* Right panel - scrollable content */
 .right-panel {
   width: 100%;
   height: 100vh;
+  overflow: hidden;
+}
+
+/* Swiper fills the panel */
+.right-panel .swiper {
+  height: 100%;
+}
+
+.right-panel .swiper-slide {
+  height: 100% !important;
   overflow-y: auto;
-  scroll-snap-type: y mandatory;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: none;
 }
 
 /* Desktop: split layout */
@@ -88,15 +96,9 @@ body {
   }
 }
 
-/* Snap scrolling - all breakpoints */
-.snap-section {
-  min-height: 100vh;
-  scroll-snap-align: start;
-}
-
 /* Content sections */
 .content-section {
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: center;

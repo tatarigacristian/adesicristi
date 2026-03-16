@@ -1,19 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Countdown from "../Countdown/Countdown";
 import { WeddingSettings, getCoupleNames, formatDate, getWeddingDateISO } from "@/utils/settings";
 import Flourish from "@/components/Ornaments/Flourish";
+import { useSwiper, useSlideTo, SLIDE_IDS } from "@/context/SwiperContext";
 
 const NAV_ITEMS = [
-  { label: "Noi doi", href: "#couple" },
-  { label: "Familie", href: "#family" },
-  { label: "Locatii", href: "#locations" },
-  { label: "Confirma prezenta", href: "#rsvp" },
+  { label: "Noi doi", sectionId: "couple" },
+  { label: "Familie", sectionId: "family" },
+  { label: "Locatii", sectionId: "locations" },
+  { label: "Confirma prezenta", sectionId: "rsvp" },
 ];
 
 export default function Sidebar({ settings }: { settings?: WeddingSettings | null }) {
   const [activeSection, setActiveSection] = useState("");
+  const swiper = useSwiper();
+  const slideTo = useSlideTo();
 
   const couple = getCoupleNames(settings ?? null);
   const weddingDateISO = getWeddingDateISO(settings ?? null);
@@ -21,30 +24,24 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
     ? formatDate(settings.ceremonie_data)
     : "4 Iulie 2026";
 
+  // Track active slide
+  const handleSlideChange = useCallback(() => {
+    if (swiper) {
+      const id = SLIDE_IDS[swiper.activeIndex];
+      if (id) setActiveSection(id);
+    }
+  }, [swiper]);
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
+    if (!swiper) return;
+    swiper.on("slideChange", handleSlideChange);
+    handleSlideChange();
+    return () => { swiper.off("slideChange", handleSlideChange); };
+  }, [swiper, handleSlideChange]);
 
-    NAV_ITEMS.forEach((item) => {
-      const el = document.getElementById(item.href.slice(1));
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [settings]);
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>, sectionId: string) => {
     e.preventDefault();
-    const target = document.querySelector(href);
-    target?.scrollIntoView({ behavior: "smooth" });
+    slideTo(sectionId);
   };
 
   return (
@@ -81,25 +78,24 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
         <nav className="w-full">
           <ul className="flex flex-col items-center gap-4">
             {NAV_ITEMS.map((item) => (
-              <li key={item.href} className="flex items-center gap-3">
+              <li key={item.sectionId} className="flex items-center gap-3">
                 <span
                   className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                    activeSection === item.href.slice(1)
+                    activeSection === item.sectionId
                       ? "bg-button"
                       : "bg-border"
                   }`}
                 />
-                <a
-                  href={item.href}
-                  onClick={(e) => handleClick(e, item.href)}
+                <button
+                  onClick={(e) => handleClick(e, item.sectionId)}
                   className={`text-[0.7rem] tracking-[0.2em] uppercase transition-colors duration-300 cursor-pointer ${
-                    activeSection === item.href.slice(1)
+                    activeSection === item.sectionId
                       ? "text-text-heading font-medium"
                       : "text-text-muted hover:text-text-heading"
                   }`}
                 >
                   {item.label}
-                </a>
+                </button>
               </li>
             ))}
           </ul>
