@@ -35,46 +35,31 @@ export default function SwiperLayout({
   guest?: GuestData | null;
 }) {
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
-  const keyboardOpen = useRef(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const handleSwiper = useCallback((swiper: SwiperType) => {
     setSwiperInstance(swiper);
   }, []);
 
-  // iOS Chrome: force Swiper to recalculate after keyboard dismiss
+  // Drive container height from visualViewport — the only value iOS Chrome
+  // reports correctly after keyboard dismiss. CSS vh/dvh can get stuck.
   useEffect(() => {
-    if (!swiperInstance) return;
+    const panel = panelRef.current;
+    if (!panel) return;
 
-    const onFocusIn = (e: FocusEvent) => {
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
-        keyboardOpen.current = true;
-      }
+    const setHeight = () => {
+      const h = window.visualViewport?.height ?? window.innerHeight;
+      panel.style.height = `${h}px`;
+      swiperInstance?.update();
     };
 
-    const onFocusOut = () => {
-      if (!keyboardOpen.current) return;
-      keyboardOpen.current = false;
-      setTimeout(() => swiperInstance.update(), 300);
-    };
+    setHeight();
 
-    const onViewportResize = () => {
-      if (!keyboardOpen.current) return;
-      const vv = window.visualViewport;
-      if (vv && window.innerHeight - vv.height < 150) {
-        keyboardOpen.current = false;
-        setTimeout(() => swiperInstance.update(), 100);
-      }
-    };
-
-    document.addEventListener("focusin", onFocusIn, true);
-    document.addEventListener("focusout", onFocusOut, true);
-    window.visualViewport?.addEventListener("resize", onViewportResize);
+    window.visualViewport?.addEventListener("resize", setHeight);
+    window.addEventListener("orientationchange", () => setTimeout(setHeight, 200));
 
     return () => {
-      document.removeEventListener("focusin", onFocusIn, true);
-      document.removeEventListener("focusout", onFocusOut, true);
-      window.visualViewport?.removeEventListener("resize", onViewportResize);
+      window.visualViewport?.removeEventListener("resize", setHeight);
     };
   }, [swiperInstance]);
 
@@ -83,7 +68,7 @@ export default function SwiperLayout({
       <MobileNav />
       <div className="split-container">
         <Sidebar settings={settings} />
-        <main className="right-panel">
+        <main ref={panelRef} className="right-panel">
           <Swiper
             direction="vertical"
             modules={[Mousewheel]}
