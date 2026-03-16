@@ -187,28 +187,37 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       }
     };
 
-    const onBlur = () => {
-      // Keep snap disabled — re-enable on next scroll
-      const onScroll = () => {
-        panel.removeEventListener("scroll", onScroll);
-        // Find nearest section and snap to it
-        const rsvpSection = document.getElementById("rsvp");
-        if (rsvpSection) {
-          rsvpSection.scrollIntoView({ behavior: "smooth" });
-        }
+    const onBlur = (e: FocusEvent) => {
+      // If focus moves to another input within the form, don't do anything
+      if (e.relatedTarget && form.contains(e.relatedTarget as Node)) return;
+
+      // Wait for iOS keyboard to fully dismiss, then snap to nearest section
+      setTimeout(() => {
+        if (!snapDisabled) return;
+
+        // Find nearest section
+        const sections = panel.querySelectorAll(".snap-section");
+        const scrollPos = panel.scrollTop;
+        let nearestTop = 0;
+        let minDist = Infinity;
+        sections.forEach((sec) => {
+          const top = (sec as HTMLElement).offsetTop;
+          const dist = Math.abs(top - scrollPos);
+          if (dist < minDist) {
+            minDist = dist;
+            nearestTop = top;
+          }
+        });
+
+        // Scroll to exact section top position
+        panel.scrollTo({ top: nearestTop, behavior: "smooth" });
+
         // Re-enable snap after scroll settles
         setTimeout(() => {
           panel.style.scrollSnapType = "";
           snapDisabled = false;
-        }, 500);
-      };
-
-      // Wait a tick for iOS keyboard to fully dismiss before listening for scroll
-      setTimeout(() => {
-        if (snapDisabled) {
-          panel.addEventListener("scroll", onScroll, { once: true });
-        }
-      }, 300);
+        }, 600);
+      }, 400);
     };
 
     form.addEventListener("focusin", disableSnap);
