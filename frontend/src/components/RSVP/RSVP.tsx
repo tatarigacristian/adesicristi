@@ -178,14 +178,35 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     if (!panel) return;
 
     const disableSnap = () => { panel.style.scrollSnapType = "none"; };
-    const enableSnap = () => { panel.style.scrollSnapType = ""; };
+    const enableSnap = () => {
+      // Find the nearest snap section and scroll to it before re-enabling snap
+      const sections = panel.querySelectorAll(".snap-section");
+      const panelScroll = panel.scrollTop;
+      const viewportH = panel.clientHeight;
+      let closest: Element | null = null;
+      let closestDist = Infinity;
+      sections.forEach((sec) => {
+        const top = (sec as HTMLElement).offsetTop;
+        const dist = Math.abs(top - panelScroll);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = sec;
+        }
+      });
+      if (closest) {
+        panel.style.scrollSnapType = "";
+        (closest as HTMLElement).scrollIntoView({ behavior: "smooth" });
+      } else {
+        panel.style.scrollSnapType = "";
+      }
+    };
 
     form.addEventListener("focusin", disableSnap);
     form.addEventListener("focusout", enableSnap);
     return () => {
       form.removeEventListener("focusin", disableSnap);
       form.removeEventListener("focusout", enableSnap);
-      enableSnap();
+      panel.style.scrollSnapType = "";
     };
   }, [formState]);
 
