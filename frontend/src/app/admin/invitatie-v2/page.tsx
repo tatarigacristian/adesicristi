@@ -344,16 +344,20 @@ function InvitatieV2Content() {
                 <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
                   ÎMPREUNĂ CU PĂRINȚII NOȘTRI
                 </p>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.04cm", marginBottom: "0.1cm" }}>
+                <div style={{ display: "flex", justifyContent: "center", gap: "1.2cm", width: "100%", marginBottom: "0.1cm" }}>
                   {parintiMireasa && (
-                    <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                      {parintiMireasa}
-                    </p>
+                    <div style={{ textAlign: "center", flex: 1 }}>
+                      <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                        {parintiMireasa}
+                      </p>
+                    </div>
                   )}
                   {parintiMire && (
-                    <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                      {parintiMire}
-                    </p>
+                    <div style={{ textAlign: "center", flex: 1 }}>
+                      <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                        {parintiMire}
+                      </p>
+                    </div>
                   )}
                 </div>
               </>
