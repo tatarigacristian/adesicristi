@@ -46,10 +46,7 @@ export default function Family({
           <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
             Familie
           </h2>
-          <SmallFlourish className="mx-auto mb-2 sm:mb-0" />
-          <p className="text-xs text-text-muted leading-relaxed">
-            Alături de cei dragi nouă
-          </p>
+          <SmallFlourish className="mx-auto mb-[30px] sm:mb-0" />
         </div>
 
         <div className="flex flex-col gap-3 sm:gap-6 mt-auto sm:mt-0">
@@ -58,15 +55,12 @@ export default function Family({
             <div className="family-card text-center relative">
               <SectionCorners size="w-[25px] h-[25px]" offset={10} />
               <div className="text-button mb-1 sm:mb-4">
-                <svg viewBox="0 0 80 50" className="w-8 h-8 sm:w-14 sm:h-14 mx-auto" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <ellipse cx="28" cy="27" rx="14" ry="16" strokeWidth="1.2" />
-                  <ellipse cx="52" cy="27" rx="14" ry="16" strokeWidth="1.2" />
-                  <ellipse cx="28" cy="27" rx="10" ry="12" strokeWidth="0.5" opacity="0.4" />
-                  <ellipse cx="52" cy="27" rx="10" ry="12" strokeWidth="0.5" opacity="0.4" />
-                  <path d="M28 8 L26 3 L28 5 L30 3 Z" fill="currentColor" opacity="0.6" />
-                  <path d="M52 8 L50 3 L52 5 L54 3 Z" fill="currentColor" opacity="0.6" />
-                  <circle cx="28" cy="11" r="1" fill="currentColor" opacity="0.5" />
-                  <circle cx="52" cy="11" r="1" fill="currentColor" opacity="0.5" />
+                <svg viewBox="0 0 48 28" className="w-10 h-6 sm:w-14 sm:h-8 mx-auto" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="17" cy="15" r="10" strokeWidth="1.2" />
+                  <circle cx="31" cy="15" r="10" strokeWidth="1.2" />
+                  <path d="M17 3 L15.5 0.5 L17 2 L18.5 0.5 Z" fill="currentColor" opacity="0.5" />
+                  <circle cx="17" cy="15" r="6.5" strokeWidth="0.5" opacity="0.3" />
+                  <circle cx="31" cy="15" r="6.5" strokeWidth="0.5" opacity="0.3" />
                 </svg>
               </div>
               <h3 className="text-[0.7rem] tracking-[0.3em] uppercase text-text-heading font-semibold mb-2">
