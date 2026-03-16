@@ -573,20 +573,34 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         </div>
 
         {/* Info below form */}
-        <div className="text-center mt-3 sm:mt-6">
+        <div className="text-center mt-4 sm:mt-6 space-y-3">
           {settings?.confirmare_pana_la && (
-            <p className="text-xs text-text-muted mb-2">
-              Vă rugăm să ne confirmați prezența până la data de{" "}
-              <span className="font-semibold text-text-heading">{formatDate(settings.confirmare_pana_la)}</span>
-            </p>
+            <div>
+              <p className="text-[0.65rem] tracking-[0.2em] uppercase text-text-muted mb-1">
+                Confirmați până la
+              </p>
+              <p className="serif-font text-base text-text-heading font-medium">
+                {formatDate(settings.confirmare_pana_la)}
+              </p>
+            </div>
           )}
-          <p className="text-xs text-text-muted">
-            Ade{" "}
-            <a href="tel:0755776372" className="text-button underline underline-offset-2">0755 776 372</a>
-            {" "}&bull;{" "}
-            Cristi{" "}
-            <a href="tel:0747340944" className="text-button underline underline-offset-2">0747 340 944</a>
-          </p>
+
+          <div className="flex items-center justify-center gap-3">
+            <span className="block w-8 h-px bg-button/20" />
+            <span className="text-[0.6rem] tracking-[0.15em] uppercase text-text-muted">Contact</span>
+            <span className="block w-8 h-px bg-button/20" />
+          </div>
+
+          <div className="flex justify-center gap-6">
+            <a href="tel:0755776372" className="flex flex-col items-center gap-0.5 group">
+              <span className="text-[0.65rem] text-text-muted">Ade</span>
+              <span className="text-xs text-button group-hover:text-button-hover transition-colors">0755 776 372</span>
+            </a>
+            <a href="tel:0747340944" className="flex flex-col items-center gap-0.5 group">
+              <span className="text-[0.65rem] text-text-muted">Cristi</span>
+              <span className="text-xs text-button group-hover:text-button-hover transition-colors">0747 340 944</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>
