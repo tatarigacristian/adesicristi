@@ -254,8 +254,8 @@ function InvitatieContent() {
     ? new Date(settings.confirmare_pana_la).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })
     : "";
 
-  const introLines = guest.intro_long
-    ? guest.intro_long.split("\n").filter((l) => l.trim())
+  const introLines = guest.intro_short
+    ? guest.intro_short.split("\n").filter((l) => l.trim())
     : defaultIntroLines;
 
   const c = buildPalette(settings);
