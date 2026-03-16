@@ -396,20 +396,20 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       className={`content-section bg-background${skipAnimation ? "" : " animate-on-scroll"}`}
     >
       <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
-        <div className="relative glass-card mt-auto sm:mt-0">
+        <div className="relative glass-card !p-4 sm:!p-8 mt-auto sm:mt-0">
           <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-          <div className="text-center mb-6">
-            <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+          <div className="text-center mb-3 sm:mb-6">
+            <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-1">
               Confirmare
             </h2>
-            <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
+            <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
             <p className="text-xs text-text-muted leading-relaxed">
               Vă așteptăm cu drag!<br />
               Completați formularul de mai jos pentru a ne anunța decizia.
             </p>
           </div>
 
-          <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-4">
+          <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-3 sm:space-y-4">
             {/* Person count */}
             <div>
               <label className="block text-xs text-text-muted mb-1 tracking-wide">
@@ -500,7 +500,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 disabled={isDisabled}
-                rows={3}
+                rows={2}
                 enterKeyHint="enter"
                 className="w-full border border-border-light rounded-lg px-3 py-2.5 text-base sm:text-sm bg-white
                            focus:outline-none focus:border-accent transition-colors resize-none disabled:opacity-50"
@@ -515,7 +515,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             )}
 
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-1 sm:pt-2">
               <button
                 type="button"
                 onClick={() => handleSubmit(true)}
