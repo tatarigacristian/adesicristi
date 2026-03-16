@@ -162,6 +162,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const [rsvpId, setRsvpId] = useState<number | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [cancelling, setCancelling] = useState(false);
+  const [step, setStep] = useState(1);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const partnerRef = useRef<HTMLInputElement>(null);
@@ -409,129 +410,162 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           </div>
 
           <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-2 sm:space-y-4">
-            {/* Person count */}
-            <div>
-              <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                Câte persoane
-              </label>
-              <select
-                value={personCount}
-                onChange={(e) => {
-                  setPersonCount(parseInt(e.target.value));
-                  setErrors((prev) => ({ ...prev, personCount: "" }));
-                }}
-                onKeyDown={handleKeyDown}
-                disabled={isDisabled}
-                className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
-                           focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
-              >
-                <option value={0}>Alege număr persoane</option>
-                <option value={1}>O persoană</option>
-                <option value={2}>Două persoane</option>
-              </select>
-              {errors.personCount && (
-                <p className="text-xs text-button mt-1">{errors.personCount}</p>
-              )}
-            </div>
 
-            {/* Names row */}
-            {personCount > 0 && (
-              <div className={`grid gap-2 sm:gap-4 ${personCount === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
-                <div>
-                  <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                    Numele tău
-                  </label>
-                  <input
-                    ref={nameRef}
-                    type="text"
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      setErrors((prev) => ({ ...prev, name: "" }));
-                    }}
-                    onKeyDown={handleKeyDown}
-                    disabled={isDisabled}
-                    placeholder="Nume"
-                    enterKeyHint="next"
-                    className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
-                               focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
-                  />
-                  {errors.name && (
-                    <p className="text-xs text-button mt-1">{errors.name}</p>
-                  )}
-                </div>
+            {/* === STEP 1 (mobile) / always visible (desktop) === */}
+            <div className={`${step !== 1 ? "hidden sm:block" : ""}`}>
+              {/* Person count */}
+              <div>
+                <label className="block text-xs text-text-muted mb-1 tracking-wide">
+                  Câte persoane
+                </label>
+                <select
+                  value={personCount}
+                  onChange={(e) => {
+                    setPersonCount(parseInt(e.target.value));
+                    setErrors((prev) => ({ ...prev, personCount: "" }));
+                  }}
+                  onKeyDown={handleKeyDown}
+                  disabled={isDisabled}
+                  className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
+                             focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
+                >
+                  <option value={0}>Alege număr persoane</option>
+                  <option value={1}>O persoană</option>
+                  <option value={2}>Două persoane</option>
+                </select>
+                {errors.personCount && (
+                  <p className="text-xs text-button mt-1">{errors.personCount}</p>
+                )}
+              </div>
 
-                {personCount === 2 && (
+              {/* Names row */}
+              {personCount > 0 && (
+                <div className={`grid gap-2 sm:gap-4 mt-2 sm:mt-4 ${personCount === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
                   <div>
                     <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                      Nume partener
+                      Numele tău
                     </label>
                     <input
-                      ref={partnerRef}
+                      ref={nameRef}
                       type="text"
-                      value={partnerName}
+                      value={name}
                       onChange={(e) => {
-                        setPartnerName(e.target.value);
-                        setErrors((prev) => ({ ...prev, partnerName: "" }));
+                        setName(e.target.value);
+                        setErrors((prev) => ({ ...prev, name: "" }));
                       }}
                       onKeyDown={handleKeyDown}
                       disabled={isDisabled}
-                      placeholder="Partener"
+                      placeholder="Nume"
                       enterKeyHint="next"
                       className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
                                  focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
                     />
-                    {errors.partnerName && (
-                      <p className="text-xs text-button mt-1">{errors.partnerName}</p>
+                    {errors.name && (
+                      <p className="text-xs text-button mt-1">{errors.name}</p>
                     )}
                   </div>
-                )}
-              </div>
-            )}
 
-            {/* Message */}
-            <div>
-              <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                Vrei să ne transmiți ceva?
-              </label>
-              <textarea
-                ref={messageRef}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                disabled={isDisabled}
-                rows={2}
-                enterKeyHint="enter"
-                className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
-                           focus:outline-none focus:border-accent transition-colors resize-none disabled:opacity-50"
-              />
+                  {personCount === 2 && (
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1 tracking-wide">
+                        Nume partener
+                      </label>
+                      <input
+                        ref={partnerRef}
+                        type="text"
+                        value={partnerName}
+                        onChange={(e) => {
+                          setPartnerName(e.target.value);
+                          setErrors((prev) => ({ ...prev, partnerName: "" }));
+                        }}
+                        onKeyDown={handleKeyDown}
+                        disabled={isDisabled}
+                        placeholder="Partener"
+                        enterKeyHint="next"
+                        className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
+                                   focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
+                      />
+                      {errors.partnerName && (
+                        <p className="text-xs text-button mt-1">{errors.partnerName}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Mobile: Continue button */}
+              <button
+                type="button"
+                onClick={() => {
+                  const newErrors: Record<string, string> = {};
+                  if (personCount === 0) newErrors.personCount = "Te rog să alegi numărul de persoane";
+                  if (personCount > 0 && !name.trim()) newErrors.name = "Te rog să introduci numele";
+                  if (personCount === 2 && !partnerName.trim()) newErrors.partnerName = "Te rog să introduci numele partenerului";
+                  setErrors(newErrors);
+                  if (Object.keys(newErrors).length === 0) setStep(2);
+                }}
+                className="sm:hidden w-full bg-button text-white py-2 px-4 rounded-lg text-sm font-medium
+                           hover:bg-button-hover transition-colors mt-4"
+              >
+                Continuă
+              </button>
             </div>
 
-            {/* Error message */}
-            {formState === "error" && (
-              <p className="text-xs text-button text-center">
-                A apărut o eroare. Te rog încearcă din nou.
-              </p>
-            )}
+            {/* === STEP 2 (mobile) / always visible (desktop) === */}
+            <div className={`${step !== 2 ? "hidden sm:block" : ""}`}>
+              {/* Message */}
+              <div>
+                <label className="block text-xs text-text-muted mb-1 tracking-wide">
+                  Vrei să ne transmiți ceva?
+                </label>
+                <textarea
+                  ref={messageRef}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  disabled={isDisabled}
+                  rows={2}
+                  enterKeyHint="enter"
+                  className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
+                             focus:outline-none focus:border-accent transition-colors resize-none disabled:opacity-50"
+                />
+              </div>
 
-            {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-1 sm:pt-2">
+              {/* Error message */}
+              {formState === "error" && (
+                <p className="text-xs text-button text-center">
+                  A apărut o eroare. Te rog încearcă din nou.
+                </p>
+              )}
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-1 sm:pt-2">
+                <button
+                  type="button"
+                  onClick={() => handleSubmit(true)}
+                  disabled={isDisabled}
+                  className="flex-1 bg-button text-white py-2 sm:py-2.5 px-4 rounded-lg text-sm font-medium
+                             hover:bg-button-hover transition-colors disabled:opacity-50"
+                >
+                  {formState === "submitting" ? "Se trimite..." : "Da, confirm prezența"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSubmit(false)}
+                  disabled={isDisabled}
+                  className="flex-1 border border-button py-2 sm:py-2.5 px-4 rounded-lg text-sm
+                             text-foreground hover:bg-background-soft transition-colors disabled:opacity-50"
+                >
+                  Nu pot să particip
+                </button>
+              </div>
+
+              {/* Mobile: Back button */}
               <button
                 type="button"
-                onClick={() => handleSubmit(true)}
-                disabled={isDisabled}
-                className="flex-1 bg-button text-white py-2 sm:py-2.5 px-4 rounded-lg text-sm font-medium
-                           hover:bg-button-hover transition-colors disabled:opacity-50"
+                onClick={() => setStep(1)}
+                className="sm:hidden w-full text-xs text-text-muted hover:text-text-heading transition-colors mt-2 py-1"
               >
-                {formState === "submitting" ? "Se trimite..." : "Da, confirm prezența"}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSubmit(false)}
-                disabled={isDisabled}
-                className="flex-1 border border-button py-2 sm:py-2.5 px-4 rounded-lg text-sm
-                           text-foreground hover:bg-background-soft transition-colors disabled:opacity-50"
-              >
-                Nu pot să particip
+                ← Înapoi
               </button>
             </div>
           </form>
