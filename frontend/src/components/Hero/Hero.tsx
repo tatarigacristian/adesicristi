@@ -79,10 +79,13 @@ export default function Hero({
 
         {/* Mobile: heart divider + date after monogram */}
         <div className="lg:hidden mb-4">
-          <div className="elegant-divider">
-            <span></span>
-            <span className="heart-icon">&#9829;</span>
-            <span></span>
+          <div className="flex items-center justify-center gap-3">
+            <span className="block w-12 h-px bg-button/30" />
+            <svg viewBox="0 0 50 48" className="w-6 h-6 text-button/60" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
+              <path d="M25,38 C25,38 8,27 8,16 C8,10 13,7 18,10 C21,12 25,16 25,16 C25,16 29,12 32,10 C37,7 42,10 42,16 C42,27 25,38 25,38 Z" strokeWidth="0.6" opacity="0.4" />
+            </svg>
+            <span className="block w-12 h-px bg-button/30" />
           </div>
           <p className="serif-font text-xl text-text-heading font-light mt-2 tracking-wide">
             {dateDisplay}
@@ -107,21 +110,13 @@ export default function Hero({
             din viața noastră
           </h2>
 
-          <div className="flex items-center justify-center gap-4 my-3 sm:my-6">
-            <span className="block w-12 h-px bg-gradient-to-r from-transparent to-button/40" />
-            <svg
-              width="16"
-              height="14"
-              viewBox="0 0 16 14"
-              fill="none"
-              className="text-button/80"
-            >
-              <path
-                d="M8 14L1.2 7.2C-0.4 5.6-0.4 3 1.2 1.4C2.8-0.2 5.4-0.2 7 1.4L8 2.4L9 1.4C10.6-0.2 13.2-0.2 14.8 1.4C16.4 3 16.4 5.6 14.8 7.2L8 14Z"
-                fill="currentColor"
-              />
+          <div className="flex items-center justify-center gap-3 my-3 sm:my-6">
+            <span className="block w-12 h-px bg-button/30" />
+            <svg viewBox="0 0 50 48" className="w-6 h-6 text-button/60" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
+              <path d="M25,38 C25,38 8,27 8,16 C8,10 13,7 18,10 C21,12 25,16 25,16 C25,16 29,12 32,10 C37,7 42,10 42,16 C42,27 25,38 25,38 Z" strokeWidth="0.6" opacity="0.4" />
             </svg>
-            <span className="block w-12 h-px bg-gradient-to-l from-transparent to-button/40" />
+            <span className="block w-12 h-px bg-button/30" />
           </div>
 
           <p className="serif-font text-[0.85rem] sm:text-[0.95rem] leading-[1.8] sm:leading-[1.9] text-foreground mt-4 sm:mt-6 max-w-md mx-auto">
