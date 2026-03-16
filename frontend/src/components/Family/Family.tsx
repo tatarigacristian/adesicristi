@@ -38,7 +38,7 @@ export default function Family({
     <section
       id="family"
       ref={ref}
-      className="content-section bg-background animate-on-scroll"
+      className="content-section bg-background"
     >
       <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
         {/* Section header */}

@@ -160,7 +160,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
       <section
         id="locations"
         ref={ref}
-        className="content-section bg-background-soft animate-on-scroll"
+        className="content-section bg-background-soft"
       >
         <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col sm:block">
           <div className="text-center mb-2 sm:mb-10">

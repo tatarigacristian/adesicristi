@@ -168,7 +168,6 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const partnerRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const initialCheckDone = useRef(false);
-  const [skipAnimation, setSkipAnimation] = useState(false);
 
   // Auto-fill from guest data
   useEffect(() => {
@@ -353,7 +352,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               Regretăm că nu veți putea fi alături de noi.
             </p>
             <button
-              onClick={() => { setSkipAnimation(true); setFormState("idle"); }}
+              onClick={() => { setFormState("idle"); }}
               className="bg-button text-white py-2.5 px-6 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer"
             >
               Confirmă prezența
@@ -379,7 +378,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               Regretăm că nu veți putea fi alături de noi.
             </p>
             <button
-              onClick={() => { setSkipAnimation(true); setFormState("idle"); }}
+              onClick={() => { setFormState("idle"); }}
               className="bg-button text-white py-2.5 px-6 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer"
             >
               Confirmă prezența
@@ -394,7 +393,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     <section
       id="rsvp"
       ref={sectionRef}
-      className={`content-section bg-background${skipAnimation ? "" : " animate-on-scroll"}`}
+      className="content-section bg-background"
     >
       <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
         {/* Section header */}

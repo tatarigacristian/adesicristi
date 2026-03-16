@@ -101,7 +101,7 @@ export default function Countdown({
     <section
       id="countdown"
       ref={ref}
-      className="content-section bg-background-soft animate-on-scroll"
+      className="content-section bg-background-soft"
     >
       <div className="text-center">
         <p className="text-[0.7rem] tracking-[0.3em] uppercase text-text-muted mb-6">
