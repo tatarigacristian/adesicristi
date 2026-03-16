@@ -28,6 +28,7 @@ html, body {
 }
 
 html {
+  font-size: 18px;
   scroll-behavior: auto;
 }
 
