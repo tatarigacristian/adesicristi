@@ -43,13 +43,16 @@ export default function Family({
       <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
         {/* Section header */}
         <div className="text-center mb-2 sm:mb-10">
-          <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
+          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
             Familie
           </h2>
           <SmallFlourish className="mx-auto mb-[30px] sm:mb-0" />
+          <p className="text-xs text-text-muted leading-relaxed mt-2 sm:mt-3">
+            Alături de cei dragi nouă
+          </p>
         </div>
 
-        <div className="flex flex-col gap-4 sm:gap-6 mt-auto sm:mt-0">
+        <div className="flex flex-col gap-6 sm:gap-6 mt-auto sm:mt-0">
           {/* Nasi */}
           {hasNasi && (
             <div className="family-card text-center relative">
@@ -66,13 +69,24 @@ export default function Family({
                   <circle cx="52" cy="11" r="1" fill="currentColor" opacity="0.5" />
                 </svg>
               </div>
-              <h3 className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-3">
+              <h3 className="text-[0.7rem] tracking-[0.3em] uppercase text-text-heading font-semibold mb-3">
                 Împreună cu nașii
               </h3>
               <Flourish size="sm" className="mx-auto mb-4" />
               <p className="script-font text-2xl text-text-heading">
                 {nasNume}
               </p>
+            </div>
+          )}
+
+          {/* Separator */}
+          {hasNasi && hasParinti && (
+            <div className="flex items-center justify-center gap-4">
+              <span className="block flex-1 max-w-[60px] h-px bg-button/20" />
+              <svg width="20" height="22" viewBox="0 0 20 22" fill="none" className="text-button flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.5 19C13.8 20.8 12 21.5 10 21.5C7.2 21.5 5 19.8 5 17.2C5 14.8 6.8 13.2 9 11.5C7.5 9.8 6.2 8.2 6.2 6.2C6.2 3.8 8 2 10.2 2C12.4 2 14 3.6 14 5.8C14 7.8 12.5 9.2 10.5 10.5L14.2 14.8C14.8 13.6 15.2 12.2 15.2 10.8H17.2C17.2 12.8 16.5 14.8 15.5 16.5L18 19.2H15.5Z" fill="currentColor" fillOpacity="0.7" />
+              </svg>
+              <span className="block flex-1 max-w-[60px] h-px bg-button/20" />
             </div>
           )}
 
@@ -89,7 +103,7 @@ export default function Family({
                   <circle cx="29" cy="3" r="0.6" fill="currentColor" opacity="0.4" />
                 </svg>
               </div>
-              <h3 className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted mb-3">
+              <h3 className="text-[0.7rem] tracking-[0.3em] uppercase text-text-heading font-semibold mb-3">
                 Dragii noștri părinți
               </h3>
               <Flourish size="sm" className="mx-auto mb-4" />

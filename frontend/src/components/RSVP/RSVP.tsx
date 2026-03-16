@@ -399,7 +399,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         <div className="relative glass-card mt-auto sm:mt-0">
           <SectionCorners size="w-[25px] h-[25px]" offset={10} />
           <div className="text-center mb-6">
-            <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
+            <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
               Confirmare
             </h2>
             <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />

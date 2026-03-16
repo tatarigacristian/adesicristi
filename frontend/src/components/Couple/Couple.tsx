@@ -110,7 +110,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
     >
       <div className="w-full max-w-5xl mx-auto px-6 flex-1 flex flex-col sm:block">
         <div className="text-center mb-4 sm:mb-10">
-          <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2 sm:mb-3">Noi doi</h2>
+          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2 sm:mb-3">Noi doi</h2>
           <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
           <p className="text-sm text-foreground">
             Vă invităm să urmăriți povestea noastră
