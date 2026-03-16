@@ -71,7 +71,7 @@ body {
 .right-panel.mobile-scroll {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  scroll-snap-type: y proximity;
+  scroll-snap-type: y mandatory;
   overscroll-behavior-y: none;
 }
 
