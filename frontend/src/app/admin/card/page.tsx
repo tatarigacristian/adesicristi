@@ -287,19 +287,20 @@ function CardEventIcon({ icon, color }: { icon: "church" | "transport" | "party"
     case "party":
       return (
         <svg {...props}>
-          {/* Left glass */}
-          <path d="M6 3 C6 3, 5 9, 5 10 C5 11.5, 6.5 12.5, 8 12.5 C9.5 12.5, 11 11.5, 11 10 C11 9, 10 3, 10 3" />
-          <line x1="8" y1="12.5" x2="8" y2="18" />
-          <line x1="5.5" y1="18" x2="10.5" y2="18" />
-          <path d="M6 6 L10 6" opacity="0.4" />
-          {/* Right glass */}
-          <path d="M14 3 C14 3, 13 9, 13 10 C13 11.5, 14.5 12.5, 16 12.5 C17.5 12.5, 19 11.5, 19 10 C19 9, 18 3, 18 3" />
-          <line x1="16" y1="12.5" x2="16" y2="18" />
-          <line x1="13.5" y1="18" x2="18.5" y2="18" />
-          <path d="M14 6 L18 6" opacity="0.4" />
-          {/* Clink sparkle */}
-          <path d="M11 4 L13 4" opacity="0.5" />
-          <path d="M12 2.5 L12 5.5" opacity="0.5" />
+          {/* Bowl - wide at top, narrow at bottom */}
+          <path d="M7 2 L7 4 C7 8, 9 10, 12 10 C15 10, 17 8, 17 4 L17 2" />
+          {/* Stem */}
+          <line x1="12" y1="10" x2="12" y2="18" />
+          {/* Base */}
+          <line x1="8" y1="18" x2="16" y2="18" />
+          {/* Rim */}
+          <line x1="7" y1="2" x2="17" y2="2" />
+          {/* Liquid level */}
+          <path d="M8 5 C9 4.5, 11 4.5, 12 5 C13 5.5, 15 5.5, 16 5" opacity="0.4" />
+          {/* Bubbles */}
+          <circle cx="10" cy="7" r="0.5" opacity="0.3" />
+          <circle cx="13" cy="6" r="0.4" opacity="0.3" />
+          <circle cx="11" cy="4" r="0.3" opacity="0.3" />
         </svg>
       );
   }
