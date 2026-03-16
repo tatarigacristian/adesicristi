@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
+import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import { useSlideTo } from "@/context/SwiperContext";
 
 interface GuestData {
@@ -103,14 +104,7 @@ export default function Hero({
             Să fiți alături de noi
           </h2>
 
-          <div className="flex items-center justify-center gap-3 my-3 sm:my-6">
-            <span className="block w-12 h-px bg-button/30" />
-            <svg viewBox="0 0 50 48" className="w-6 h-6 text-button/60" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
-              <path d="M25,38 C25,38 8,27 8,16 C8,10 13,7 18,10 C21,12 25,16 25,16 C25,16 29,12 32,10 C37,7 42,10 42,16 C42,27 25,38 25,38 Z" strokeWidth="0.6" opacity="0.4" />
-            </svg>
-            <span className="block w-12 h-px bg-button/30" />
-          </div>
+          <SmallFlourish className="mx-auto my-3 sm:my-6" />
 
           <p className="serif-font text-[0.85rem] sm:text-[0.95rem] leading-[1.8] sm:leading-[1.9] text-foreground mt-4 sm:mt-6 max-w-md mx-auto">
             {guest ? (
