@@ -397,18 +397,19 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       className={`content-section bg-background${skipAnimation ? "" : " animate-on-scroll"}`}
     >
       <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
+        {/* Section header */}
+        <div className="text-center mb-2 sm:mb-6">
+          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+            Confirmare
+          </h2>
+          <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
+          <p className="text-xs text-text-muted leading-snug">
+            Vă așteptăm cu drag!
+          </p>
+        </div>
+
         <div className="relative glass-card !p-4 sm:!p-8 mt-auto sm:mt-0">
           <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-          <div className="text-center mb-2 sm:mb-6">
-            <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-1">
-              Confirmare
-            </h2>
-            <SmallFlourish className="mx-auto mb-1 sm:mb-3" />
-            <p className="text-xs text-text-muted leading-snug">
-              Vă așteptăm cu drag!
-            </p>
-          </div>
-
           <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-2 sm:space-y-4">
 
             {/* === STEP 1 (mobile) / always visible (desktop) === */}
