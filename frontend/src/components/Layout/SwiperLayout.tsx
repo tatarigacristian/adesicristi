@@ -41,6 +41,14 @@ export default function SwiperLayout({
     setSwiperInstance(swiper);
   }, []);
 
+  // Lock html scroll for Swiper pages only
+  useEffect(() => {
+    document.documentElement.classList.add("swiper-lock");
+    return () => {
+      document.documentElement.classList.remove("swiper-lock");
+    };
+  }, []);
+
   // iOS Chrome: vh/dvh get stuck after keyboard dismiss.
   // Use visualViewport.height but only update when keyboard is CLOSED
   // (height increases back to full), not when it opens (height shrinks).

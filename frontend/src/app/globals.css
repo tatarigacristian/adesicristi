@@ -20,13 +20,6 @@
   --font-sans: var(--font-montserrat);
 }
 
-html, body {
-  overflow: hidden;
-  height: 100%;
-  position: fixed;
-  width: 100%;
-}
-
 html {
   font-size: 18px;
   scroll-behavior: auto;
@@ -38,6 +31,15 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   font-weight: 300;
   letter-spacing: 0.02em;
+  overflow: auto;
+}
+
+html.swiper-lock,
+html.swiper-lock body {
+  overflow: hidden !important;
+  height: 100% !important;
+  position: fixed !important;
+  width: 100% !important;
 }
 
 /* Script font class */

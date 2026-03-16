@@ -44,6 +44,8 @@ interface WeddingSettings {
   petrecere_descriere: string | null;
   confirmare_pana_la: string | null;
   contact_info: string | null;
+  telefon_mireasa: string | null;
+  telefon_mire: string | null;
   color_main: string | null;
   color_second: string | null;
   color_button: string | null;
@@ -241,20 +243,28 @@ function InvitatieV2Content() {
     upper: "uppercase" as const,
   };
 
-  // Parents
-  const parintiMireasa = settings.tata_mireasa_prenume
-    ? `${settings.mama_mireasa_prenume} si ${settings.tata_mireasa_prenume} ${settings.tata_mireasa_nume}`
-    : settings.parinti_mireasa;
-  const parintiMire = settings.tata_mire_prenume
-    ? `${settings.mama_mire_prenume} si ${settings.tata_mire_prenume} ${settings.tata_mire_nume}`
-    : settings.parinti_mire;
+  // Parents — split into first names line + family name line
+  const parintiMireasaNames = settings.tata_mireasa_prenume
+    ? `${settings.mama_mireasa_prenume} și ${settings.tata_mireasa_prenume}`
+    : null;
+  const parintiMireasaFamilie = settings.tata_mireasa_nume || null;
+  const parintiMireasaFallback = settings.parinti_mireasa;
 
-  // Nasi
+  const parintiMireNames = settings.tata_mire_prenume
+    ? `${settings.mama_mire_prenume} și ${settings.tata_mire_prenume}`
+    : null;
+  const parintiMireFamilie = settings.tata_mire_nume || null;
+  const parintiMireFallback = settings.parinti_mire;
+
+  const hasParinti = parintiMireasaNames || parintiMireasaFallback || parintiMireNames || parintiMireFallback;
+
+  // Nasi — single line: "Prenume1 și Prenume2 Nume"
   const nasiText = settings.nas_prenume && settings.nasa_prenume
     ? settings.nasa_nume === settings.nas_nume
-      ? `${settings.nasa_prenume} si ${settings.nas_prenume} ${settings.nas_nume}`
-      : `${settings.nasa_prenume} ${settings.nasa_nume} si ${settings.nas_prenume} ${settings.nas_nume}`
+      ? `${settings.nasa_prenume} și ${settings.nas_prenume} ${settings.nas_nume}`
+      : `${settings.nasa_prenume} ${settings.nasa_nume} și ${settings.nas_prenume} ${settings.nas_nume}`
     : null;
+  const hasNasi = !!nasiText;
 
   return (
     <>
@@ -338,32 +348,8 @@ function InvitatieV2Content() {
               <span style={{ display: "block", width: 40, height: 0.5, background: c.ornament, opacity: 0.4 }} />
             </div>
 
-            {/* 3. Parents (side by side) + Nași — replacing the date position */}
-            {(parintiMireasa || parintiMire) && (
-              <>
-                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
-                  ÎMPREUNĂ CU PĂRINȚII NOȘTRI
-                </p>
-                <div style={{ display: "flex", justifyContent: "center", gap: "1.2cm", width: "100%", marginBottom: "0.1cm" }}>
-                  {parintiMireasa && (
-                    <div style={{ textAlign: "center", flex: 1 }}>
-                      <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                        {parintiMireasa}
-                      </p>
-                    </div>
-                  )}
-                  {parintiMire && (
-                    <div style={{ textAlign: "center", flex: 1 }}>
-                      <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                        {parintiMire}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-
-            {nasiText && (
+            {/* 3. Nași first, then Parents */}
+            {hasNasi && (
               <div style={{ textAlign: "center", marginBottom: "0.1cm" }}>
                 <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
                   ALĂTURI DE NAȘII
@@ -372,6 +358,59 @@ function InvitatieV2Content() {
                   {nasiText}
                 </p>
               </div>
+            )}
+
+            {hasParinti && (
+              <>
+                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
+                  ȘI ÎMPREUNĂ CU PĂRINȚII NOȘTRI
+                </p>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.4cm", width: "100%", marginBottom: "0.1cm" }}>
+                  {(parintiMireasaNames || parintiMireasaFallback) && (
+                    <div style={{ textAlign: "center" }}>
+                      {parintiMireasaNames ? (
+                        <>
+                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                            {parintiMireasaNames}
+                          </p>
+                          {parintiMireasaFamilie && (
+                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                              {parintiMireasaFamilie}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                          {parintiMireasaFallback}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireNames || parintiMireFallback) && (
+                    <div style={{ width: "0.5px", height: "0.8cm", background: c.ornament, opacity: 0.4 }} />
+                  )}
+                  {(parintiMireNames || parintiMireFallback) && (
+                    <div style={{ textAlign: "center" }}>
+                      {parintiMireNames ? (
+                        <>
+                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                            {parintiMireNames}
+                          </p>
+                          {parintiMireFamilie && (
+                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                              {parintiMireFamilie}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                          {parintiMireFallback}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
             )}
 
             {/* 4. "Cu drag vă invităm" */}
@@ -473,17 +512,24 @@ function InvitatieV2Content() {
               </div>
             )}
 
-            {/* Contact */}
-            {settings.contact_info && (
+            {/* Contact — phone numbers */}
+            {(settings.telefon_mireasa || settings.telefon_mire) && (
               <div style={{ marginTop: "0.15cm", width: "80%" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>
                   <SmallFlourish color={c.ornament} />
                 </div>
-                {settings.contact_info.split("\n").map((line, i) => (
-                  <p key={i} style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
-                    {line}
-                  </p>
-                ))}
+                <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm" }}>
+                  {settings.telefon_mireasa && (
+                    <p style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
+                      {mireasa}: {settings.telefon_mireasa}
+                    </p>
+                  )}
+                  {settings.telefon_mire && (
+                    <p style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
+                      {mire}: {settings.telefon_mire}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
           </div>

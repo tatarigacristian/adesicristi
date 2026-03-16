@@ -14,9 +14,18 @@ export function useScrollAnimation<T extends HTMLElement>() {
 
     if (!el) return;
 
+    // Inside Swiper, slides are positioned via translate3d so the default
+    // IntersectionObserver (root=viewport) never sees off-screen slides.
+    // Use the Swiper container (.right-panel) as the observation root so
+    // intersections are detected when a slide becomes active.
+    const swiperRoot = el.closest(".right-panel") as HTMLElement | null;
+
     // If element is already in viewport, make it visible immediately
     const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
+    const rootRect = swiperRoot?.getBoundingClientRect();
+    const viewH = rootRect ? rootRect.bottom : window.innerHeight;
+    const viewTop = rootRect ? rootRect.top : 0;
+    if (rect.top < viewH && rect.bottom > viewTop) {
       el.classList.add("visible");
       return;
     }
@@ -27,7 +36,7 @@ export function useScrollAnimation<T extends HTMLElement>() {
           el.classList.add("visible");
         }
       },
-      { threshold: 0.15 }
+      { root: swiperRoot, threshold: 0.15 }
     );
 
     observer.observe(el);
