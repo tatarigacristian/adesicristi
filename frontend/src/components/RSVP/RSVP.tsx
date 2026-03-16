@@ -168,6 +168,26 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const initialCheckDone = useRef(false);
   const [skipAnimation, setSkipAnimation] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Disable scroll snap when form inputs are focused (prevents iOS repositioning)
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const panel = document.querySelector(".right-panel") as HTMLElement | null;
+    if (!panel) return;
+
+    const disableSnap = () => { panel.style.scrollSnapType = "none"; };
+    const enableSnap = () => { panel.style.scrollSnapType = ""; };
+
+    form.addEventListener("focusin", disableSnap);
+    form.addEventListener("focusout", enableSnap);
+    return () => {
+      form.removeEventListener("focusin", disableSnap);
+      form.removeEventListener("focusout", enableSnap);
+      enableSnap();
+    };
+  }, [formState]);
 
   // Auto-fill from guest data
   useEffect(() => {
@@ -409,7 +429,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </p>
           </div>
 
-          <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-4">
+          <form ref={formRef} onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-4">
             {/* Person count */}
             <div>
               <label className="block text-xs text-text-muted mb-1 tracking-wide">
