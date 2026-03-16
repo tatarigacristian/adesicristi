@@ -136,15 +136,32 @@ function ChurchIcon({ color }: { color: string }) {
   );
 }
 
+function TransportIcon({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 7 Q3 5, 5 5 L19 5 Q21 5, 21 7 L21 15 Q21 17, 19 17 L18.5 17" />
+      <path d="M5.5 17 L3 17 L3 7" />
+      <rect x="5" y="7" width="4" height="3.5" rx="0.5" />
+      <rect x="10" y="7" width="4" height="3.5" rx="0.5" />
+      <rect x="15" y="7" width="4" height="3.5" rx="0.5" />
+      <path d="M3 12 L21 12" />
+      <circle cx="7" cy="17.5" r="1.8" />
+      <circle cx="17" cy="17.5" r="1.8" />
+      <path d="M8.8 17 L15.2 17" />
+    </svg>
+  );
+}
+
 function VenueIcon({ color }: { color: string }) {
   return (
     <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 20 L12 4 L22 20" />
-      <line x1="7" y1="20" x2="7" y2="13" />
-      <line x1="12" y1="20" x2="12" y2="8" />
-      <line x1="17" y1="20" x2="17" y2="13" />
-      <path d="M10 20 L10 17 Q10 16, 12 16 Q14 16, 14 17 L14 20" />
-      <line x1="1" y1="20" x2="23" y2="20" />
+      <path d="M7 2 L7 4 C7 8, 9 10, 12 10 C15 10, 17 8, 17 4 L17 2" />
+      <line x1="12" y1="10" x2="12" y2="18" />
+      <line x1="8" y1="18" x2="16" y2="18" />
+      <line x1="7" y1="2" x2="17" y2="2" />
+      <path d="M8 5 C9 4.5, 11 4.5, 12 5 C13 5.5, 15 5.5, 16 5" opacity="0.4" />
+      <circle cx="10" cy="7" r="0.5" opacity="0.3" />
+      <circle cx="13" cy="6" r="0.4" opacity="0.3" />
     </svg>
   );
 }
@@ -443,6 +460,20 @@ function InvitatieContent() {
                   {settings.ceremonie_adresa && (
                     <p style={{ fontSize: "0.38rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
                       {settings.ceremonie_adresa}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {settings.transport_ora && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
+                  <TransportIcon color={c.muted} />
+                  <p style={{ fontSize: "0.5rem", fontFamily: f.mont, fontWeight: 500, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>
+                    ora {settings.transport_ora}
+                  </p>
+                  {settings.transport_adresa && (
+                    <p style={{ fontSize: "0.38rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
+                      {settings.transport_adresa}
                     </p>
                   )}
                 </div>
