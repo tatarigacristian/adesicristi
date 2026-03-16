@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Alex_Brush, Montserrat } from "next/font/google";
 import "./globals.css";
 
@@ -20,6 +20,14 @@ const montserrat = Montserrat({
   subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  interactiveWidget: "resizes-visual",
+};
 
 export const metadata: Metadata = {
   title: "Ade & Cristi - 4 Iulie 2026",

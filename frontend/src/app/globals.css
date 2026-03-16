@@ -61,6 +61,12 @@ body {
   overflow: hidden;
 }
 
+@supports (height: 100dvh) {
+  .right-panel {
+    height: 100dvh;
+  }
+}
+
 /* Swiper fills the panel */
 .right-panel .swiper {
   height: 100%;
@@ -93,6 +99,14 @@ body {
     margin-left: 35%;
     width: 65%;
     height: 100vh;
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (min-width: 1024px) {
+    .right-panel {
+      height: 100dvh;
+    }
   }
 }
 

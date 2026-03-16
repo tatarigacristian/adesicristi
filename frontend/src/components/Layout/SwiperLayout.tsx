@@ -6,6 +6,7 @@ import { Mousewheel } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { SwiperProvider } from "@/context/SwiperContext";
 import { WeddingSettings } from "@/utils/settings";
+import { useIOSKeyboardFix } from "@/hooks/useIOSKeyboardFix";
 import Hero from "@/components/Hero/Hero";
 import Couple from "@/components/Couple/Couple";
 import Family from "@/components/Family/Family";
@@ -39,6 +40,9 @@ export default function SwiperLayout({
   const handleSwiper = useCallback((swiper: SwiperType) => {
     setSwiperInstance(swiper);
   }, []);
+
+  // Fix iOS Safari keyboard viewport shift issue
+  useIOSKeyboardFix(swiperInstance);
 
   return (
     <SwiperProvider swiper={swiperInstance}>
