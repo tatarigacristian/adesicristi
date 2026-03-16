@@ -478,7 +478,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                       disabled={isDisabled}
                       placeholder="Partener"
                       enterKeyHint="next"
-                      className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-sm bg-white
+                      className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
                                  focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
                     />
                     {errors.partnerName && (
