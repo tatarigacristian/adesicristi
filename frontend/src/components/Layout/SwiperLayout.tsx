@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
@@ -35,10 +35,48 @@ export default function SwiperLayout({
   guest?: GuestData | null;
 }) {
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
+  const keyboardOpen = useRef(false);
 
   const handleSwiper = useCallback((swiper: SwiperType) => {
     setSwiperInstance(swiper);
   }, []);
+
+  // iOS Chrome: force Swiper to recalculate after keyboard dismiss
+  useEffect(() => {
+    if (!swiperInstance) return;
+
+    const onFocusIn = (e: FocusEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
+        keyboardOpen.current = true;
+      }
+    };
+
+    const onFocusOut = () => {
+      if (!keyboardOpen.current) return;
+      keyboardOpen.current = false;
+      setTimeout(() => swiperInstance.update(), 300);
+    };
+
+    const onViewportResize = () => {
+      if (!keyboardOpen.current) return;
+      const vv = window.visualViewport;
+      if (vv && window.innerHeight - vv.height < 150) {
+        keyboardOpen.current = false;
+        setTimeout(() => swiperInstance.update(), 100);
+      }
+    };
+
+    document.addEventListener("focusin", onFocusIn, true);
+    document.addEventListener("focusout", onFocusOut, true);
+    window.visualViewport?.addEventListener("resize", onViewportResize);
+
+    return () => {
+      document.removeEventListener("focusin", onFocusIn, true);
+      document.removeEventListener("focusout", onFocusOut, true);
+      window.visualViewport?.removeEventListener("resize", onViewportResize);
+    };
+  }, [swiperInstance]);
 
   return (
     <SwiperProvider swiper={swiperInstance}>
