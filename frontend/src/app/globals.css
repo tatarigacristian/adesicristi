@@ -54,35 +54,15 @@ body {
   display: none;
 }
 
-/* Right panel - native scroll on mobile */
+/* Right panel */
 .right-panel {
   width: 100%;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
-@supports (height: 100dvh) {
-  .right-panel {
-    height: 100dvh;
-  }
-}
-
-/* Mobile: native scroll with snap */
-.right-panel.mobile-scroll {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: y mandatory;
-  overscroll-behavior-y: none;
-}
-
-.right-panel.mobile-scroll > section,
-.right-panel.mobile-scroll > .content-section {
-  scroll-snap-align: start;
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
-/* Swiper fills the panel (desktop only) */
+/* Swiper fills the panel */
 .right-panel .swiper {
   height: 100%;
 }
@@ -113,15 +93,6 @@ body {
   .right-panel {
     margin-left: 35%;
     width: 65%;
-    height: 100vh;
-  }
-}
-
-@supports (height: 100dvh) {
-  @media (min-width: 1024px) {
-    .right-panel {
-      height: 100dvh;
-    }
   }
 }
 

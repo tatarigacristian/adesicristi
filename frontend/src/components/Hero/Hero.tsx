@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
-import { useSwiper, useSlideTo } from "@/context/SwiperContext";
+import { useSlideTo } from "@/context/SwiperContext";
 
 interface GuestData {
   nume: string;
@@ -22,7 +22,6 @@ export default function Hero({
   settings?: WeddingSettings | null;
 }) {
   const [isVisible, setIsVisible] = useState(false);
-  const swiper = useSwiper();
   const slideTo = useSlideTo();
 
   const couple = getCoupleNames(settings ?? null);
@@ -38,15 +37,6 @@ export default function Hero({
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
-
-  const handleClick = () => {
-    if (swiper) {
-      slideTo("couple");
-    } else {
-      const el = document.getElementById("couple");
-      el?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <section className="content-section bg-background relative overflow-hidden">
@@ -152,7 +142,7 @@ export default function Hero({
           }`}
         >
           <button
-            onClick={handleClick}
+            onClick={() => slideTo("couple")}
             className="group cursor-pointer inline-flex flex-col items-center gap-2"
             aria-label="Scroll down"
           >

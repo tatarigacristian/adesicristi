@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSwiper, useSlideTo } from "@/context/SwiperContext";
+import { useSlideTo } from "@/context/SwiperContext";
 
 const NAV_ITEMS = [
   { label: "Noi doi", sectionId: "couple" },
@@ -12,19 +12,11 @@ const NAV_ITEMS = [
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
-  const swiper = useSwiper();
   const slideTo = useSlideTo();
 
   const handleClick = (sectionId: string) => {
     setOpen(false);
-    if (swiper) {
-      // Desktop: use Swiper
-      slideTo(sectionId);
-    } else {
-      // Mobile: native scroll
-      const el = document.getElementById(sectionId);
-      el?.scrollIntoView({ behavior: "smooth" });
-    }
+    slideTo(sectionId);
   };
 
   return (

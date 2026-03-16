@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { SwiperProvider } from "@/context/SwiperContext";
 import { WeddingSettings } from "@/utils/settings";
-import { useIOSKeyboardFix } from "@/hooks/useIOSKeyboardFix";
 import Hero from "@/components/Hero/Hero";
 import Couple from "@/components/Couple/Couple";
 import Family from "@/components/Family/Family";
@@ -28,17 +27,6 @@ interface GuestData {
   partner: { nume: string; prenume: string } | null;
 }
 
-function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(false);
-  useEffect(() => {
-    const check = () => setIsDesktop(window.innerWidth >= 1024);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-  return isDesktop;
-}
-
 export default function SwiperLayout({
   settings,
   guest,
@@ -47,36 +35,11 @@ export default function SwiperLayout({
   guest?: GuestData | null;
 }) {
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
-  const isDesktop = useIsDesktop();
 
   const handleSwiper = useCallback((swiper: SwiperType) => {
     setSwiperInstance(swiper);
   }, []);
 
-  // Fix iOS Chrome stuck viewport after keyboard dismiss
-  useIOSKeyboardFix();
-
-  // Mobile: native scroll, no Swiper
-  if (!isDesktop) {
-    return (
-      <SwiperProvider swiper={null}>
-        <MobileNav />
-        <div className="split-container">
-          <Sidebar settings={settings} />
-          <main className="right-panel mobile-scroll">
-            <Hero guest={guest} settings={settings} />
-            <Couple settings={settings} />
-            <Family settings={settings} />
-            <Locations settings={settings} />
-            <RSVP guest={guest} settings={settings} />
-            <Footer settings={settings} />
-          </main>
-        </div>
-      </SwiperProvider>
-    );
-  }
-
-  // Desktop: Swiper with mousewheel
   return (
     <SwiperProvider swiper={swiperInstance}>
       <MobileNav />
@@ -94,7 +57,6 @@ export default function SwiperLayout({
             slidesPerView={1}
             onSwiper={handleSwiper}
             style={{ height: "100%" }}
-            simulateTouch={false}
           >
             <SwiperSlide><Hero guest={guest} settings={settings} /></SwiperSlide>
             <SwiperSlide><Couple settings={settings} /></SwiperSlide>
