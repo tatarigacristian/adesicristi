@@ -204,7 +204,7 @@ function CardBack({
 
   return (
     <div className="card-face card-back">
-      <div className="card-inner">
+      <div className="card-inner" style={{ paddingBottom: "0.3cm" }}>
         <div className="corner-ornament top-left" />
         <div className="corner-ornament top-right" />
         <div className="corner-ornament bottom-left" />
@@ -246,8 +246,8 @@ function CardBack({
           ))}
         </div>
 
-        {/* Closing */}
-        <div className="card-back-footer">
+        {/* Closing - positioned at bottom like date on front */}
+        <div className="card-back-footer" style={{ marginTop: "auto" }}>
           <p className="card-back-names">{mireasa} & {mire}</p>
         </div>
       </div>
