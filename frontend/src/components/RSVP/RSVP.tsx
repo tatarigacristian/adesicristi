@@ -171,41 +171,51 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const formRef = useRef<HTMLFormElement>(null);
 
   // Disable scroll snap when form inputs are focused (prevents iOS repositioning)
+  // On blur, keep snap disabled until the next scroll, then re-enable it at the right position
   useEffect(() => {
     const form = formRef.current;
     if (!form) return;
     const panel = document.querySelector(".right-panel") as HTMLElement | null;
     if (!panel) return;
 
-    const disableSnap = () => { panel.style.scrollSnapType = "none"; };
-    const enableSnap = () => {
-      // Find the nearest snap section and scroll to it before re-enabling snap
-      const sections = panel.querySelectorAll(".snap-section");
-      const panelScroll = panel.scrollTop;
-      const viewportH = panel.clientHeight;
-      let closest: Element | null = null;
-      let closestDist = Infinity;
-      sections.forEach((sec) => {
-        const top = (sec as HTMLElement).offsetTop;
-        const dist = Math.abs(top - panelScroll);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closest = sec;
-        }
-      });
-      if (closest) {
-        panel.style.scrollSnapType = "";
-        (closest as HTMLElement).scrollIntoView({ behavior: "smooth" });
-      } else {
-        panel.style.scrollSnapType = "";
+    let snapDisabled = false;
+
+    const disableSnap = () => {
+      if (!snapDisabled) {
+        snapDisabled = true;
+        panel.style.scrollSnapType = "none";
       }
     };
 
+    const onBlur = () => {
+      // Keep snap disabled — re-enable on next scroll
+      const onScroll = () => {
+        panel.removeEventListener("scroll", onScroll);
+        // Find nearest section and snap to it
+        const rsvpSection = document.getElementById("rsvp");
+        if (rsvpSection) {
+          rsvpSection.scrollIntoView({ behavior: "smooth" });
+        }
+        // Re-enable snap after scroll settles
+        setTimeout(() => {
+          panel.style.scrollSnapType = "";
+          snapDisabled = false;
+        }, 500);
+      };
+
+      // Wait a tick for iOS keyboard to fully dismiss before listening for scroll
+      setTimeout(() => {
+        if (snapDisabled) {
+          panel.addEventListener("scroll", onScroll, { once: true });
+        }
+      }, 300);
+    };
+
     form.addEventListener("focusin", disableSnap);
-    form.addEventListener("focusout", enableSnap);
+    form.addEventListener("focusout", onBlur);
     return () => {
       form.removeEventListener("focusin", disableSnap);
-      form.removeEventListener("focusout", enableSnap);
+      form.removeEventListener("focusout", onBlur);
       panel.style.scrollSnapType = "";
     };
   }, [formState]);
