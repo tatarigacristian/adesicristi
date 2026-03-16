@@ -106,55 +106,52 @@ function CardFront({
         <div className="corner-ornament bottom-left" />
         <div className="corner-ornament bottom-right" />
 
-        {/* Row: left + divider + right */}
+        {/* Row: monogram + divider + QR */}
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%", flex: 1, gap: "0.5cm" }}>
 
-        {/* Left side - Monogram + text */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
-          {/* Monogram */}
-          <div style={{ position: "relative", width: 80, height: 80, marginBottom: "0.15cm" }}>
-            <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }} xmlns="http://www.w3.org/2000/svg">
-              <circle cx="80" cy="80" r="72" stroke={accent} strokeWidth="0.7" fill="none" opacity="0.5" />
-              <circle cx="80" cy="80" r="68" stroke={accent} strokeWidth="0.4" fill="none" opacity="0.3" />
-              <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={accent} opacity="0.5" />
-              <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={accent} opacity="0.5" />
-            </svg>
-            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
-              <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 300, color: text }}>{initialMireasa}</span>
-              <span style={{ fontFamily: "'Alex Brush', cursive", fontSize: "0.8rem", color: muted }}>&amp;</span>
-              <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 300, color: text }}>{initialMire}</span>
+          {/* Left side - Monogram + text */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
+            <div style={{ position: "relative", width: 80, height: 80 }}>
+              <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }} xmlns="http://www.w3.org/2000/svg">
+                <circle cx="80" cy="80" r="72" stroke={accent} strokeWidth="0.7" fill="none" opacity="0.5" />
+                <circle cx="80" cy="80" r="68" stroke={accent} strokeWidth="0.4" fill="none" opacity="0.3" />
+                <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={accent} opacity="0.5" />
+                <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={accent} opacity="0.5" />
+              </svg>
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 300, color: text }}>{initialMireasa}</span>
+                <span style={{ fontFamily: "'Alex Brush', cursive", fontSize: "0.8rem", color: muted }}>&amp;</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 300, color: text }}>{initialMire}</span>
+              </div>
             </div>
+            <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.1cm" }}>Ne casatorim!</p>
           </div>
 
-          <p className="card-label" style={{ fontSize: "0.38rem" }}>Ne casatorim!</p>
+          {/* Vertical divider */}
+          <div style={{ width: 1, height: "60%", background: `linear-gradient(to bottom, transparent, ${accent}50, transparent)` }} />
 
-          {/* Flourish */}
-          <svg viewBox="0 0 200 12" style={{ width: 90, height: 5, marginTop: "0.06cm" }} xmlns="http://www.w3.org/2000/svg">
-            <line x1="0" y1="6" x2="60" y2="6" stroke={accent} strokeWidth="0.5" opacity="0.5" />
-            <line x1="140" y1="6" x2="200" y2="6" stroke={accent} strokeWidth="0.5" opacity="0.5" />
-            <path d="M70 6 Q85 0, 100 6 Q115 12, 130 6" fill="none" stroke={accent} strokeWidth="0.6" opacity="0.6" />
-            <circle cx="100" cy="6" r="1.5" fill={accent} opacity="0.5" />
-          </svg>
-
-        </div>
-
-        {/* Vertical divider */}
-        <div style={{ width: 1, height: "60%", background: `linear-gradient(to bottom, transparent, ${accent}50, transparent)` }} />
-
-        {/* Right side - QR */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
-          <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.3rem", letterSpacing: "0.2em", textTransform: "uppercase" as const, color: muted, marginBottom: "0.1cm", fontWeight: 500 }}>
-            Scanati codul
-          </p>
-          <div className="card-qr">
-            <img src={qrDataUrl} alt="QR Code" style={{ width: "2.2cm", height: "2.2cm" }} />
+          {/* Right side - QR + label below */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
+            <div className="card-qr">
+              <img src={qrDataUrl} alt="QR Code" style={{ width: "2cm", height: "2cm" }} />
+            </div>
+            <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.28rem", letterSpacing: "0.2em", textTransform: "uppercase" as const, color: muted, marginTop: "0.08cm", fontWeight: 500 }}>
+              Scanați codul
+            </p>
           </div>
-        </div>
 
         </div>{/* end row */}
 
-        {/* Footer - date centered */}
-        <p className="card-date" style={{ fontSize: "0.35rem", marginTop: "0.08cm" }}>{dateDisplay}</p>
+        {/* Flourish centered */}
+        <svg viewBox="0 0 200 12" style={{ width: 90, height: 5, marginTop: "0.1cm" }} xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="6" x2="60" y2="6" stroke={accent} strokeWidth="0.5" opacity="0.5" />
+          <line x1="140" y1="6" x2="200" y2="6" stroke={accent} strokeWidth="0.5" opacity="0.5" />
+          <path d="M70 6 Q85 0, 100 6 Q115 12, 130 6" fill="none" stroke={accent} strokeWidth="0.6" opacity="0.6" />
+          <circle cx="100" cy="6" r="1.5" fill={accent} opacity="0.5" />
+        </svg>
+
+        {/* Footer - date */}
+        <p className="card-date" style={{ fontSize: "0.35rem", marginTop: "0.1cm" }}>{dateDisplay}</p>
       </div>
     </div>
   );
