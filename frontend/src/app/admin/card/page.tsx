@@ -508,10 +508,11 @@ function buildStyles(s: WeddingSettings | null) {
     }
     .card-event-address {
       font-family: 'Montserrat', sans-serif;
-      font-size: 0.27rem;
+      font-size: 0.24rem;
       color: ${muted};
       text-align: center;
       line-height: 1.3;
+      white-space: nowrap;
     }
 
     .card-back-footer {
