@@ -188,19 +188,19 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
         ref={ref}
         className="content-section bg-background-soft animate-on-scroll"
       >
-        <div className="max-w-4xl mx-auto w-full">
+        <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col sm:block">
           <div className="text-center mb-2 sm:mb-10">
             <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
               Detaliile evenimentului
             </h2>
-            <SmallFlourish className="mx-auto mb-3" />
+            <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
             <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
               Când și unde
             </p>
           </div>
 
           {/* Mobile carousel */}
-          <div className="md:hidden">
+          <div className="md:hidden mt-auto sm:mt-0">
             <div
               ref={carouselRef}
               className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"

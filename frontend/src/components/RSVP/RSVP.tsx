@@ -395,14 +395,14 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       ref={sectionRef}
       className={`content-section bg-background${skipAnimation ? "" : " animate-on-scroll"}`}
     >
-      <div className="max-w-lg mx-auto w-full">
-        <div className="relative glass-card">
+      <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
+        <div className="relative glass-card mt-auto sm:mt-0">
           <SectionCorners size="w-[25px] h-[25px]" offset={10} />
           <div className="text-center mb-6">
             <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
               Confirmare
             </h2>
-            <SmallFlourish className="mx-auto mb-3" />
+            <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
             <p className="text-xs text-text-muted leading-relaxed">
               Vă așteptăm cu drag!<br />
               Completați formularul de mai jos pentru a ne anunța decizia.

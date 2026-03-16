@@ -40,16 +40,16 @@ export default function Family({
       ref={ref}
       className="content-section bg-background animate-on-scroll"
     >
-      <div className="max-w-lg mx-auto w-full">
+      <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
         {/* Section header */}
         <div className="text-center mb-2 sm:mb-10">
           <h2 className="serif-font text-2xl md:text-3xl font-light text-text-heading mb-2">
             Familie
           </h2>
-          <SmallFlourish className="mx-auto" />
+          <SmallFlourish className="mx-auto mb-[30px] sm:mb-0" />
         </div>
 
-        <div className="flex flex-col gap-4 sm:gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6 mt-auto sm:mt-0">
           {/* Nasi */}
           {hasNasi && (
             <div className="family-card text-center relative">

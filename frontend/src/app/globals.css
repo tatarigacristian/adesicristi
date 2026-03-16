@@ -105,9 +105,10 @@ body {
 .content-section {
   min-height: 100vh;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 3.5rem 1rem 1rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 3.5rem 1rem 30px;
 }
 
 @supports (min-height: 100dvh) {
@@ -118,7 +119,7 @@ body {
 
 @media (min-width: 640px) {
   .content-section {
-    align-items: center;
+    justify-content: center;
     padding: 3rem 1.5rem;
   }
 }
@@ -128,6 +129,7 @@ body {
     min-height: 0;
     height: 100%;
     padding: 4rem 3rem;
+    justify-content: center;
   }
 }
 
