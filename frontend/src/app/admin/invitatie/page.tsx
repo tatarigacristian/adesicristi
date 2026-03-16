@@ -349,9 +349,9 @@ function InvitatieContent() {
                 <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={c.ornament} opacity="0.7" />
               </svg>
               <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", display: "flex", alignItems: "center", gap: "0.3cm" }}>
-                <span style={{ fontFamily: f.serif, fontSize: "2.5rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>{initialMireasa}</span>
-                <span style={{ fontFamily: f.script, fontSize: "1.3rem", color: c.muted }}>&amp;</span>
-                <span style={{ fontFamily: f.serif, fontSize: "2.5rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>{initialMire}</span>
+                <span style={{ fontFamily: f.serif, fontSize: "2.69rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>{initialMireasa}</span>
+                <span style={{ fontFamily: f.script, fontSize: "1.49rem", color: c.muted }}>&amp;</span>
+                <span style={{ fontFamily: f.serif, fontSize: "2.69rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>{initialMire}</span>
               </div>
             </div>
 
@@ -365,17 +365,17 @@ function InvitatieContent() {
             </div>
 
             {/* ─── Date (serif) ─── */}
-            <p style={{ fontFamily: f.serif, fontSize: "1.1rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>
+            <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>
               {ceremonieDateObj ? ceremonieDateObj.toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" }) : "4 iulie 2026"}
             </p>
 
             {/* ─── "Cu drag vă invităm" ─── */}
-            <p style={{ fontSize: "0.45rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.ornament, marginTop: "0.1cm" }}>
+            <p style={{ fontSize: "0.64rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.ornament, marginTop: "0.1cm" }}>
               CU DRAG VĂ INVITĂM
             </p>
 
             {/* ─── Script heading ─── */}
-            <p style={{ fontFamily: f.script, fontSize: "1.5rem", color: c.primary, fontStyle: "italic" }}>
+            <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic" }}>
               Să fiți alături de noi
             </p>
 
@@ -387,7 +387,7 @@ function InvitatieContent() {
             {/* ─── Invitation Text ─── */}
             <div style={{ lineHeight: 1.8, maxWidth: "10cm" }}>
               {introLines.map((line, i) => (
-                <p key={i} style={{ fontSize: "0.42rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 300, color: c.secondary }}>
+                <p key={i} style={{ fontSize: "0.61rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 300, color: c.secondary }}>
                   {line}
                 </p>
               ))}
@@ -398,20 +398,20 @@ function InvitatieContent() {
               <div style={{ display: "flex", justifyContent: "center", gap: "1.2cm", marginTop: "0.2cm", width: "100%" }}>
                 {parintiMireasa && (
                   <div style={{ textAlign: "center", flex: 1 }}>
-                    <p style={{ fontSize: "0.4rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
+                    <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
                       PĂRINȚII MIRESEI
                     </p>
-                    <p style={{ fontFamily: f.serif, fontSize: "0.7rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                    <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
                       {parintiMireasa}
                     </p>
                   </div>
                 )}
                 {parintiMire && (
                   <div style={{ textAlign: "center", flex: 1 }}>
-                    <p style={{ fontSize: "0.4rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
+                    <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
                       PĂRINȚII MIRELUI
                     </p>
-                    <p style={{ fontFamily: f.serif, fontSize: "0.7rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                    <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
                       {parintiMire}
                     </p>
                   </div>
@@ -422,10 +422,10 @@ function InvitatieContent() {
             {/* ─── Nași ─── */}
             {nasiText && (
               <div style={{ textAlign: "center", marginTop: "0.15cm" }}>
-                <p style={{ fontSize: "0.4rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
+                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
                   ALĂTURI DE NAȘII
                 </p>
-                <p style={{ fontFamily: f.serif, fontSize: "0.7rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
                   {nasiText}
                 </p>
               </div>
@@ -438,15 +438,15 @@ function InvitatieContent() {
 
             {/* ─── Date row ─── */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.4cm" }}>
-              <span style={{ fontSize: "0.55rem", fontFamily: f.mont, letterSpacing: "0.3em", fontWeight: 600, color: c.primary }}>{dayOfWeek}</span>
+              <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.3em", fontWeight: 600, color: c.primary }}>{dayOfWeek}</span>
               <svg viewBox="0 0 4 20" style={{ width: 3, height: 16 }} xmlns="http://www.w3.org/2000/svg">
                 <line x1="2" y1="0" x2="2" y2="20" stroke={c.ornament} strokeWidth="0.8" />
               </svg>
-              <span style={{ fontSize: "0.55rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{dateFormatted}</span>
+              <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{dateFormatted}</span>
               <svg viewBox="0 0 4 20" style={{ width: 3, height: 16 }} xmlns="http://www.w3.org/2000/svg">
                 <line x1="2" y1="0" x2="2" y2="20" stroke={c.ornament} strokeWidth="0.8" />
               </svg>
-              <span style={{ fontSize: "0.55rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{year}</span>
+              <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{year}</span>
             </div>
 
             {/* ─── Events (matching card style: icon → time → address) ─── */}
@@ -454,11 +454,11 @@ function InvitatieContent() {
               {settings.ceremonie_ora && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
                   <ChurchIcon color={c.muted} />
-                  <p style={{ fontSize: "0.5rem", fontFamily: f.mont, fontWeight: 500, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>
+                  <p style={{ fontSize: "0.69rem", fontFamily: f.mont, fontWeight: 500, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>
                     ora {settings.ceremonie_ora}
                   </p>
                   {settings.ceremonie_adresa && (
-                    <p style={{ fontSize: "0.38rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
+                    <p style={{ fontSize: "0.57rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
                       {settings.ceremonie_adresa}
                     </p>
                   )}
@@ -468,11 +468,11 @@ function InvitatieContent() {
               {settings.transport_ora && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
                   <TransportIcon color={c.muted} />
-                  <p style={{ fontSize: "0.5rem", fontFamily: f.mont, fontWeight: 500, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>
+                  <p style={{ fontSize: "0.69rem", fontFamily: f.mont, fontWeight: 500, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>
                     ora {settings.transport_ora}
                   </p>
                   {settings.transport_adresa && (
-                    <p style={{ fontSize: "0.38rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
+                    <p style={{ fontSize: "0.57rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
                       {settings.transport_adresa}
                     </p>
                   )}
@@ -482,11 +482,11 @@ function InvitatieContent() {
               {settings.petrecere_ora && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
                   <VenueIcon color={c.muted} />
-                  <p style={{ fontSize: "0.5rem", fontFamily: f.mont, fontWeight: 500, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>
+                  <p style={{ fontSize: "0.69rem", fontFamily: f.mont, fontWeight: 500, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>
                     ora {settings.petrecere_ora}
                   </p>
                   {settings.petrecere_adresa && (
-                    <p style={{ fontSize: "0.38rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
+                    <p style={{ fontSize: "0.57rem", fontFamily: f.mont, fontWeight: 300, color: c.muted, textAlign: "center" }}>
                       {settings.petrecere_adresa}
                     </p>
                   )}
@@ -495,17 +495,17 @@ function InvitatieContent() {
             </div>
 
             {/* ─── Script Closing ─── */}
-            <p style={{ fontFamily: f.script, fontSize: "1.4rem", color: c.primary, marginTop: "0.3cm" }}>
+            <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "0.3cm" }}>
               Va asteptam cu drag!
             </p>
 
             {/* ─── RSVP ─── */}
             {confirmareDate && (
               <div>
-                <p style={{ fontSize: "0.38rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted, lineHeight: 2 }}>
+                <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted, lineHeight: 2 }}>
                   VA RUGAM SA NE CONFIRMATI PREZENTA DUMNEAVOASTRA
                 </p>
-                <p style={{ fontSize: "0.38rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted }}>
+                <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted }}>
                   PANA IN DATA DE {confirmareDate.toUpperCase()}.
                 </p>
               </div>
@@ -518,7 +518,7 @@ function InvitatieContent() {
                   <SmallFlourish color={c.ornament} />
                 </div>
                 {settings.contact_info.split("\n").map((line, i) => (
-                  <p key={i} style={{ fontSize: "0.35rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
+                  <p key={i} style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
                     {line}
                   </p>
                 ))}
