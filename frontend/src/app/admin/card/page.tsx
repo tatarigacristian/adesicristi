@@ -287,12 +287,14 @@ function CardEventIcon({ icon, color }: { icon: "church" | "transport" | "party"
     case "party":
       return (
         <svg {...props}>
-          <path d="M2 20 L12 4 L22 20" />
-          <line x1="7" y1="20" x2="7" y2="13" />
-          <line x1="12" y1="20" x2="12" y2="8" />
-          <line x1="17" y1="20" x2="17" y2="13" />
-          <path d="M10 20 L10 17 Q10 16, 12 16 Q14 16, 14 17 L14 20" />
-          <line x1="1" y1="20" x2="23" y2="20" />
+          <path d="M8 2 L12 12" />
+          <path d="M16 2 L12 12" />
+          <line x1="12" y1="12" x2="12" y2="18" />
+          <line x1="8" y1="18" x2="16" y2="18" />
+          <path d="M6 2 L10 2" />
+          <path d="M14 2 L18 2" />
+          <path d="M5 5 L7 4" />
+          <path d="M19 5 L17 4" />
         </svg>
       );
   }
