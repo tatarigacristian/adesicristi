@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
@@ -133,8 +136,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
   const ref = useScrollAnimation<HTMLElement>();
   const [drawerLocation, setDrawerLocation] = useState<LocationCard | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const isScrolling = useRef(false);
+  const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const locations = useMemo(() => buildLocations(settings ?? null), [settings]);
 
@@ -146,40 +148,9 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
     }
   }
 
-  const scrollToIndex = useCallback((index: number) => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
-    isScrolling.current = true;
-    const cardWidth = carousel.offsetWidth;
-    carousel.scrollTo({ left: cardWidth * index, behavior: "smooth" });
-    setActiveIndex(index);
-    setTimeout(() => {
-      isScrolling.current = false;
-    }, 400);
+  const handleSlideChange = useCallback((swiper: SwiperType) => {
+    setActiveIndex(swiper.realIndex);
   }, []);
-
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
-
-    const handleScroll = () => {
-      if (isScrolling.current) return;
-      const cardWidth = carousel.offsetWidth;
-      const index = Math.round(carousel.scrollLeft / cardWidth);
-      setActiveIndex(index);
-    };
-
-    carousel.addEventListener("scroll", handleScroll, { passive: true });
-    return () => carousel.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const nextIndex = (activeIndex + 1) % locations.length;
-      scrollToIndex(nextIndex);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [activeIndex, scrollToIndex, locations.length]);
 
   return (
     <>
@@ -201,26 +172,30 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
 
           {/* Mobile carousel */}
           <div className="md:hidden mt-auto sm:mt-0">
-            <div
-              ref={carouselRef}
-              className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            <Swiper
+              modules={[Autoplay]}
+              loop={true}
+              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              slidesPerView={1}
+              spaceBetween={16}
+              onSwiper={setSwiperRef}
+              onSlideChange={handleSlideChange}
+              nested={true}
             >
               {locations.map((loc) => (
-                <div
-                  key={loc.title}
-                  className="w-full flex-shrink-0 snap-center px-4"
-                >
-                  <LocationCardContent loc={loc} onMapClick={handleMapClick} />
-                </div>
+                <SwiperSlide key={loc.title}>
+                  <div className="px-4">
+                    <LocationCardContent loc={loc} onMapClick={handleMapClick} />
+                  </div>
+                </SwiperSlide>
               ))}
-            </div>
+            </Swiper>
 
             <div className="flex items-center justify-center gap-2.5 mt-6">
               {locations.map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => scrollToIndex(i)}
+                  onClick={() => swiperRef?.slideToLoop(i)}
                   aria-label={`Go to ${locations[i].title}`}
                   className={`rounded-full transition-all duration-300 cursor-pointer ${
                     activeIndex === i
