@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState, useRef, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { toPng } from "html-to-image";
 
@@ -557,6 +557,7 @@ function buildStyles(s: WeddingSettings | null) {
 
 function CardPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const guestId = searchParams.get("guestId");
   const token = typeof window !== "undefined" ? sessionStorage.getItem("admin_token") : null;
 
@@ -691,6 +692,15 @@ function CardPageContent() {
 
       <div className="print-page">
         <div className="print-actions">
+          <select
+            className="print-btn print-btn-secondary"
+            value="card"
+            onChange={(e) => router.push(`/admin/${e.target.value}?guestId=${guestId}`)}
+          >
+            <option value="card">Card</option>
+            <option value="invitatie">Invitatie v1</option>
+            <option value="invitatie-v2">Invitatie v2</option>
+          </select>
           <button className="print-btn print-btn-primary" onClick={handleSavePng}>
             Salveaza ca PNG
           </button>
