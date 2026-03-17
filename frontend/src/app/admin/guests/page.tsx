@@ -203,10 +203,10 @@ export default function GuestsPage() {
               </div>
               <div>
                 <label className="block text-xs text-text-muted mb-1">Intro lung (pagina invitatie)</label>
-                <textarea value={form.intro_long} onChange={(e) => { if (e.target.value.length <= 500) setForm({ ...form, intro_long: e.target.value }); }}
-                  maxLength={500}
+                <textarea value={form.intro_long} onChange={(e) => { if (e.target.value.length <= 400) setForm({ ...form, intro_long: e.target.value }); }}
+                  maxLength={400}
                   rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
-                <p className="text-xs text-text-muted text-right mt-1">{form.intro_long.length}/500</p>
+                <p className="text-xs text-text-muted text-right mt-1">{form.intro_long.length}/400</p>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={saving}

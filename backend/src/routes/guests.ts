@@ -73,8 +73,8 @@ export async function guestRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'Nume si prenume sunt obligatorii' });
     }
 
-    if (intro_long && intro_long.length > 500) {
-      return reply.status(400).send({ error: 'Intro lung nu poate depasi 500 de caractere' });
+    if (intro_long && intro_long.length > 400) {
+      return reply.status(400).send({ error: 'Intro lung nu poate depasi 400 de caractere' });
     }
 
     if (plus_one && (!partner_nume || !partner_prenume)) {
@@ -138,8 +138,8 @@ export async function guestRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'Nume si prenume sunt obligatorii' });
     }
 
-    if (intro_long && intro_long.length > 500) {
-      return reply.status(400).send({ error: 'Intro lung nu poate depasi 500 de caractere' });
+    if (intro_long && intro_long.length > 400) {
+      return reply.status(400).send({ error: 'Intro lung nu poate depasi 400 de caractere' });
     }
 
     if (plus_one && (!partner_nume || !partner_prenume)) {
