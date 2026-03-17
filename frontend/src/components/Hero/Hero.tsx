@@ -123,12 +123,12 @@ export default function Hero({
       parentSwiper.allowTouchMove = true;
     };
 
-    // Unblock parent only after the touch/scroll gesture that moved nested to end finishes
+    // Unblock parent immediately on touchEnd — gesture is already over
     nested.on("touchEnd", () => {
       console.log("[Hero] Nested touchEnd, index:", nested.activeIndex, "nestedAtEnd:", nestedAtEnd);
       if (nestedAtEnd && initialized) {
-        console.log("[Hero] Gesture ended with nested at end → unblocking parent after delay");
-        setTimeout(unblockParent, 100);
+        console.log("[Hero] Gesture ended with nested at end → unblocking parent immediately");
+        unblockParent();
       }
     });
 
