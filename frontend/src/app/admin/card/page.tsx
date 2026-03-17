@@ -562,7 +562,7 @@ function CardPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const guestId = searchParams.get("guestId");
-  const token = typeof window !== "undefined" ? sessionStorage.getItem("admin_token") : null;
+  const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 
   const [guest, setGuest] = useState<GuestData | null>(null);
   const [allGuests, setAllGuests] = useState<GuestData[]>([]);

@@ -2,21 +2,30 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useAdminAuth } from "../_context";
-import { API_URL, PAGE_SIZE, RsvpEntry, authHeaders, Pagination, SearchInput, FilterButton } from "../_shared";
+import { API_URL, PAGE_SIZE, RsvpEntry, authHeaders, Pagination, SearchInput } from "../_shared";
 
 type RsvpFilter = "all" | "attending" | "not_attending";
+type BoolFilter = "all" | "yes" | "no";
 
 export default function ConfirmariPage() {
   const { token, onUnauth } = useAdminAuth();
   const [rsvps, setRsvps] = useState<RsvpEntry[]>([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<RsvpFilter>("all");
+  const [vegetarianFilter, setVegetarianFilter] = useState<BoolFilter>("all");
+  const [transportFilter, setTransportFilter] = useState<BoolFilter>("all");
   const [page, setPage] = useState(1);
+  const [viewEntry, setViewEntry] = useState<RsvpEntry | null>(null);
 
   async function fetchRsvps() {
     const res = await fetch(`${API_URL}/api/admin/rsvp`, { headers: authHeaders(token) });
     if (res.status === 401) { onUnauth(); return; }
-    setRsvps(await res.json());
+    const data = await res.json();
+    setRsvps(data.map((r: Record<string, unknown>) => ({
+      ...r,
+      needs_transport: Boolean(r.needs_transport),
+      vegetarian_menu: Boolean(r.vegetarian_menu),
+    })));
   }
 
   useEffect(() => { fetchRsvps(); }, []);
@@ -41,14 +50,28 @@ export default function ConfirmariPage() {
     if (filter === "attending") result = result.filter((r) => r.attending);
     if (filter === "not_attending") result = result.filter((r) => !r.attending);
 
+    if (vegetarianFilter === "yes") result = result.filter((r) => r.vegetarian_menu);
+    if (vegetarianFilter === "no") result = result.filter((r) => !r.vegetarian_menu);
+
+    if (transportFilter === "yes") result = result.filter((r) => r.needs_transport);
+    if (transportFilter === "no") result = result.filter((r) => !r.needs_transport);
+
     return result;
-  }, [rsvps, search, filter]);
+  }, [rsvps, search, filter, vegetarianFilter, transportFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
-  useEffect(() => { setPage(1); }, [search, filter]);
+  useEffect(() => { setPage(1); }, [search, filter, vegetarianFilter, transportFilter]);
+
+  function resetFilters() {
+    setSearch("");
+    setFilter("all");
+    setVegetarianFilter("all");
+    setTransportFilter("all");
+    setPage(1);
+  }
 
   return (
     <div>
@@ -71,14 +94,57 @@ export default function ConfirmariPage() {
       </div>
 
       {/* Search & Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col gap-3 mb-4">
         <div className="flex-1">
           <SearchInput value={search} onChange={setSearch} placeholder="Cauta dupa nume, partener sau mesaj..." />
         </div>
-        <div className="flex items-center gap-2">
-          <FilterButton label="Toate" active={filter === "all"} count={rsvps.length} onClick={() => setFilter("all")} />
-          <FilterButton label="Participa" active={filter === "attending"} count={attending.length} onClick={() => setFilter("attending")} />
-          <FilterButton label="Nu participa" active={filter === "not_attending"} count={notAttending.length} onClick={() => setFilter("not_attending")} />
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:items-center">
+          <div className="flex items-center gap-2">
+            <label htmlFor="filter-status" className="text-xs text-text-muted whitespace-nowrap">Status</label>
+            <select
+              id="filter-status"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as RsvpFilter)}
+              className="border border-border rounded-lg px-3 py-2 text-sm bg-white text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer min-w-[140px]"
+            >
+              <option value="all">Nesetat</option>
+              <option value="attending">Participa</option>
+              <option value="not_attending">Nu participa</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="filter-vegetarian" className="text-xs text-text-muted whitespace-nowrap">Meniu vegetarian</label>
+            <select
+              id="filter-vegetarian"
+              value={vegetarianFilter}
+              onChange={(e) => setVegetarianFilter(e.target.value as BoolFilter)}
+              className="border border-border rounded-lg px-3 py-2 text-sm bg-white text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer min-w-[120px]"
+            >
+              <option value="all">Nesetat</option>
+              <option value="yes">Da</option>
+              <option value="no">Nu</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="filter-transport" className="text-xs text-text-muted whitespace-nowrap">Transport</label>
+            <select
+              id="filter-transport"
+              value={transportFilter}
+              onChange={(e) => setTransportFilter(e.target.value as BoolFilter)}
+              className="border border-border rounded-lg px-3 py-2 text-sm bg-white text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer min-w-[120px]"
+            >
+              <option value="all">Nesetat</option>
+              <option value="yes">Da</option>
+              <option value="no">Nu</option>
+            </select>
+          </div>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="px-3 py-2 text-sm rounded-lg border border-border text-text-muted hover:text-text-heading hover:bg-background-soft/50 hover:border-accent transition-colors cursor-pointer whitespace-nowrap"
+          >
+            Reseteaza filtre
+          </button>
         </div>
       </div>
 
@@ -103,13 +169,27 @@ export default function ConfirmariPage() {
             <div className="md:hidden divide-y divide-border-light/50">
               {paginated.map((r) => (
                 <div key={r.id} className="px-4 py-3 space-y-1.5">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="text-text-heading font-medium text-sm">{r.name}</span>
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                      r.attending ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
-                    }`}>
-                      {r.attending ? "Da" : "Nu"} ({r.person_count} pers.)
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                        r.attending ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
+                      }`}>
+                        {r.attending ? "Da" : "Nu"} ({r.person_count} pers.)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setViewEntry(r)}
+                        className="p-2 rounded-lg text-foreground/50 hover:text-accent hover:bg-background-soft/50 transition-colors cursor-pointer"
+                        title="Vezi detalii"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   {r.partner_name && (
                     <p className="text-xs text-foreground/60">
@@ -137,8 +217,11 @@ export default function ConfirmariPage() {
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Partener</th>
                     <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Pers.</th>
                     <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Status</th>
+                    <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Meniu veg.</th>
+                    <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Transport</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Mesaj</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Data</th>
+                    <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Actiuni</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -154,11 +237,35 @@ export default function ConfirmariPage() {
                           {r.attending ? "Da" : "Nu"}
                         </span>
                       </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`inline-block px-2 py-0.5 rounded text-xs ${r.vegetarian_menu ? "bg-green-50 text-green-700" : "text-foreground/40"}`}>
+                          {r.vegetarian_menu ? "Da" : "—"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`inline-block px-2 py-0.5 rounded text-xs ${r.needs_transport ? "bg-blue-50 text-blue-700" : "text-foreground/40"}`}>
+                          {r.needs_transport ? "Da" : "—"}
+                        </span>
+                      </td>
                       <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{r.message || "\u2014"}</td>
                       <td className="px-4 py-3 text-foreground/50 text-xs whitespace-nowrap">
                         {new Date(r.created_at).toLocaleDateString("ro-RO", {
                           day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
                         })}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setViewEntry(r)}
+                          className="p-2 rounded-lg text-foreground/50 hover:text-accent hover:bg-background-soft/50 transition-colors cursor-pointer inline-flex items-center justify-center"
+                          title="Vezi detalii"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                          </svg>
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -176,6 +283,78 @@ export default function ConfirmariPage() {
         </p>
         <Pagination page={safePage} totalPages={totalPages} onPageChange={setPage} />
       </div>
+
+      {/* Modal detalii RSVP */}
+      {viewEntry && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setViewEntry(null)}>
+          <div
+            className="family-card w-full max-w-md max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="serif-font text-lg text-text-heading">Detalii confirmare</h3>
+              <button
+                type="button"
+                onClick={() => setViewEntry(null)}
+                className="p-2 rounded-lg text-text-muted hover:text-text-heading hover:bg-background-soft/50 transition-colors cursor-pointer"
+                aria-label="Inchide"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <dl className="space-y-3 text-sm">
+              <div>
+                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Nume</dt>
+                <dd className="text-text-heading font-medium">{viewEntry.name}</dd>
+              </div>
+              {viewEntry.partner_name && (
+                <div>
+                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Partener</dt>
+                  <dd className="text-foreground">{viewEntry.partner_name}</dd>
+                </div>
+              )}
+              <div>
+                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Numar persoane</dt>
+                <dd className="text-foreground">{viewEntry.person_count}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Participa</dt>
+                <dd>
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                    viewEntry.attending ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
+                  }`}>
+                    {viewEntry.attending ? "Da" : "Nu"}
+                  </span>
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Meniu vegetarian</dt>
+                <dd className="text-foreground">{viewEntry.vegetarian_menu ? "Da" : "Nu"}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Necesita transport</dt>
+                <dd className="text-foreground">{viewEntry.needs_transport ? "Da" : "Nu"}</dd>
+              </div>
+              {viewEntry.message && (
+                <div>
+                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Mesaj</dt>
+                  <dd className="text-foreground whitespace-pre-wrap">{viewEntry.message}</dd>
+                </div>
+              )}
+              <div>
+                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Data confirmare</dt>
+                <dd className="text-foreground">
+                  {new Date(viewEntry.created_at).toLocaleDateString("ro-RO", {
+                    day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+                  })}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

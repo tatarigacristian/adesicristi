@@ -31,7 +31,7 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
         throw new Error(data.error || "Login failed");
       }
       const { token } = await res.json();
-      sessionStorage.setItem("admin_token", token);
+      localStorage.setItem("admin_token", token);
       onLogin(token);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
@@ -118,7 +118,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
 
   useEffect(() => {
-    const saved = sessionStorage.getItem("admin_token");
+    const saved = localStorage.getItem("admin_token");
     if (saved) {
       setToken(saved);
     }
@@ -142,16 +142,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   function handleLogout() {
-    sessionStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_token");
     setToken("");
   }
 
   function handleUnauth() {
-    sessionStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_token");
     setToken("");
   }
 
-  // Don't render anything until we've checked sessionStorage
+  // Don't render anything until we've checked localStorage
   if (!checked) return null;
 
   // Show login if no token

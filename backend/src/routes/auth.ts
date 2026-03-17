@@ -33,7 +33,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       return reply.status(401).send({ error: 'Invalid credentials' });
     }
 
-    const token = fastify.jwt.sign({ id: user.id, username: user.username });
+    const token = fastify.jwt.sign({ id: user.id, username: user.username }, { expiresIn: '24h' });
     return { token };
   });
 }

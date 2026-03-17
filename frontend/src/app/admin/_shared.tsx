@@ -10,6 +10,9 @@ export interface RsvpEntry {
   partner_name: string | null;
   message: string | null;
   attending: boolean;
+  guest_id: number | null;
+  needs_transport: boolean;
+  vegetarian_menu: boolean;
   created_at: string;
 }
 

@@ -5,7 +5,6 @@ import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import { getInvitationAudience, getAsteptamLine } from "@/utils/invitation-text";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import Flourish from "@/components/Ornaments/Flourish";
-import SectionCorners from "@/components/Ornaments/SectionCorners";
 import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
@@ -306,107 +305,106 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   }
 
   const isDisabled = formState === "submitting";
+  const isResult = formState === "confirmed" || formState === "declined" || formState === "cancelled";
+  const isPositive = formState === "confirmed";
+  const isPlural = personCount === 2;
 
   // Loading state
   if (formState === "loading") {
     return (
-      <section id="rsvp" className="content-section bg-background !justify-center">
-        <div className="max-w-lg mx-auto w-full text-center">
-          <div className="relative glass-card py-12">
-            <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-            <p className="text-sm text-text-muted">Se încarcă...</p>
-          </div>
+      <section id="rsvp" className="content-section bg-background">
+        <div className="section-header">
+          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">Confirmare</h2>
+          <SmallFlourish className="mx-auto" />
         </div>
-        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
+        <div className="section-content">
+          <p className="text-sm text-text-muted">Se încarcă...</p>
+        </div>
+        <div className="section-footer"><ScrollIndicator className="mx-auto" /></div>
       </section>
     );
   }
 
-  // Confirmed state — show confirmation + cancel option
-  if (formState === "confirmed") {
+  // Result states (confirmed / declined / cancelled) — with fade-in animation
+  if (isResult) {
     return (
-      <section id="rsvp" className="content-section bg-background !justify-center">
-        <div className="max-w-lg mx-auto w-full text-center">
-          <div className="relative glass-card py-12">
-            <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-            <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
-              Mulțumim pentru confirmare!
+      <section id="rsvp" className="content-section bg-background">
+        <div className="section-header">
+          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+            Confirmare
+          </h2>
+          <SmallFlourish className="mx-auto" />
+        </div>
+
+        <div className="section-content max-w-md px-6">
+          <div className="w-full flex flex-col items-center text-center animate-fade-in-up">
+            {/* Icon */}
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${isPositive ? "bg-button/10" : "bg-text-muted/10"}`}>
+              {isPositive ? (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              ) : (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-text-muted">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M8 15s1.5-2 4-2 4 2 4 2" />
+                  <line x1="9" y1="9" x2="9.01" y2="9" />
+                  <line x1="15" y1="9" x2="15.01" y2="9" />
+                </svg>
+              )}
+            </div>
+
+            {/* Title */}
+            <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-2">
+              {isPositive
+                ? (isPlural ? "Mulțumim pentru confirmare" : "Mulțumim pentru confirmare")
+                : formState === "declined"
+                  ? (isPlural ? "Am primit răspunsul vostru" : "Am primit răspunsul tău")
+                  : "Prezența anulată"}
             </p>
-            <p className="script-font text-4xl text-text-heading mb-4">{couple.display}</p>
-            <p className="text-sm text-foreground mb-6">
-              Vă mulțumim din suflet că ați confirmat prezența.
-              <br />
-              Abia așteptăm să fiți alături de noi!
+            <p className="script-font text-3xl text-text-heading mb-3">
+              {isPositive ? couple.display : "Ne pare rău"}
             </p>
-            {settings && (
-              <div className="mb-6">
-                <AddToCalendar settings={settings} />
+
+            {/* Message */}
+            <p className="text-xs text-text-muted leading-relaxed mb-5 max-w-[260px]">
+              {isPositive
+                ? (isPlural ? "Abia așteptăm să fiți alături de noi!" : "Abia așteptăm să fii alături de noi!")
+                : (isPlural ? "Regretăm că nu veți putea fi alături de noi." : "Regretăm că nu vei putea fi alături de noi.")}
+            </p>
+
+            {/* Actions */}
+            {isPositive ? (
+              <div className="flex flex-col items-center gap-3">
+                {settings && <AddToCalendar settings={settings} />}
+                <button
+                  onClick={handleCancel}
+                  disabled={cancelling}
+                  className="text-[0.6rem] text-text-muted hover:text-button transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {cancelling ? "Se anulează..." : (isPlural ? "Anulați prezența" : "Anulează prezența")}
+                </button>
               </div>
+            ) : (
+              <button
+                onClick={() => { setFormState("idle"); setStep(1); }}
+                className="bg-button text-white py-2.5 px-8 rounded-xl text-xs font-medium hover:bg-button-hover transition-colors cursor-pointer"
+              >
+                {isPlural ? "Confirmați prezența" : "Confirmă prezența"}
+              </button>
             )}
-            <button
-              onClick={handleCancel}
-              disabled={cancelling}
-              className="text-xs text-text-muted hover:text-button transition-colors cursor-pointer underline underline-offset-2 disabled:opacity-50"
-            >
-              {cancelling ? "Se anulează..." : "Anulează prezența"}
-            </button>
           </div>
         </div>
-        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
-      </section>
-    );
-  }
 
-  // Cancelled state
-  if (formState === "cancelled") {
-    return (
-      <section id="rsvp" className="content-section bg-background !justify-center">
-        <div className="max-w-lg mx-auto w-full text-center">
-          <div className="relative glass-card py-12">
-            <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-            <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
-              Prezența anulată
-            </p>
-            <p className="script-font text-4xl text-text-heading mb-4">Ne pare rău</p>
-            <p className="text-sm text-foreground mb-6">
-              Regretăm că nu veți putea fi alături de noi.
-            </p>
-            <button
-              onClick={() => { setFormState("idle"); }}
-              className="bg-button text-white py-2.5 px-6 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer"
-            >
-              Confirmă prezența
-            </button>
-          </div>
+        <div className="section-footer space-y-2 pb-4 sm:pb-0">
+          {settings?.confirmare_pana_la && (
+            <div>
+              <p className="text-[0.65rem] tracking-[0.2em] uppercase text-text-muted mb-1">Confirmați până la</p>
+              <p className="serif-font text-base text-text-heading font-medium">{formatDate(settings.confirmare_pana_la)}</p>
+            </div>
+          )}
+          <ScrollIndicator className="mx-auto" />
         </div>
-        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
-      </section>
-    );
-  }
-
-  // Declined state (submitted "Nu pot sa particip")
-  if (formState === "declined") {
-    return (
-      <section id="rsvp" className="content-section bg-background !justify-center">
-        <div className="max-w-lg mx-auto w-full text-center">
-          <div className="relative glass-card py-12">
-            <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-            <p className="text-[0.65rem] tracking-[0.25em] uppercase text-text-muted mb-3">
-              Am primit răspunsul tău
-            </p>
-            <p className="script-font text-4xl text-text-heading mb-4">Ne pare rău</p>
-            <p className="text-sm text-foreground mb-6">
-              Regretăm că nu veți putea fi alături de noi.
-            </p>
-            <button
-              onClick={() => { setFormState("idle"); }}
-              className="bg-button text-white py-2.5 px-6 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer"
-            >
-              Confirmă prezența
-            </button>
-          </div>
-        </div>
-        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
       </section>
     );
   }
