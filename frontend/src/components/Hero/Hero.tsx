@@ -116,16 +116,19 @@ export default function Hero({
       nestedAtEnd = true;
     });
 
+    const unblockParent = () => {
+      console.log("[Hero] Unblocking parent + disabling nested");
+      nested.disable();
+      parentSwiper.allowSlideNext = true;
+      parentSwiper.allowTouchMove = true;
+    };
+
     // Unblock parent only after the touch/scroll gesture that moved nested to end finishes
     nested.on("touchEnd", () => {
       console.log("[Hero] Nested touchEnd, index:", nested.activeIndex, "nestedAtEnd:", nestedAtEnd);
       if (nestedAtEnd && initialized) {
         console.log("[Hero] Gesture ended with nested at end → unblocking parent after delay");
-        setTimeout(() => {
-          console.log("[Hero] Unblocking parent now");
-          parentSwiper.allowSlideNext = true;
-          parentSwiper.allowTouchMove = true;
-        }, 100);
+        setTimeout(unblockParent, 100);
       }
     });
 
@@ -134,11 +137,7 @@ export default function Hero({
     nested.el.addEventListener("wheel", () => {
       if (!nestedAtEnd || !initialized) return;
       if (wheelTimer) clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(() => {
-        console.log("[Hero] Wheel stopped with nested at end → unblocking parent");
-        parentSwiper.allowSlideNext = true;
-        parentSwiper.allowTouchMove = true;
-      }, 400);
+      wheelTimer = setTimeout(unblockParent, 400);
     }, { passive: true });
   }, [parentSwiper]);
 
