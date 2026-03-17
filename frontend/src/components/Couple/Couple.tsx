@@ -15,10 +15,10 @@ function getYoutubeId(url: string): string | null {
 }
 
 const TIMELINE = [
-  { date: "2021-12-24", label: "Ne-am cunoscut", icon: "sparkle" },
-  { date: "2022-01-10", label: "Prima întâlnire", icon: "coffee" },
-  { date: "2022-02-02", label: "Am devenit un cuplu", icon: "heart" },
-  { date: "2022-12-28", label: "Ne-am mutat împreună", icon: "home" },
+  { date: "2021-12-24", label: "Ne-am găsit", icon: "sparkle" },
+  { date: "2022-01-10", label: "Ne-am întâlnit", icon: "coffee" },
+  { date: "2022-02-02", label: "Un cuplu", icon: "heart" },
+  { date: "2022-12-28", label: "Prima casă", icon: "home" },
   { date: "2023-05-02", label: "Logodna", icon: "ring" },
   { date: "", label: "Nunta", icon: "celebrate" },
 ];
@@ -109,38 +109,16 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       {/* Header */}
       <div className="section-header">
         <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2 sm:mb-3">Noi doi</h2>
-        <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
-
-        {/* Mobile: rotating timeline label */}
-        <div className="lg:hidden flex flex-col items-center">
-          {(() => {
-            const item = timeline[activeTimelineIndex];
-            const isLast = activeTimelineIndex === timeline.length - 1;
-            return (
-              <div
-                className={`flex flex-col items-center text-center transition-opacity duration-400 ${
-                  timelineFading ? "opacity-0" : "opacity-100"
-                }`}
-              >
-                <p className="text-[0.6rem] tracking-[0.2em] uppercase text-text-muted mb-1">
-                  {formatDate(item.date)}
-                </p>
-                <p className={`serif-font text-xl leading-snug ${isLast ? "text-button font-medium" : "text-text-heading"}`}>
-                  {item.label}
-                </p>
-              </div>
-            );
-          })()}
-        </div>
+        <SmallFlourish className="mx-auto mb-3" />
       </div>
 
       {/* Content */}
       <div className="section-content max-w-5xl px-6">
-        <div className="flex flex-col-reverse lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14 w-full h-full sm:h-auto">
+        <div className="flex flex-col lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14 w-full">
 
-          {/* Timeline — desktop only */}
-          <div className="w-full lg:w-1/2 flex justify-center lg:justify-end lg:self-center">
-            <div className="hidden lg:block relative pl-8">
+          {/* Desktop: full vertical timeline (left side) */}
+          <div className="hidden lg:flex w-full lg:w-1/2 justify-center lg:justify-end lg:self-center">
+            <div className="relative pl-8">
               <div className="absolute left-[11px] top-2 bottom-2 w-px bg-button/20" />
               <div className="flex flex-col gap-8">
                 {timeline.map((item, i) => {
@@ -171,10 +149,10 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
             </div>
           </div>
 
-          {/* Video — h-full on mobile so it fills available space */}
-          <div className="w-full lg:w-1/2 flex justify-center lg:justify-start h-full sm:h-auto">
-            <div className="h-full sm:h-auto sm:max-w-xs lg:max-w-sm glass-card !p-0 overflow-hidden rounded-xl" style={{ aspectRatio: "2/3" }}>
-              <div className="relative w-full h-full">
+          {/* Mobile: video + timeline below; Desktop: video right */}
+          <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start gap-4">
+            <div className="w-[55vw] max-w-[240px] sm:max-w-xs lg:max-w-sm glass-card !p-0 overflow-hidden rounded-xl">
+              <div className="relative w-full" style={{ paddingBottom: "150%" }}>
                 {!playing ? (
                   <button
                     onClick={() => setPlaying(true)}
@@ -204,6 +182,32 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                   />
                 )}
               </div>
+            </div>
+
+            {/* Mobile: rotating timeline under video */}
+            <div className="lg:hidden relative w-full shrink-0" style={{ height: 36 }}>
+              {timeline.map((item, i) => {
+                const isLast = i === timeline.length - 1;
+                const isActive = i === activeTimelineIndex;
+                return (
+                  <div
+                    key={i}
+                    className={`absolute inset-0 flex items-center justify-center gap-2
+                      transition-all duration-500 ease-in-out
+                      ${isActive && !timelineFading ? "opacity-100 translate-y-0" : ""}
+                      ${isActive && timelineFading ? "opacity-0 -translate-y-2" : ""}
+                      ${!isActive ? "opacity-0 translate-y-2 pointer-events-none" : ""}`}
+                  >
+                    <span className="text-[0.65rem] tracking-[0.15em] uppercase text-text-muted whitespace-nowrap">
+                      {formatDate(item.date)}
+                    </span>
+                    <span className="w-px h-3.5 bg-button/30" />
+                    <span className={`serif-font text-[0.85rem] leading-none whitespace-nowrap ${isLast ? "text-button font-medium" : "text-text-heading"}`}>
+                      {item.label}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
