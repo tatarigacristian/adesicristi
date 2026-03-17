@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
-import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
+import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 
 interface LocationCard {
   title: string;
@@ -252,9 +252,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
         </div>
 
         {/* Footer */}
-        <div className="section-footer">
-          <ScrollIndicator className="mx-auto" />
-        </div>
+        <SectionFooterNav settings={settings} />
       </section>
 
       {/* Mobile map drawer */}

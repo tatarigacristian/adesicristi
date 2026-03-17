@@ -239,14 +239,14 @@ html.swiper-lock body {
   50% { transform: translateY(4px); }
 }
 
-/* Scroll indicator — mouse wheel line */
-.scroll-indicator-line {
-  animation: scroll-indicator-bounce 1.8s ease-in-out infinite;
+/* Scroll indicator — dot travels down inside mouse */
+.scroll-indicator-dot {
+  animation: scroll-dot-travel 2s ease-in-out infinite;
 }
 
-@keyframes scroll-indicator-bounce {
+@keyframes scroll-dot-travel {
   0%, 100% { transform: translateY(0); opacity: 1; }
-  50% { transform: translateY(4px); opacity: 0.3; }
+  50% { transform: translateY(6px); opacity: 0.4; }
 }
 
 /* Glass card effect */

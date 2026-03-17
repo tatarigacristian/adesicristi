@@ -6,6 +6,7 @@ import { getInvitationAudience, getAsteptamLine } from "@/utils/invitation-text"
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import Flourish from "@/components/Ornaments/Flourish";
 import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
+import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -320,7 +321,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         <div className="section-content">
           <p className="text-sm text-text-muted">Se încarcă...</p>
         </div>
-        <div className="section-footer"><ScrollIndicator className="mx-auto" /></div>
+        <SectionFooterNav settings={settings} />
       </section>
     );
   }
@@ -396,15 +397,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           </div>
         </div>
 
-        <div className="section-footer space-y-2 pb-4 sm:pb-0">
-          {settings?.confirmare_pana_la && (
-            <div>
-              <p className="text-[0.65rem] tracking-[0.2em] uppercase text-text-muted mb-1">Confirmați până la</p>
-              <p className="serif-font text-base text-text-heading font-medium">{formatDate(settings.confirmare_pana_la)}</p>
-            </div>
-          )}
-          <ScrollIndicator className="mx-auto" />
-        </div>
+        <SectionFooterNav settings={settings} />
       </section>
     );
   }
@@ -674,43 +667,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       </div>
 
       {/* Footer */}
-      <div className="section-footer space-y-2 pb-4 sm:pb-0">
-        {settings?.confirmare_pana_la && (
-          <div>
-            <p className="text-[0.65rem] tracking-[0.2em] uppercase text-text-muted mb-1">
-              Confirmați până la
-            </p>
-            <p className="serif-font text-base text-text-heading font-medium">
-              {formatDate(settings.confirmare_pana_la)}
-            </p>
-          </div>
-        )}
-
-        <div className="flex items-center justify-center gap-3">
-          <span className="block w-8 h-px bg-button/20" />
-          <span className="text-[0.6rem] tracking-[0.15em] uppercase text-text-muted">Contact</span>
-          <span className="block w-8 h-px bg-button/20" />
-        </div>
-
-        {(settings?.telefon_mireasa || settings?.telefon_mire) && (
-          <div className="flex justify-center gap-6">
-            {settings.telefon_mireasa && (
-              <a href={`tel:${settings.telefon_mireasa.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
-                <span className="text-[0.65rem] text-text-muted">{couple.mireasa}</span>
-                <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mireasa}</span>
-              </a>
-            )}
-            {settings.telefon_mire && (
-              <a href={`tel:${settings.telefon_mire.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
-                <span className="text-[0.65rem] text-text-muted">{couple.mire}</span>
-                <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mire}</span>
-              </a>
-            )}
-          </div>
-        )}
-
-        <ScrollIndicator className="mx-auto" />
-      </div>
+      <SectionFooterNav settings={settings} />
     </section>
   );
 }

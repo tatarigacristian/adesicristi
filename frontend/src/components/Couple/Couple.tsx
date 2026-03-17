@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
-import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
+import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 
 const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/embed/jEj57Rqeuy8";
 
@@ -215,9 +215,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       </div>
 
       {/* Footer */}
-      <div className="section-footer">
-        <ScrollIndicator className="mx-auto" />
-      </div>
+      <SectionFooterNav settings={settings} />
     </section>
   );
 }

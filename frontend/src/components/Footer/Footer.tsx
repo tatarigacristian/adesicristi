@@ -2,6 +2,7 @@
 
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import { WeddingSettings, getCoupleNames } from "@/utils/settings";
+import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 
 export default function Footer({ settings }: { settings?: WeddingSettings | null }) {
   const couple = getCoupleNames(settings ?? null);
@@ -39,30 +40,8 @@ export default function Footer({ settings }: { settings?: WeddingSettings | null
         </div>
       </div>
 
-      {/* Footer — Contact */}
-      <div className="section-footer space-y-2 pb-4 sm:pb-0">
-        <div className="flex items-center justify-center gap-3 mb-2">
-          <span className="block w-8 h-px bg-button/20" />
-          <span className="text-[0.6rem] tracking-[0.15em] uppercase text-text-muted">Contact</span>
-          <span className="block w-8 h-px bg-button/20" />
-        </div>
-        {(settings?.telefon_mireasa || settings?.telefon_mire) && (
-          <div className="flex justify-center gap-6">
-            {settings?.telefon_mireasa && (
-              <a href={`tel:${settings.telefon_mireasa.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
-                <span className="text-[0.65rem] text-text-muted">{couple.mireasa}</span>
-                <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mireasa}</span>
-              </a>
-            )}
-            {settings?.telefon_mire && (
-              <a href={`tel:${settings.telefon_mire.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
-                <span className="text-[0.65rem] text-text-muted">{couple.mire}</span>
-                <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mire}</span>
-              </a>
-            )}
-          </div>
-        )}
-      </div>
+      {/* Footer */}
+      <SectionFooterNav settings={settings} />
     </section>
   );
 }

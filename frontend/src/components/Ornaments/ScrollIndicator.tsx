@@ -1,36 +1,34 @@
 export default function ScrollIndicator({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex flex-col items-center ${className}`}>
+    <div className={`flex flex-col items-center gap-1.5 ${className}`}>
       <svg
-        width="20"
-        height="28"
-        viewBox="0 0 20 28"
+        width="24"
+        height="36"
+        viewBox="0 0 24 36"
         fill="none"
-        className="text-button/40"
+        className="text-button/60"
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* Mouse outline */}
         <rect
-          x="1"
-          y="1"
-          width="18"
-          height="26"
-          rx="9"
+          x="1.5"
+          y="1.5"
+          width="21"
+          height="33"
+          rx="10.5"
           stroke="currentColor"
-          strokeWidth="1.2"
+          strokeWidth="1.5"
         />
-        {/* Scroll wheel line */}
-        <line
-          x1="10"
-          y1="7"
-          x2="10"
-          y2="12"
-          stroke="currentColor"
-          strokeWidth="1.2"
-          strokeLinecap="round"
-          className="scroll-indicator-line"
+        {/* Scroll dot */}
+        <circle
+          cx="12"
+          cy="11"
+          r="2"
+          fill="currentColor"
+          className="scroll-indicator-dot"
         />
       </svg>
+      <span className="text-[0.45rem] tracking-[0.2em] uppercase text-button/40">scroll</span>
     </div>
   );
 }

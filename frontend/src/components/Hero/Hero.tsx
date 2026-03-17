@@ -9,6 +9,7 @@ import { getInvitationAudience, getGreeting, getInvitationLine, getAlaturiLine, 
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
+import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import { useSwiper } from "@/context/SwiperContext";
 
 interface GuestData {
@@ -174,42 +175,42 @@ export default function Hero({
             >
               {/* Phase 1: greeting + invitation */}
               <SwiperSlide>
-                <div className="h-full flex flex-col items-center justify-center px-6">
-                  {guest && audience && (
-                    <>
-                      <p className="serif-font text-base italic text-text-muted mb-1">
-                        {getGreeting(audience)}
-                      </p>
-                      <p className="serif-font text-xl text-text-heading font-light mb-3">
-                        {guest.partner
-                          ? guest.nume === guest.partner.nume
-                            ? `${guest.prenume} și ${guest.partner.prenume} ${guest.nume}`
-                            : `${guest.prenume} ${guest.nume} și ${guest.partner.prenume} ${guest.partner.nume}`
-                          : `${guest.prenume} ${guest.nume}`}
-                      </p>
-                    </>
-                  )}
-                  <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-3 font-medium mt-2">
-                    {audience ? getInvitationLine(audience) : "Cu drag vă invităm"}
-                  </p>
-                  <h2 className="serif-font text-xl font-light italic text-text-heading leading-relaxed">
-                    {audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}
-                  </h2>
-                  <div className="mt-6">
-                    <ScrollIndicator />
+                <div className="h-full flex flex-col items-center px-6">
+                  <div className="flex-1 flex flex-col items-center justify-center">
+                    {guest && audience && (
+                      <>
+                        <p className="serif-font text-base italic text-text-muted mb-1">
+                          {getGreeting(audience)}
+                        </p>
+                        <p className="serif-font text-xl text-text-heading font-light mb-3">
+                          {guest.partner
+                            ? guest.nume === guest.partner.nume
+                              ? `${guest.prenume} și ${guest.partner.prenume} ${guest.nume}`
+                              : `${guest.prenume} ${guest.nume} și ${guest.partner.prenume} ${guest.partner.nume}`
+                            : `${guest.prenume} ${guest.nume}`}
+                        </p>
+                      </>
+                    )}
+                    <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-3 font-medium mt-2">
+                      {audience ? getInvitationLine(audience) : "Cu drag vă invităm"}
+                    </p>
+                    <h2 className="serif-font text-xl font-light italic text-text-heading leading-relaxed">
+                      {audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}
+                    </h2>
                   </div>
+                  <SectionFooterNav settings={settings} />
                 </div>
               </SwiperSlide>
 
               {/* Phase 2: personalized message */}
               <SwiperSlide>
-                <div className="h-full flex flex-col items-center justify-center px-6">
-                  <p className="serif-font text-[0.85rem] leading-[1.8] text-foreground max-w-md mx-auto px-2">
-                    {guest ? personalizedText : defaultText}
-                  </p>
-                  <div className="mt-6">
-                    <ScrollIndicator />
+                <div className="h-full flex flex-col items-center px-6">
+                  <div className="flex-1 flex flex-col items-center justify-center">
+                    <p className="serif-font text-[0.85rem] leading-[1.8] text-foreground max-w-md mx-auto px-2">
+                      {guest ? personalizedText : defaultText}
+                    </p>
                   </div>
+                  <SectionFooterNav settings={settings} />
                 </div>
               </SwiperSlide>
             </Swiper>
@@ -263,8 +264,8 @@ export default function Hero({
           </p>
         </div>
 
-        <div className={`mt-auto pb-[20px] transition-all duration-1000 delay-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <ScrollIndicator />
+        <div className={`mt-auto transition-all duration-1000 delay-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <SectionFooterNav settings={settings} />
         </div>
       </div>
     </section>

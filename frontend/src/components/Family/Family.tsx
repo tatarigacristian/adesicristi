@@ -2,7 +2,7 @@
 
 import { WeddingSettings } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
-import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
+import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 
 export default function Family({
   settings,
@@ -92,9 +92,7 @@ export default function Family({
       </div>
 
       {/* Footer */}
-      <div className="section-footer">
-        <ScrollIndicator className="mx-auto" />
-      </div>
+      <SectionFooterNav settings={settings} />
     </section>
   );
 }
