@@ -119,10 +119,13 @@ export default function Hero({
     const unblockParent = () => {
       console.log("[Hero] Unblocking parent + disabling nested");
       nested.disable();
-      // Force touch events to pass through to parent on iOS
       nested.el.style.pointerEvents = "none";
+      nested.el.style.touchAction = "none";
       parentSwiper.allowSlideNext = true;
       parentSwiper.allowTouchMove = true;
+      parentSwiper.attachEvents();
+      parentSwiper.update();
+      console.log("[Hero] Parent state: allowSlideNext:", parentSwiper.allowSlideNext, "allowTouchMove:", parentSwiper.allowTouchMove, "enabled:", parentSwiper.enabled);
     };
 
     // Unblock parent immediately on touchEnd — gesture is already over
