@@ -59,21 +59,23 @@ export default function Hero({
   const onNestedSwiper = useCallback((nested: SwiperType) => {
     if (!parentSwiper) return;
 
-    console.log("[Hero] Nested swiper initialized. Parent activeIndex:", parentSwiper.activeIndex);
+    console.log("[Hero] Nested init. Parent activeIndex:", parentSwiper.activeIndex, "Parent enabled:", parentSwiper.enabled);
 
-    // Only block slideNext — do NOT touch allowTouchMove (breaks nested touch on iOS)
+    // Fully disable parent so it doesn't capture any touch/wheel events
     if (parentSwiper.activeIndex === 0) {
-      console.log("[Hero] Blocking parent slideNext (initial)");
-      parentSwiper.allowSlideNext = false;
+      console.log("[Hero] Disabling parent completely");
+      parentSwiper.disable();
     }
 
-    // Ignore events during init
+    // Ignore reachEnd during init
     let initialized = false;
     setTimeout(() => {
       initialized = true;
       console.log("[Hero] Nested ready. activeIndex:", nested.activeIndex);
+      // Re-disable parent in case reachEnd during init re-enabled it
       if (parentSwiper.activeIndex === 0 && nested.activeIndex === 0) {
-        parentSwiper.allowSlideNext = false;
+        console.log("[Hero] Re-disabling parent after init");
+        parentSwiper.disable();
       }
     }, 300);
 
@@ -81,22 +83,20 @@ export default function Hero({
       if (!initialized) return;
       console.log("[Hero] Nested slideChange → index:", nested.activeIndex, "isEnd:", nested.isEnd);
       if (nested.isEnd) {
-        console.log("[Hero] Nested at end → disabling nested, unblocking parent");
+        console.log("[Hero] Nested at end → disabling nested, enabling parent");
         nested.disable();
         nested.el.style.pointerEvents = "none";
-        parentSwiper.allowSlideNext = true;
-        console.log("[Hero] Parent allowSlideNext:", parentSwiper.allowSlideNext);
-      } else {
-        parentSwiper.allowSlideNext = false;
+        parentSwiper.enable();
+        console.log("[Hero] Parent enabled:", parentSwiper.enabled);
       }
     });
 
     nested.on("reachEnd", () => {
       if (!initialized) return;
-      console.log("[Hero] Nested reachEnd → disabling nested, unblocking parent");
+      console.log("[Hero] Nested reachEnd → disabling nested, enabling parent");
       nested.disable();
       nested.el.style.pointerEvents = "none";
-      parentSwiper.allowSlideNext = true;
+      parentSwiper.enable();
     });
   }, [parentSwiper]);
 
@@ -106,15 +106,7 @@ export default function Hero({
 
     const onParentSlideChange = () => {
       console.log("[Hero] Parent slideChange → activeIndex:", parentSwiper.activeIndex);
-      if (parentSwiper.activeIndex === 0) {
-        const nestedEl = parentSwiper.slides[0]?.querySelector(".swiper") as HTMLElement & { swiper?: SwiperType };
-        const nested = nestedEl?.swiper;
-        console.log("[Hero] Back on Hero. Nested exists:", !!nested, "nested index:", nested?.activeIndex, "nested enabled:", nested?.enabled);
-        if (nested && !nested.isEnd) {
-          console.log("[Hero] Nested not at end → re-blocking parent");
-          parentSwiper.allowSlideNext = false;
-        }
-      }
+      // No re-blocking needed — once nested is done, parent stays enabled
     };
 
     parentSwiper.on("slideChange", onParentSlideChange);
