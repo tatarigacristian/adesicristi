@@ -13,8 +13,11 @@ const fastify = Fastify({ logger: true });
 async function start() {
   // Run pending migrations before starting
   await runMigrations();
+  const allowedOrigins = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(',').map((u) => u.trim())
+    : ['http://localhost:3000', 'http://localhost:3001'];
   await fastify.register(cors, {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   });
 

@@ -178,10 +178,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="fixed inset-0 bg-black/30 z-40 md:hidden" onClick={() => setSidebarOpen(false)} />
         )}
 
-        {/* Sidebar */}
+        {/* Sidebar - fixed pe desktop ca sa ramana vizibil la scroll */}
         <aside className={`fixed top-0 left-0 h-full w-60 bg-background border-r border-border-light z-50
           flex flex-col transition-transform duration-300
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:sticky md:top-0 md:h-screen md:z-auto`}>
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:z-20`}>
           <div className="px-6 py-6 border-b border-border-light">
             <h1 className="script-font text-2xl text-text-heading">Ade & Cristi</h1>
             <p className="text-[0.6rem] tracking-widest uppercase text-text-muted mt-1">Admin Panel</p>
@@ -219,8 +219,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </aside>
 
-        {/* Main content */}
-        <main className="flex-1 pt-16 md:pt-0">
+        {/* Main content - ml-60 pe desktop ca sa nu se ascunda sub meniul fixed */}
+        <main className="flex-1 pt-16 md:pt-0 md:ml-60">
           <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
             {children}
           </div>

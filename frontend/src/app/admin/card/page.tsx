@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useEffect, useState, useRef } from "react";
+import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
+import { toPng } from "html-to-image";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://adesicristi.vercel.app";
@@ -320,14 +321,11 @@ function buildStyles(s: WeddingSettings | null) {
   return `
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Alex+Brush&family=Montserrat:wght@300;400;500;600&display=swap');
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: ${bgOuter};
+    .card-page-root {
       font-family: 'Montserrat', sans-serif;
     }
 
-    .print-page {
+    .card-page-root .print-page {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -335,13 +333,13 @@ function buildStyles(s: WeddingSettings | null) {
       gap: 2rem;
     }
 
-    .print-actions {
+    .card-page-root .print-actions {
       display: flex;
       gap: 0.75rem;
       margin-bottom: 1rem;
     }
 
-    .print-btn {
+    .card-page-root .print-btn {
       padding: 0.5rem 1.5rem;
       border-radius: 0.5rem;
       font-size: 0.85rem;
@@ -352,27 +350,27 @@ function buildStyles(s: WeddingSettings | null) {
       border: none;
     }
 
-    .print-btn-primary {
+    .card-page-root .print-btn-primary {
       background: ${text};
       color: ${main};
     }
-    .print-btn-primary:hover { filter: brightness(1.2); }
+    .card-page-root .print-btn-primary:hover { filter: brightness(1.2); }
 
-    .print-btn-secondary {
+    .card-page-root .print-btn-secondary {
       background: ${bgCard};
       color: ${text};
       border: 1px solid ${button};
     }
-    .print-btn-secondary:hover { filter: brightness(0.97); }
+    .card-page-root .print-btn-secondary:hover { filter: brightness(0.97); }
 
-    .cards-container {
+    .card-page-root .cards-container {
       display: flex;
       gap: 2.5rem;
       flex-wrap: wrap;
       justify-content: center;
     }
 
-    .card-face {
+    .card-page-root .card-face {
       width: 9cm;
       height: 5.5cm;
       background: ${bgCard};
@@ -383,7 +381,7 @@ function buildStyles(s: WeddingSettings | null) {
       border: 0.5px solid ${button}60;
     }
 
-    .card-inner {
+    .card-page-root .card-inner {
       width: 100%;
       height: 100%;
       display: flex;
@@ -400,7 +398,7 @@ function buildStyles(s: WeddingSettings | null) {
     }
 
     /* Corner ornaments */
-    .corner-ornament {
+    .card-page-root .corner-ornament {
       position: absolute;
       width: 22px;
       height: 22px;
@@ -408,13 +406,13 @@ function buildStyles(s: WeddingSettings | null) {
       background-repeat: no-repeat;
       background-image: ${cornerImg};
     }
-    .corner-ornament.top-left     { top: 2px; left: 2px; }
-    .corner-ornament.top-right    { top: 2px; right: 2px; transform: scaleX(-1); }
-    .corner-ornament.bottom-left  { bottom: 2px; left: 2px; transform: scaleY(-1); }
-    .corner-ornament.bottom-right { bottom: 2px; right: 2px; transform: scale(-1, -1); }
+    .card-page-root .corner-ornament.top-left     { top: 2px; left: 2px; }
+    .card-page-root .corner-ornament.top-right    { top: 2px; right: 2px; transform: scaleX(-1); }
+    .card-page-root .corner-ornament.bottom-left  { bottom: 2px; left: 2px; transform: scaleY(-1); }
+    .card-page-root .corner-ornament.bottom-right { bottom: 2px; right: 2px; transform: scale(-1, -1); }
 
     /* Front card */
-    .card-label {
+    .card-page-root .card-label {
       font-family: 'Montserrat', sans-serif;
       font-size: 0.35rem;
       letter-spacing: 0.3em;
@@ -424,7 +422,7 @@ function buildStyles(s: WeddingSettings | null) {
       margin-bottom: 0.08cm;
     }
 
-    .card-couple-names {
+    .card-page-root .card-couple-names {
       font-family: 'Alex Brush', cursive;
       font-size: 1.5rem;
       color: ${text};
@@ -433,17 +431,17 @@ function buildStyles(s: WeddingSettings | null) {
       margin-bottom: 0.1cm;
     }
 
-    .card-qr {
+    .card-page-root .card-qr {
       margin-bottom: 0.08cm;
     }
-    .card-qr img {
+    .card-page-root .card-qr img {
       width: 1.5cm;
       height: 1.5cm;
       display: block;
       border-radius: 2px;
     }
 
-    .card-guest-name {
+    .card-page-root .card-guest-name {
       font-family: 'Cormorant Garamond', serif;
       font-size: 0.5rem;
       color: ${text};
@@ -452,7 +450,7 @@ function buildStyles(s: WeddingSettings | null) {
       margin-bottom: 0.03cm;
     }
 
-    .card-date {
+    .card-page-root .card-date {
       font-family: 'Montserrat', sans-serif;
       font-size: 0.33rem;
       color: ${muted};
@@ -462,18 +460,18 @@ function buildStyles(s: WeddingSettings | null) {
     }
 
     /* Back card */
-    .card-back {
+    .card-page-root .card-back {
       background: ${bgCard};
     }
 
-    .card-greeting {
+    .card-page-root .card-greeting {
       font-family: 'Cormorant Garamond', serif;
       font-size: 0.5rem;
       color: ${text};
       font-weight: 500;
       margin-bottom: 0.05cm;
     }
-    .card-nasi {
+    .card-page-root .card-nasi {
       font-family: 'Cormorant Garamond', serif;
       font-size: 0.38rem;
       color: ${muted};
@@ -482,7 +480,7 @@ function buildStyles(s: WeddingSettings | null) {
       margin-bottom: 0.08cm;
     }
 
-    .card-message {
+    .card-page-root .card-message {
       font-family: 'Cormorant Garamond', serif;
       font-size: 0.42rem;
       color: ${lightenHex(text, 30)};
@@ -494,26 +492,26 @@ function buildStyles(s: WeddingSettings | null) {
       margin-bottom: 0.15cm;
     }
 
-    .card-events-row {
+    .card-page-root .card-events-row {
       display: flex;
       gap: 0.35cm;
       margin-bottom: 0.12cm;
     }
-    .card-event-item {
+    .card-page-root .card-event-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0.04cm;
       flex: 1;
     }
-    .card-event-time {
+    .card-page-root .card-event-time {
       font-family: 'Montserrat', sans-serif;
       font-size: 0.3rem;
       font-weight: 500;
       color: ${text};
       letter-spacing: 0.05em;
     }
-    .card-event-address {
+    .card-page-root .card-event-address {
       font-family: 'Montserrat', sans-serif;
       font-size: 0.24rem;
       color: ${muted};
@@ -522,10 +520,10 @@ function buildStyles(s: WeddingSettings | null) {
       white-space: nowrap;
     }
 
-    .card-back-footer {
+    .card-page-root .card-back-footer {
       text-align: center;
     }
-    .card-back-names {
+    .card-page-root .card-back-names {
       font-family: 'Alex Brush', cursive;
       font-size: 0.85rem;
       color: ${text};
@@ -533,23 +531,22 @@ function buildStyles(s: WeddingSettings | null) {
 
     /* Print styles */
     @media print {
-      body { background: white; }
-      .print-actions { display: none !important; }
-      .print-page { padding: 0; gap: 0; }
+      .card-page-root .print-actions { display: none !important; }
+      .card-page-root .print-page { padding: 0; gap: 0; }
 
-      .cards-container {
+      .card-page-root .cards-container {
         gap: 0;
         flex-direction: column;
         align-items: center;
       }
 
-      .card-face {
+      .card-page-root .card-face {
         box-shadow: none;
         border-radius: 0;
         page-break-inside: avoid;
       }
 
-      .card-front {
+      .card-page-root .card-front {
         margin-bottom: 0.5cm;
       }
     }
@@ -567,6 +564,53 @@ function CardPageContent() {
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const printRef = useRef<HTMLDivElement>(null);
+
+  const generatePngBlob = useCallback(async (): Promise<Blob | null> => {
+    if (!printRef.current) return null;
+    const dataUrl = await toPng(printRef.current, { pixelRatio: 3 });
+    const res = await fetch(dataUrl);
+    return res.blob();
+  }, []);
+
+  const handleSavePng = useCallback(async () => {
+    if (!printRef.current || !guest) return;
+    try {
+      const dataUrl = await toPng(printRef.current, { pixelRatio: 3 });
+      const link = document.createElement("a");
+      link.download = `card-${guest.prenume}-${guest.nume}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to save PNG:", err);
+    }
+  }, [guest]);
+
+  const handleShare = useCallback(async (target: "whatsapp" | "messenger") => {
+    if (!guest) return;
+    const fileName = `card-${guest.prenume}-${guest.nume}.png`;
+    const inviteUrl = guest.slug ? `${SITE_URL}/${guest.slug}` : SITE_URL;
+    const text = `Invitatie pentru ${guest.prenume} ${guest.nume}`;
+
+    try {
+      const blob = await generatePngBlob();
+      if (blob && navigator.share && navigator.canShare) {
+        const file = new File([blob], fileName, { type: "image/png" });
+        const shareData = { files: [file], text };
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          return;
+        }
+      }
+    } catch (err) {
+      if ((err as DOMException)?.name === "AbortError") return;
+    }
+
+    if (target === "whatsapp") {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text + "\n" + inviteUrl)}`, "_blank");
+    } else {
+      window.open(`https://www.facebook.com/dialog/send?link=${encodeURIComponent(inviteUrl)}&app_id=966242223397117&redirect_uri=${encodeURIComponent(window.location.href)}`, "_blank");
+    }
+  }, [guest, generatePngBlob]);
 
   useEffect(() => {
     if (!guestId || !token) return;
@@ -640,13 +684,21 @@ function CardPageContent() {
   }
 
   return (
-    <>
+    <div className="card-page-root">
       <style>{buildStyles(settings)}</style>
 
       <div className="print-page">
         <div className="print-actions">
-          <button className="print-btn print-btn-primary" onClick={() => window.print()}>
-            Printeaza
+          <button className="print-btn print-btn-primary" onClick={handleSavePng}>
+            Salveaza ca PNG
+          </button>
+          <button className="print-btn print-btn-secondary" onClick={() => handleShare("whatsapp")} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+            WhatsApp
+          </button>
+          <button className="print-btn print-btn-secondary" onClick={() => handleShare("messenger")} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.242c1.092.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.111C24 4.974 18.627 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26L10.732 8.2l3.131 3.259L19.752 8.2l-6.561 6.763z" /></svg>
+            Messenger
           </button>
           <button className="print-btn print-btn-secondary" onClick={() => window.close()}>
             Inchide
@@ -658,7 +710,7 @@ function CardPageContent() {
           <CardBack guest={guest} partner={partner} settings={settings} />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
