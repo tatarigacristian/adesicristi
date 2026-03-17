@@ -198,6 +198,16 @@ html.swiper-lock body {
   50% { transform: translateY(4px); }
 }
 
+/* Scroll indicator — mouse wheel line */
+.scroll-indicator-line {
+  animation: scroll-indicator-bounce 1.8s ease-in-out infinite;
+}
+
+@keyframes scroll-indicator-bounce {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(4px); opacity: 0.3; }
+}
+
 /* Glass card effect */
 .glass-card {
   border: 1px solid var(--color-accent);

@@ -7,7 +7,8 @@ import type { Swiper as SwiperType } from "swiper";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
-import { useSwiper, useSlideTo } from "@/context/SwiperContext";
+import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
+import { useSwiper } from "@/context/SwiperContext";
 
 interface GuestData {
   nume: string;
@@ -29,7 +30,6 @@ export default function Hero({
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const parentSwiper = useSwiper();
-  const slideTo = useSlideTo();
 
   const couple = getCoupleNames(settings ?? null);
   const dateDisplay = settings?.ceremonie_data
@@ -195,6 +195,9 @@ export default function Hero({
                   <h2 className="serif-font text-xl font-light italic text-text-heading leading-relaxed">
                     Să fiți alături de noi
                   </h2>
+                  <div className="mt-6">
+                    <ScrollIndicator />
+                  </div>
                 </div>
               </SwiperSlide>
 
@@ -205,15 +208,7 @@ export default function Hero({
                     {guest ? personalizedText : defaultText}
                   </p>
                   <div className="mt-6">
-                    <button
-                      onClick={() => slideTo("couple")}
-                      className="group cursor-pointer inline-flex flex-col items-center gap-2"
-                    >
-                      <span className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted">Descoperă mai mult</span>
-                      <svg width="20" height="12" viewBox="0 0 20 12" fill="none" className="scroll-arrow text-button/70">
-                        <path d="M2 2L10 10L18 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </button>
+                    <ScrollIndicator />
                   </div>
                 </div>
               </SwiperSlide>
@@ -268,13 +263,8 @@ export default function Hero({
           </p>
         </div>
 
-        <div className={`mt-auto pb-[50px] transition-all duration-1000 delay-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <button onClick={() => slideTo("couple")} className="group cursor-pointer inline-flex flex-col items-center gap-2">
-            <span className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted group-hover:text-button transition-colors duration-300">Descoperă mai mult</span>
-            <svg width="20" height="12" viewBox="0 0 20 12" fill="none" className="scroll-arrow text-button/70 group-hover:text-button transition-colors duration-300">
-              <path d="M2 2L10 10L18 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+        <div className={`mt-auto pb-[20px] transition-all duration-1000 delay-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <ScrollIndicator />
         </div>
       </div>
     </section>

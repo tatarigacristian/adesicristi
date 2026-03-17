@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import type { Swiper as SwiperType } from "swiper";
+import { useState, useMemo } from "react";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
+import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
 
 interface LocationCard {
   title: string;
@@ -86,7 +84,8 @@ function getAppleMapsUrl(googleMapsUrl: string) {
   return `https://maps.apple.com/?daddr=${encodeURIComponent(googleMapsUrl)}`;
 }
 
-function LocationCardContent({
+/* Desktop card with image */
+function LocationCardDesktop({
   loc,
   onMapClick,
 }: {
@@ -98,11 +97,11 @@ function LocationCardContent({
       <img
         src={loc.image}
         alt={loc.title}
-        className={`w-full h-[234px] sm:h-[298px] md:h-[330px] object-cover ${loc.imagePosition === "top" ? "object-top" : "object-center"}`}
+        className={`w-full h-[298px] md:h-[330px] object-cover ${loc.imagePosition === "top" ? "object-top" : "object-center"}`}
       />
       <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-      <div className="px-4 pt-3 pb-[20px] sm:p-5 text-center">
-        <h3 className="serif-font text-base sm:text-lg text-text-heading mb-1">
+      <div className="p-5 text-center">
+        <h3 className="serif-font text-lg text-text-heading mb-1">
           {loc.title}
         </h3>
         <p className="text-[0.7rem] text-text-muted flex items-center justify-center gap-1.5 mb-0.5">
@@ -134,10 +133,43 @@ function LocationCardContent({
   );
 }
 
+/* Event icons for mobile timeline */
+function EventIcon({ type }: { type: string }) {
+  if (type.toLowerCase().includes("transport")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 7 Q3 5, 5 5 L19 5 Q21 5, 21 7 L21 15 Q21 17, 19 17 L5 17 Q3 17, 3 15Z" />
+        <rect x="5" y="7" width="4" height="3" rx="0.5" />
+        <rect x="10" y="7" width="4" height="3" rx="0.5" />
+        <rect x="15" y="7" width="4" height="3" rx="0.5" />
+        <circle cx="7" cy="19" r="1.5" /><circle cx="17" cy="19" r="1.5" />
+      </svg>
+    );
+  }
+  if (type.toLowerCase().includes("petrecere") || type.toLowerCase().includes("recep")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M7 2 L7 4 C7 8, 9 10, 12 10 C15 10, 17 8, 17 4 L17 2" />
+        <line x1="12" y1="10" x2="12" y2="18" />
+        <line x1="8" y1="18" x2="16" y2="18" />
+        <line x1="7" y1="2" x2="17" y2="2" />
+      </svg>
+    );
+  }
+  // Default: church
+  return (
+    <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="1" x2="12" y2="5" />
+      <line x1="10" y1="3" x2="14" y2="3" />
+      <path d="M7 10 L12 5 L17 10" />
+      <rect x="6" y="10" width="12" height="11" />
+      <path d="M10 21 L10 17 Q10 15, 12 15 Q14 15, 14 17 L14 21" />
+    </svg>
+  );
+}
+
 export default function Locations({ settings }: { settings?: WeddingSettings | null }) {
   const [drawerLocation, setDrawerLocation] = useState<LocationCard | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const locations = useMemo(() => buildLocations(settings ?? null), [settings]);
 
@@ -148,10 +180,6 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
       window.open(loc.googleMapsUrl, "_blank");
     }
   }
-
-  const handleSlideChange = useCallback((swiper: SwiperType) => {
-    setActiveIndex(swiper.realIndex);
-  }, []);
 
   return (
     <>
@@ -164,53 +192,60 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
             <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
               Detaliile evenimentului
             </h2>
-            <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
+            <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
             <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
               Când și unde
             </p>
           </div>
 
-          {/* Mobile carousel */}
-          <div className="md:hidden mt-auto sm:mt-0">
-            <Swiper
-              modules={[Autoplay]}
-              loop={true}
-              autoplay={{ delay: 5000, disableOnInteraction: false }}
-              slidesPerView={1}
-              spaceBetween={16}
-              onSwiper={setSwiperRef}
-              onSlideChange={handleSlideChange}
-              nested={true}
-            >
-              {locations.map((loc) => (
-                <SwiperSlide key={loc.title}>
-                  <div className="px-4">
-                    <LocationCardContent loc={loc} onMapClick={handleMapClick} />
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+          {/* Mobile timeline */}
+          <div className="md:hidden my-auto px-6">
+            <div className="relative pl-10">
+              {/* Vertical line */}
+              <div className="absolute left-[15px] top-4 bottom-4 w-px bg-button/20" />
 
-            <div className="flex items-center justify-center gap-2.5 mt-6">
-              {locations.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => swiperRef?.slideToLoop(i)}
-                  aria-label={`Go to ${locations[i].title}`}
-                  className={`rounded-full transition-all duration-300 cursor-pointer ${
-                    activeIndex === i
-                      ? "w-6 h-2 bg-button"
-                      : "w-2 h-2 bg-border hover:bg-button/50"
-                  }`}
-                />
-              ))}
+              <div className="flex flex-col gap-6">
+                {locations.map((loc, i) => (
+                  <div key={loc.title} className="relative">
+                    {/* Icon circle on timeline */}
+                    <div className="absolute -left-10 top-0 w-[30px] h-[30px] rounded-full flex items-center justify-center bg-button text-white">
+                      <EventIcon type={loc.title} />
+                    </div>
+
+                    {/* Content */}
+                    <div>
+                      <h3 className="serif-font text-base text-text-heading leading-tight">
+                        {loc.title}
+                      </h3>
+                      <p className="text-[0.65rem] text-button mt-0.5">
+                        {loc.date}{loc.time ? `, ${loc.time}` : ""}
+                      </p>
+                      <p className="text-[0.65rem] text-text-muted mt-0.5 leading-snug">
+                        {loc.address}
+                      </p>
+                      {loc.googleMapsUrl && (
+                        <button
+                          onClick={() => handleMapClick(loc)}
+                          className="mt-1.5 text-[0.6rem] tracking-[0.1em] uppercase text-button flex items-center gap-1 cursor-pointer hover:text-button-hover transition-colors"
+                        >
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                          </svg>
+                          Vezi pe hartă
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Desktop grid */}
           <div className="hidden md:grid grid-cols-3 gap-5">
             {locations.map((loc) => (
-              <LocationCardContent
+              <LocationCardDesktop
                 key={loc.title}
                 loc={loc}
                 onMapClick={handleMapClick}
@@ -218,6 +253,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
             ))}
           </div>
         </div>
+        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
       </section>
 
       {/* Mobile map drawer */}

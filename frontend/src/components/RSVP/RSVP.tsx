@@ -5,6 +5,7 @@ import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import Flourish from "@/components/Ornaments/Flourish";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
+import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -298,6 +299,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             <p className="text-sm text-text-muted">Se încarcă...</p>
           </div>
         </div>
+        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
       </section>
     );
   }
@@ -332,6 +334,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </button>
           </div>
         </div>
+        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
       </section>
     );
   }
@@ -358,6 +361,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </button>
           </div>
         </div>
+        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
       </section>
     );
   }
@@ -384,6 +388,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </button>
           </div>
         </div>
+        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
       </section>
     );
   }
@@ -608,6 +613,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           )}
         </div>
       </div>
+      <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
     </section>
   );
 }

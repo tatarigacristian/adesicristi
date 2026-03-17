@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
+import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
 
 const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/embed/jEj57Rqeuy8";
 
@@ -175,7 +176,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
 
           {/* Video */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-start">
-            <div className="w-full max-w-[280px] sm:max-w-xs lg:max-w-sm glass-card !p-0 overflow-hidden">
+            <div className="w-full max-w-[220px] sm:max-w-xs lg:max-w-sm glass-card !p-0 overflow-hidden">
               <div className="relative w-full" style={{ paddingBottom: "calc(150% - 20px)" }}>
                 {!playing ? (
                   <button
@@ -190,11 +191,10 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                     <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-                      <div className="flex items-center gap-2 bg-white/50 group-hover:bg-white/70 transition-all duration-300 rounded-full px-4 py-2 shadow-lg">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-button">
+                      <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="text-button ml-1">
                           <path d="M8 5v14l11-7z" fill="currentColor" />
                         </svg>
-                        <span className="text-xs font-medium text-text-heading tracking-wide">Play video</span>
                       </div>
                     </div>
                   </button>
@@ -211,6 +211,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
           </div>
         </div>
       </div>
+      <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
     </section>
   );
 }
