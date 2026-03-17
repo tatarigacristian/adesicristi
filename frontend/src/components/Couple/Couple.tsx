@@ -105,7 +105,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       id="couple"
       className="content-section bg-background-soft"
     >
-      <div className="w-full max-w-5xl mx-auto px-6 flex-1 flex flex-col sm:block">
+      <div className="w-full max-w-5xl mx-auto px-6 flex-1 flex flex-col">
         <div className="text-center mb-4 sm:mb-10">
           <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2 sm:mb-3">Noi doi</h2>
           <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
@@ -134,7 +134,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
         </div>
 
         {/* Mobile: stacked */}
-        <div className="flex flex-col-reverse lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14 mt-auto sm:mt-0">
+        <div className="flex flex-col-reverse lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14 mt-auto sm:mb-[50px]">
 
           {/* Timeline — vertically centered with video on desktop */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-end lg:self-center">

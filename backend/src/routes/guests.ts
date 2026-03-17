@@ -12,6 +12,7 @@ interface GuestBody {
   slug?: string;
   partner_nume?: string;
   partner_prenume?: string;
+  sex?: 'M' | 'F' | null;
 }
 
 export async function guestRoutes(fastify: FastifyInstance) {
@@ -22,7 +23,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
     // Get main guest by slug
     const [rows] = await pool.execute<RowDataPacket[]>(
-      'SELECT id, nume, prenume, plus_one, intro_short, intro_long, partner_id FROM guests WHERE slug = ?',
+      'SELECT id, nume, prenume, plus_one, intro_short, intro_long, partner_id, sex FROM guests WHERE slug = ?',
       [slug]
     );
 
@@ -50,6 +51,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
       plus_one: guest.plus_one,
       intro_short: guest.intro_short,
       intro_long: guest.intro_long,
+      sex: guest.sex || null,
       partner: partner ? { nume: partner.nume, prenume: partner.prenume } : null,
     };
   });
@@ -65,7 +67,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
   // Create guest
   fastify.post<{ Body: GuestBody }>('/api/admin/guests', { preHandler: authenticate }, async (request, reply) => {
-    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume } = request.body;
+    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume, sex } = request.body;
 
     if (!nume || !prenume) {
       return reply.status(400).send({ error: 'Nume si prenume sunt obligatorii' });
@@ -97,8 +99,8 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
       // Create main guest
       const [result] = await conn.execute<ResultSetHeader>(
-        'INSERT INTO guests (nume, prenume, plus_one, intro_short, intro_long, slug) VALUES (?, ?, ?, ?, ?, ?)',
-        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slug || null]
+        'INSERT INTO guests (nume, prenume, plus_one, intro_short, intro_long, slug, sex) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slug || null, sex || null]
       );
       const mainId = result.insertId;
 
@@ -130,7 +132,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
   // Update guest
   fastify.put<{ Params: { id: string }; Body: GuestBody }>('/api/admin/guests/:id', { preHandler: authenticate }, async (request, reply) => {
     const { id } = request.params;
-    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume } = request.body;
+    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume, sex } = request.body;
 
     if (!nume || !prenume) {
       return reply.status(400).send({ error: 'Nume si prenume sunt obligatorii' });
@@ -172,8 +174,8 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
       // Update main guest
       await conn.execute(
-        'UPDATE guests SET nume = ?, prenume = ?, plus_one = ?, intro_short = ?, intro_long = ?, slug = ? WHERE id = ?',
-        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slug || null, id]
+        'UPDATE guests SET nume = ?, prenume = ?, plus_one = ?, intro_short = ?, intro_long = ?, slug = ?, sex = ? WHERE id = ?',
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slug || null, sex || null, id]
       );
 
       if (plus_one && partner_nume && partner_prenume) {

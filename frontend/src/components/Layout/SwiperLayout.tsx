@@ -24,6 +24,7 @@ interface GuestData {
   plus_one: boolean;
   intro_short: string | null;
   intro_long: string | null;
+  sex: "M" | "F" | null;
   partner: { nume: string; prenume: string } | null;
 }
 
@@ -86,7 +87,7 @@ export default function SwiperLayout({
     <SwiperProvider swiper={swiperInstance}>
       <MobileNav />
       <div className="split-container">
-        <Sidebar settings={settings} />
+        <Sidebar settings={settings} hasGuest={!!guest} />
         <main ref={panelRef} className="right-panel">
           <Swiper
             direction="vertical"

@@ -11,9 +11,10 @@ const NAV_ITEMS = [
   { label: "Familie", sectionId: "family" },
   { label: "Locatii", sectionId: "locations" },
   { label: "Confirma prezenta", sectionId: "rsvp" },
+  { label: "Multumim", sectionId: "footer" },
 ];
 
-export default function Sidebar({ settings }: { settings?: WeddingSettings | null }) {
+export default function Sidebar({ settings, hasGuest }: { settings?: WeddingSettings | null; hasGuest?: boolean }) {
   const [activeSection, setActiveSection] = useState("");
   const swiper = useSwiper();
   const slideTo = useSlideTo();
@@ -76,9 +77,28 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
         </div>
 
         <nav className="w-full">
-          <ul className="flex flex-col items-center gap-4">
+          <ul className="flex flex-col gap-4 w-min mx-auto">
+            {hasGuest && (
+              <li className="grid grid-cols-[0.5rem_1fr] items-center gap-3">
+                <span
+                  className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                    activeSection === "hero" ? "bg-button" : "bg-border"
+                  }`}
+                />
+                <button
+                  onClick={(e) => handleClick(e, "hero")}
+                  className={`text-[0.7rem] tracking-[0.2em] uppercase transition-colors duration-300 cursor-pointer text-left ${
+                    activeSection === "hero"
+                      ? "text-text-heading font-medium"
+                      : "text-text-muted hover:text-text-heading"
+                  }`}
+                >
+                  Voi doi
+                </button>
+              </li>
+            )}
             {NAV_ITEMS.map((item) => (
-              <li key={item.sectionId} className="flex items-center gap-3">
+              <li key={item.sectionId} className="grid grid-cols-[0.5rem_1fr] items-center gap-3">
                 <span
                   className={`w-2 h-2 rounded-full transition-colors duration-300 ${
                     activeSection === item.sectionId
@@ -88,7 +108,7 @@ export default function Sidebar({ settings }: { settings?: WeddingSettings | nul
                 />
                 <button
                   onClick={(e) => handleClick(e, item.sectionId)}
-                  className={`text-[0.7rem] tracking-[0.2em] uppercase transition-colors duration-300 cursor-pointer ${
+                  className={`text-[0.7rem] tracking-[0.2em] uppercase transition-colors duration-300 cursor-pointer text-left leading-relaxed ${
                     activeSection === item.sectionId
                       ? "text-text-heading font-medium"
                       : "text-text-muted hover:text-text-heading"

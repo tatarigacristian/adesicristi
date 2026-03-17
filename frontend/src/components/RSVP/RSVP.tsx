@@ -17,6 +17,7 @@ interface GuestData {
   plus_one: boolean;
   intro_short: string | null;
   intro_long: string | null;
+  sex: "M" | "F" | null;
   partner: { nume: string; prenume: string } | null;
 }
 
@@ -392,7 +393,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       id="rsvp"
       className="content-section bg-background"
     >
-      <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
+      <div className="max-w-lg mx-auto w-full flex-1 flex flex-col">
         {/* Section header */}
         <div className="text-center mb-2 sm:mb-6">
           <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
@@ -404,7 +405,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           </p>
         </div>
 
-        <div className="relative glass-card !p-4 sm:!p-8 mt-auto sm:mt-0">
+        <div className="relative glass-card !p-4 sm:!p-8 mt-auto sm:mt-0 sm:my-auto">
           <SectionCorners size="w-[25px] h-[25px]" offset={10} />
           <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-2 sm:space-y-4">
 
@@ -423,8 +424,10 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                   }}
                   onKeyDown={handleKeyDown}
                   disabled={isDisabled}
-                  className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
-                             focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
+                  className="w-full border border-border-light rounded-lg pl-3 pr-8 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
+                             focus:outline-none focus:border-accent transition-colors disabled:opacity-50 appearance-none
+                             bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E')]
+                             bg-[length:12px] bg-[right_0.75rem_center] bg-no-repeat"
                 >
                   <option value={0}>Alege număr persoane</option>
                   <option value={1}>O persoană</option>
@@ -569,7 +572,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         </div>
 
         {/* Info below form */}
-        <div className="text-center mt-4 sm:mt-6 space-y-3">
+        <div className="text-center mt-auto sm:pb-[50px] space-y-3">
           {settings?.confirmare_pana_la && (
             <div>
               <p className="text-[0.65rem] tracking-[0.2em] uppercase text-text-muted mb-1">

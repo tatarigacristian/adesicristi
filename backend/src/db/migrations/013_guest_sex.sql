@@ -1,0 +1,1 @@
+ALTER TABLE guests ADD COLUMN sex ENUM('M', 'F') DEFAULT NULL;

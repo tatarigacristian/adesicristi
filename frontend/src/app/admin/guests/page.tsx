@@ -11,7 +11,7 @@ export default function GuestsPage() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editGuest, setEditGuest] = useState<Guest | null>(null);
-  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "" });
+  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "" as "" | "M" | "F" });
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<Guest | null>(null);
   const [invitatiePicker, setInvitatiePicker] = useState<Guest | null>(null);
@@ -73,7 +73,7 @@ export default function GuestsPage() {
 
   function openNew() {
     setEditGuest(null);
-    setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "" });
+    setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "" });
     setShowForm(true);
   }
 
@@ -90,6 +90,7 @@ export default function GuestsPage() {
       slug: g.slug || "",
       partner_nume: partner?.nume || "",
       partner_prenume: partner?.prenume || "",
+      sex: g.sex || "",
     });
     setShowForm(true);
   }
@@ -99,7 +100,8 @@ export default function GuestsPage() {
     setSaving(true);
     const method = editGuest ? "PUT" : "POST";
     const url = editGuest ? `${API_URL}/api/admin/guests/${editGuest.id}` : `${API_URL}/api/admin/guests`;
-    await fetch(url, { method, headers: authHeaders(token), body: JSON.stringify(form) });
+    const payload = { ...form, sex: form.sex || null };
+    await fetch(url, { method, headers: authHeaders(token), body: JSON.stringify(payload) });
     setSaving(false);
     setShowForm(false);
     fetchGuests();
@@ -156,6 +158,15 @@ export default function GuestsPage() {
                   <input type="text" value={form.prenume} onChange={(e) => setForm({ ...form, prenume: e.target.value })}
                     required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Sex</label>
+                <select value={form.sex} onChange={(e) => setForm({ ...form, sex: e.target.value as "" | "M" | "F" })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors appearance-none">
+                  <option value="">Selecteaz&#259;</option>
+                  <option value="M">Masculin</option>
+                  <option value="F">Feminin</option>
+                </select>
               </div>
               <div>
                 <label className="block text-xs text-text-muted mb-1">Slug (unic)</label>

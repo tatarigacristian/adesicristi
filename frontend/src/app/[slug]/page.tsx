@@ -14,6 +14,7 @@ export interface GuestData {
   plus_one: boolean;
   intro_short: string | null;
   intro_long: string | null;
+  sex: "M" | "F" | null;
   partner: { nume: string; prenume: string } | null;
 }
 

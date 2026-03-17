@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
-import { useSlideTo } from "@/context/SwiperContext";
+import { useSwiper, useSlideTo } from "@/context/SwiperContext";
 
 interface GuestData {
   nume: string;
@@ -12,6 +15,7 @@ interface GuestData {
   plus_one: boolean;
   intro_short: string | null;
   intro_long: string | null;
+  sex: "M" | "F" | null;
   partner: { nume: string; prenume: string } | null;
 }
 
@@ -23,6 +27,8 @@ export default function Hero({
   settings?: WeddingSettings | null;
 }) {
   const [isVisible, setIsVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const parentSwiper = useSwiper();
   const slideTo = useSlideTo();
 
   const couple = getCoupleNames(settings ?? null);
@@ -30,32 +36,251 @@ export default function Hero({
     ? formatDate(settings.ceremonie_data)
     : "4 Iulie 2026";
 
-  // Initials for monogram
   const initialMireasa = couple.mireasa.charAt(0).toUpperCase();
   const initialMire = couple.mire.charAt(0).toUpperCase();
+
+  const personalizedText = guest?.intro_long
+    || "Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment.";
+  const defaultText = "Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment unic.";
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // Nested Swiper callback — control parent based on nested position
+  const onNestedSwiper = useCallback((nested: SwiperType) => {
+    if (!parentSwiper) return;
+
+    console.log("[Hero] Nested swiper initialized. Parent activeIndex:", parentSwiper.activeIndex);
+
+    // Block parent initially when on Hero
+    if (parentSwiper.activeIndex === 0) {
+      console.log("[Hero] Blocking parent (initial)");
+      parentSwiper.allowSlideNext = false;
+      parentSwiper.allowTouchMove = false;
+    }
+
+    // Ignore events during initialization — only react to user-initiated slides
+    let initialized = false;
+    setTimeout(() => {
+      initialized = true;
+      console.log("[Hero] Nested ready for user interaction. activeIndex:", nested.activeIndex);
+      // Re-block in case reachEnd fired during init
+      if (parentSwiper.activeIndex === 0 && !nested.isEnd) {
+        parentSwiper.allowSlideNext = false;
+        parentSwiper.allowTouchMove = false;
+      }
+      // If only 1 slide or already at end after init, also re-check
+      if (parentSwiper.activeIndex === 0 && nested.activeIndex === 0) {
+        console.log("[Hero] Re-blocking parent after init (nested at 0)");
+        parentSwiper.allowSlideNext = false;
+        parentSwiper.allowTouchMove = false;
+      }
+    }, 500);
+
+    // Only unblock parent on the NEXT user gesture after nested reaches end.
+    // We use touchEnd (not slideChange/reachEnd) because slideChange fires
+    // during the same gesture that would also trigger the parent.
+    let nestedAtEnd = false;
+
+    nested.on("slideChange", () => {
+      if (!initialized) {
+        console.log("[Hero] Nested slideChange (ignored, not initialized)");
+        return;
+      }
+      console.log("[Hero] Nested slideChange → index:", nested.activeIndex, "isEnd:", nested.isEnd);
+      nestedAtEnd = nested.isEnd;
+
+      if (!nested.isEnd) {
+        console.log("[Hero] Nested not at end → blocking parent");
+        parentSwiper.allowSlideNext = false;
+        parentSwiper.allowTouchMove = false;
+      }
+      // Do NOT unblock here — wait for gesture to end
+    });
+
+    nested.on("reachEnd", () => {
+      if (!initialized) {
+        console.log("[Hero] Nested reachEnd (ignored, not initialized)");
+        return;
+      }
+      console.log("[Hero] Nested reachEnd (will unblock after gesture ends)");
+      nestedAtEnd = true;
+    });
+
+    // Unblock parent only after the touch/scroll gesture that moved nested to end finishes
+    nested.on("touchEnd", () => {
+      console.log("[Hero] Nested touchEnd, index:", nested.activeIndex, "nestedAtEnd:", nestedAtEnd);
+      if (nestedAtEnd && initialized) {
+        console.log("[Hero] Gesture ended with nested at end → unblocking parent after delay");
+        setTimeout(() => {
+          console.log("[Hero] Unblocking parent now");
+          parentSwiper.allowSlideNext = true;
+          parentSwiper.allowTouchMove = true;
+        }, 100);
+      }
+    });
+
+    // For desktop wheel: listen on the nested element for wheel end
+    let wheelTimer: ReturnType<typeof setTimeout> | null = null;
+    nested.el.addEventListener("wheel", () => {
+      if (!nestedAtEnd || !initialized) return;
+      if (wheelTimer) clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => {
+        console.log("[Hero] Wheel stopped with nested at end → unblocking parent");
+        parentSwiper.allowSlideNext = true;
+        parentSwiper.allowTouchMove = true;
+      }, 400);
+    }, { passive: true });
+  }, [parentSwiper]);
+
+  // Re-block parent when navigating back to Hero slide
+  useEffect(() => {
+    if (!parentSwiper || !isMobile) return;
+
+    const onParentSlideChange = () => {
+      console.log("[Hero] Parent slideChange → activeIndex:", parentSwiper.activeIndex);
+      if (parentSwiper.activeIndex === 0) {
+        // Find nested swiper and check its position
+        const nestedEl = parentSwiper.slides[0]?.querySelector(".swiper") as HTMLElement & { swiper?: SwiperType };
+        const nested = nestedEl?.swiper;
+        console.log("[Hero] Back on Hero. Nested exists:", !!nested, "nested index:", nested?.activeIndex);
+        if (nested && !nested.isEnd) {
+          console.log("[Hero] Nested not at end → re-blocking parent");
+          parentSwiper.allowSlideNext = false;
+          parentSwiper.allowTouchMove = false;
+        }
+      }
+    };
+
+    parentSwiper.on("slideChange", onParentSlideChange);
+    return () => {
+      parentSwiper.off("slideChange", onParentSlideChange);
+    };
+  }, [parentSwiper, isMobile]);
+
   return (
     <section className="content-section bg-background relative overflow-hidden">
-      {/* Corner ornaments */}
       <SectionCorners size="w-[35px] h-[35px] sm:w-[55px] sm:h-[55px]" offset={16} />
 
+      {/* ─── Mobile: static header + nested Swiper ─── */}
+      {isMobile && (
+        <div
+          className={`absolute inset-0 flex flex-col items-center text-center transition-opacity duration-1000 ease-out ${
+            isVisible ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ paddingTop: "3.5rem" }}
+        >
+          {/* Static: Monogram + Heart + Date */}
+          <div className="relative w-32 h-32 mx-auto mb-4">
+            <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
+              <circle cx="80" cy="80" r="68" className="stroke-button/25" strokeWidth="0.3" fill="none" />
+              <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" className="fill-button/60" />
+              <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" className="fill-button/60" />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center gap-2">
+              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
+              <span className="script-font text-lg text-button/80 italic">&amp;</span>
+              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">{initialMire}</span>
+            </div>
+          </div>
+          <div className="mb-3">
+            <div className="flex items-center justify-center gap-3">
+              <span className="block w-12 h-px bg-button/30" />
+              <svg viewBox="0 0 50 48" className="w-6 h-6 text-button/60" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
+                <path d="M25,38 C25,38 8,27 8,16 C8,10 13,7 18,10 C21,12 25,16 25,16 C25,16 29,12 32,10 C37,7 42,10 42,16 C42,27 25,38 25,38 Z" strokeWidth="0.6" opacity="0.4" />
+              </svg>
+              <span className="block w-12 h-px bg-button/30" />
+            </div>
+            <p className="serif-font text-xl text-text-heading font-light mt-2 tracking-wide">{dateDisplay}</p>
+          </div>
+
+          {/* Nested Swiper — only the dynamic part */}
+          <div className="flex-1 w-full overflow-hidden">
+            <Swiper
+              direction="vertical"
+              modules={[Mousewheel]}
+              mousewheel={{
+                sensitivity: 1,
+                forceToAxis: true,
+                thresholdDelta: 10,
+                thresholdTime: 300,
+              }}
+              touchEventsTarget="container"
+              speed={500}
+              slidesPerView={1}
+              onSwiper={onNestedSwiper}
+              style={{ height: "100%", overflow: "hidden" }}
+            >
+              {/* Phase 1: greeting + invitation */}
+              <SwiperSlide>
+                <div className="h-full flex flex-col items-center justify-center px-6">
+                  {guest && (
+                    <>
+                      <p className="serif-font text-base italic text-text-muted mb-1">
+                        {guest.plus_one && guest.partner
+                          ? "Dragii noștri"
+                          : guest.sex === "M" ? "Dragul nostru" : "Draga noastră"}
+                      </p>
+                      <p className="serif-font text-xl text-text-heading font-light mb-3">
+                        {guest.partner
+                          ? guest.nume === guest.partner.nume
+                            ? `${guest.prenume} și ${guest.partner.prenume} ${guest.nume}`
+                            : `${guest.prenume} ${guest.nume} și ${guest.partner.prenume} ${guest.partner.nume}`
+                          : `${guest.prenume} ${guest.nume}`}
+                      </p>
+                    </>
+                  )}
+                  <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-3 font-medium mt-2">
+                    Cu drag vă invităm
+                  </p>
+                  <h2 className="serif-font text-xl font-light italic text-text-heading leading-relaxed">
+                    Să fiți alături de noi
+                  </h2>
+                </div>
+              </SwiperSlide>
+
+              {/* Phase 2: personalized message */}
+              <SwiperSlide>
+                <div className="h-full flex flex-col items-center justify-center px-6">
+                  <p className="serif-font text-[0.85rem] leading-[1.8] text-foreground max-w-md mx-auto px-2">
+                    {guest ? personalizedText : defaultText}
+                  </p>
+                  <div className="mt-6">
+                    <button
+                      onClick={() => slideTo("couple")}
+                      className="group cursor-pointer inline-flex flex-col items-center gap-2"
+                    >
+                      <span className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted">Descoperă mai mult</span>
+                      <svg width="20" height="12" viewBox="0 0 20 12" fill="none" className="scroll-arrow text-button/70">
+                        <path d="M2 2L10 10L18 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </SwiperSlide>
+            </Swiper>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Desktop ─── */}
       <div
-        className={`max-w-lg mx-auto text-center transition-all duration-1000 ease-out ${
+        className={`hidden sm:flex max-w-lg mx-auto text-center flex-1 flex-col items-center justify-center transition-all duration-1000 ease-out ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-
-        {/* Monogram */}
-        <div
-          className={`relative mb-4 sm:mb-10 transition-all duration-1000 delay-300 ease-out ${
-            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
-          }`}
-        >
+        <div className={`relative mb-10 transition-all duration-1000 delay-300 ease-out ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}>
           <div className="relative w-32 h-32 mx-auto">
             <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
@@ -64,88 +289,41 @@ export default function Hero({
               <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" className="fill-button/60" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center gap-2">
-              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">
-                {initialMireasa}
-              </span>
+              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
               <span className="script-font text-lg text-button/80 italic">&amp;</span>
-              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">
-                {initialMire}
-              </span>
+              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">{initialMire}</span>
             </div>
           </div>
         </div>
 
-        {/* Mobile: heart divider + date after monogram */}
-        <div className="lg:hidden mb-4">
-          <div className="flex items-center justify-center gap-3">
-            <span className="block w-12 h-px bg-button/30" />
-            <svg viewBox="0 0 50 48" className="w-6 h-6 text-button/60" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
-              <path d="M25,38 C25,38 8,27 8,16 C8,10 13,7 18,10 C21,12 25,16 25,16 C25,16 29,12 32,10 C37,7 42,10 42,16 C42,27 25,38 25,38 Z" strokeWidth="0.6" opacity="0.4" />
-            </svg>
-            <span className="block w-12 h-px bg-button/30" />
+        {guest && (
+          <div className="mb-6">
+            <p className="serif-font text-lg italic text-text-muted mb-1">
+              {guest.plus_one && guest.partner ? "Dragii noștri" : guest.sex === "M" ? "Dragul nostru" : "Draga noastră"}
+            </p>
+            <p className="serif-font text-2xl text-text-heading font-light">
+              {guest.partner
+                ? guest.nume === guest.partner.nume
+                  ? `${guest.prenume} și ${guest.partner.prenume} ${guest.nume}`
+                  : `${guest.prenume} ${guest.nume} și ${guest.partner.prenume} ${guest.partner.nume}`
+                : `${guest.prenume} ${guest.nume}`}
+            </p>
           </div>
-          <p className="serif-font text-xl text-text-heading font-light mt-2 tracking-wide">
-            {dateDisplay}
+        )}
+
+        <div className={`transition-all duration-1000 delay-500 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-5 font-medium">Cu drag vă invităm</p>
+          <h2 className="serif-font text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-6">Să fiți alături de noi</h2>
+          <SmallFlourish className="mx-auto my-6" />
+          <p className="serif-font text-[0.95rem] leading-[1.9] text-foreground mt-6 max-w-md mx-auto">
+            {guest ? personalizedText : defaultText}
           </p>
         </div>
 
-        {/* Invitation text */}
-        <div
-          className={`transition-all duration-1000 delay-500 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-        >
-          <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-3 sm:mb-5 font-medium">
-            Cu drag vă invităm
-          </p>
-
-          <h2 className="serif-font text-xl sm:text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-4 sm:mb-6">
-            Să fiți alături de noi
-          </h2>
-
-          <SmallFlourish className="mx-auto my-3 sm:my-6" />
-
-          <p className="serif-font text-[0.85rem] sm:text-[0.95rem] leading-[1.8] sm:leading-[1.9] text-foreground mt-4 sm:mt-6 max-w-md mx-auto">
-            {guest ? (
-              <>
-                {guest.intro_long ? (
-                  <>{guest.intro_long}</>
-                ) : (
-                  <>Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment.</>
-                )}
-              </>
-            ) : (
-              <>
-                Ne-ar face o deosebită plăcere să fiți alături de noi în această zi
-                specială, să împărtășim împreună emoția și fericirea acestui moment
-                unic.
-              </>
-            )}
-          </p>
-        </div>
-
-        {/* Scroll hint */}
-        <div
-          className={`mt-6 sm:mt-14 transition-all duration-1000 delay-700 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-        >
-          <button
-            onClick={() => slideTo("couple")}
-            className="group cursor-pointer inline-flex flex-col items-center gap-2"
-            aria-label="Scroll down"
-          >
-            <span className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted group-hover:text-button transition-colors duration-300">
-              Descoperă mai mult
-            </span>
-            <svg
-              width="20"
-              height="12"
-              viewBox="0 0 20 12"
-              fill="none"
-              className="scroll-arrow text-button/70 group-hover:text-button transition-colors duration-300"
-            >
+        <div className={`mt-auto pb-[50px] transition-all duration-1000 delay-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <button onClick={() => slideTo("couple")} className="group cursor-pointer inline-flex flex-col items-center gap-2">
+            <span className="text-[0.6rem] tracking-[0.3em] uppercase text-text-muted group-hover:text-button transition-colors duration-300">Descoperă mai mult</span>
+            <svg width="20" height="12" viewBox="0 0 20 12" fill="none" className="scroll-arrow text-button/70 group-hover:text-button transition-colors duration-300">
               <path d="M2 2L10 10L18 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
