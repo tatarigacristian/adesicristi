@@ -339,8 +339,8 @@ function InvitatieContent() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Alex+Brush&family=Montserrat:wght@300;400;500;600&display=swap');
         .inv-root .inv-page { display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; gap: 1.5rem; }
-        .inv-root .inv-actions { display: flex; gap: 0.75rem; }
-        .inv-root .inv-btn { padding: 0.5rem 1.5rem; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'Montserrat', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; background: ${c.secondary}; color: #fff; }
+        .inv-root .inv-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+        .inv-root .inv-btn { padding: 0.45rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-family: 'Montserrat', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; background: ${c.secondary}; color: #fff; }
         .inv-root .inv-btn:hover { background: ${c.primary}; }
         .inv-root .inv-btn-secondary { background: ${c.bg}; color: ${c.secondary}; border: 1px solid ${c.ornament}; }
         .inv-root .inv-btn-secondary:hover { background: #f5f0ea; }

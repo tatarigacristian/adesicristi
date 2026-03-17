@@ -335,14 +335,16 @@ function buildStyles(s: WeddingSettings | null) {
 
     .card-page-root .print-actions {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.5rem;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .card-page-root .print-btn {
-      padding: 0.5rem 1.5rem;
+      padding: 0.45rem 1rem;
       border-radius: 0.5rem;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-family: 'Montserrat', sans-serif;
       font-weight: 500;
       cursor: pointer;
