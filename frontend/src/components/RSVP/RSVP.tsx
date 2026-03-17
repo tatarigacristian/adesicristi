@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, FormEvent, KeyboardEvent } from "react";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
+import { getInvitationAudience, getAsteptamLine } from "@/utils/invitation-text";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import Flourish from "@/components/Ornaments/Flourish";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
@@ -154,6 +155,7 @@ function AddToCalendar({ settings }: { settings: WeddingSettings }) {
 
 export default function RSVP({ guest, settings }: { guest?: GuestData | null; settings?: WeddingSettings | null }) {
   const couple = getCoupleNames(settings ?? null);
+  const audience = guest ? getInvitationAudience(Boolean(guest.plus_one && guest.partner), guest.sex ?? null) : null;
   const [personCount, setPersonCount] = useState(0);
   const [name, setName] = useState("");
   const [partnerName, setPartnerName] = useState("");
@@ -406,7 +408,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           </h2>
           <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
           <p className="text-xs text-text-muted leading-snug">
-            Vă așteptăm cu drag!
+            {audience ? getAsteptamLine(audience) : "Vă așteptăm cu drag!"}
           </p>
         </div>
 

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toPng } from "html-to-image";
+import { getInvitationAudience, getGreeting, getInvitationLineUpper, getAlaturiLine, getAsteptamLineShort, getDefaultInvitationLines } from "@/utils/invitation-text";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://adesicristi.vercel.app";
@@ -16,6 +17,7 @@ interface GuestData {
   intro_long: string | null;
   slug: string | null;
   partner_id: number | null;
+  sex: "M" | "F" | null;
 }
 
 interface WeddingSettings {
@@ -51,12 +53,6 @@ interface WeddingSettings {
   color_button: string | null;
   color_text: string | null;
 }
-
-const defaultIntroLines = [
-  "AVEM PLĂCEREA DE A VĂ INVITA SĂ FIȚI ALĂTURI DE NOI",
-  "ÎN ZIUA ÎN CARE NE LEGĂM DESTINELE",
-  "ȘI PĂȘIM ÎMPREUNĂ PE DRUMUL UNEI NOI VIEȚI.",
-];
 
 /* ─── Color utilities ─── */
 function hexToRgb(hex: string) {
@@ -220,7 +216,7 @@ function InvitatieContent() {
     }
   }, [guest]);
 
-  const handleShare = useCallback(async (target: "whatsapp" | "messenger") => {
+  const handleShare = useCallback(async () => {
     if (!guest) return;
     const fileName = `invitatie-${guest.prenume}-${guest.nume}.png`;
     const inviteUrl = guest.slug ? `${SITE_URL}/${guest.slug}` : SITE_URL;
@@ -236,14 +232,18 @@ function InvitatieContent() {
           return;
         }
       }
+      if (navigator.share) {
+        await navigator.share({ title: text, text: `${text}\n${inviteUrl}`, url: inviteUrl });
+        return;
+      }
     } catch (err) {
       if ((err as DOMException)?.name === "AbortError") return;
     }
-
-    if (target === "whatsapp") {
+    try {
+      await navigator.clipboard.writeText(inviteUrl);
+      alert("Link copiat în clipboard.");
+    } catch {
       window.open(`https://wa.me/?text=${encodeURIComponent(text + "\n" + inviteUrl)}`, "_blank");
-    } else {
-      window.open(`https://www.facebook.com/dialog/send?link=${encodeURIComponent(inviteUrl)}&app_id=966242223397117&redirect_uri=${encodeURIComponent(window.location.href)}`, "_blank");
     }
   }, [guest, generatePngBlob]);
 
@@ -307,10 +307,10 @@ function InvitatieContent() {
     ? new Date(settings.confirmare_pana_la).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })
     : "";
 
+  const audience = getInvitationAudience(!!partner, guest.sex ?? null);
   const introLines = guest.intro_short
     ? guest.intro_short.split("\n").filter((l) => l.trim())
-    : defaultIntroLines;
-
+    : getDefaultInvitationLines(audience);
   const c = buildPalette(settings);
 
   const f = {
@@ -363,13 +363,9 @@ function InvitatieContent() {
             <option value="invitatie-v2">Invitatie v2</option>
           </select>
           <button className="inv-btn" onClick={handleSavePng}>Salveaza ca PNG</button>
-          <button className="inv-btn inv-btn-secondary" onClick={() => handleShare("whatsapp")} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            WhatsApp
-          </button>
-          <button className="inv-btn inv-btn-secondary" onClick={() => handleShare("messenger")} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.242c1.092.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.111C24 4.974 18.627 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26L10.732 8.2l3.131 3.259L19.752 8.2l-6.561 6.763z"/></svg>
-            Messenger
+          <button className="inv-btn inv-btn-secondary" onClick={handleShare} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share
           </button>
           <button className="inv-btn inv-btn-secondary" onClick={() => window.close()}>Inchide</button>
         </div>
@@ -434,17 +430,17 @@ function InvitatieContent() {
 
             {/* ─── Guest greeting ─── */}
             <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 400, color: c.primary, letterSpacing: "0.03em" }}>
-              {partner ? "Dragii noștri" : "Dragă"} {partner ? `${guest.prenume} & ${partner.prenume}` : `${guest.prenume} ${guest.nume}`},
+              {getGreeting(audience, true)} {partner ? `${guest.prenume} & ${partner.prenume}` : `${guest.prenume} ${guest.nume}`},
             </p>
 
-            {/* ─── "Cu drag vă invităm" ─── */}
+            {/* ─── "Cu drag te/vă invităm" ─── */}
             <p style={{ fontSize: "0.64rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.ornament, marginTop: "0.1cm" }}>
-              CU DRAG VĂ INVITĂM
+              {getInvitationLineUpper(audience)}
             </p>
 
             {/* ─── Script heading ─── */}
             <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic" }}>
-              Să fiți alături de noi
+              {getAlaturiLine(audience)}
             </p>
 
             {/* ─── Flourish ─── */}
@@ -564,7 +560,7 @@ function InvitatieContent() {
 
             {/* ─── Script Closing ─── */}
             <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "0.3cm" }}>
-              Va asteptam cu drag!
+              {getAsteptamLineShort(audience)}
             </p>
 
             {/* ─── RSVP ─── */}

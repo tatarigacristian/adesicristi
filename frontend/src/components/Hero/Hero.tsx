@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
+import { getInvitationAudience, getGreeting, getInvitationLine, getAlaturiLine, getDefaultIntroLong } from "@/utils/invitation-text";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
@@ -39,8 +40,9 @@ export default function Hero({
   const initialMireasa = couple.mireasa.charAt(0).toUpperCase();
   const initialMire = couple.mire.charAt(0).toUpperCase();
 
+  const audience = guest ? getInvitationAudience(Boolean(guest.plus_one && guest.partner), guest.sex ?? null) : null;
   const personalizedText = guest?.intro_long
-    || "Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment.";
+    || (audience ? getDefaultIntroLong(audience) : "Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment.");
   const defaultText = "Ne-ar face o deosebită plăcere să fiți alături de noi în această zi specială, să împărtășim împreună emoția și fericirea acestui moment unic.";
 
   useEffect(() => {
@@ -173,12 +175,10 @@ export default function Hero({
               {/* Phase 1: greeting + invitation */}
               <SwiperSlide>
                 <div className="h-full flex flex-col items-center justify-center px-6">
-                  {guest && (
+                  {guest && audience && (
                     <>
                       <p className="serif-font text-base italic text-text-muted mb-1">
-                        {guest.plus_one && guest.partner
-                          ? "Dragii noștri"
-                          : guest.sex === "M" ? "Dragul nostru" : "Draga noastră"}
+                        {getGreeting(audience)}
                       </p>
                       <p className="serif-font text-xl text-text-heading font-light mb-3">
                         {guest.partner
@@ -190,10 +190,10 @@ export default function Hero({
                     </>
                   )}
                   <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-3 font-medium mt-2">
-                    Cu drag vă invităm
+                    {audience ? getInvitationLine(audience) : "Cu drag vă invităm"}
                   </p>
                   <h2 className="serif-font text-xl font-light italic text-text-heading leading-relaxed">
-                    Să fiți alături de noi
+                    {audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}
                   </h2>
                   <div className="mt-6">
                     <ScrollIndicator />
@@ -239,10 +239,10 @@ export default function Hero({
           </div>
         </div>
 
-        {guest && (
+        {guest && audience && (
           <div className="mb-6">
             <p className="serif-font text-lg italic text-text-muted mb-1">
-              {guest.plus_one && guest.partner ? "Dragii noștri" : guest.sex === "M" ? "Dragul nostru" : "Draga noastră"}
+              {getGreeting(audience)}
             </p>
             <p className="serif-font text-2xl text-text-heading font-light">
               {guest.partner
@@ -255,8 +255,8 @@ export default function Hero({
         )}
 
         <div className={`transition-all duration-1000 delay-500 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-5 font-medium">Cu drag vă invităm</p>
-          <h2 className="serif-font text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-6">Să fiți alături de noi</h2>
+          <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-5 font-medium">{audience ? getInvitationLine(audience) : "Cu drag vă invităm"}</p>
+          <h2 className="serif-font text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-6">{audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}</h2>
           <SmallFlourish className="mx-auto my-6" />
           <p className="serif-font text-[0.95rem] leading-[1.9] text-foreground mt-6 max-w-md mx-auto">
             {guest ? personalizedText : defaultText}

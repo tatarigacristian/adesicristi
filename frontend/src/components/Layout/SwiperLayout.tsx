@@ -37,10 +37,39 @@ export default function SwiperLayout({
 }) {
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const isAnimating = useRef(false);
 
   const handleSwiper = useCallback((swiper: SwiperType) => {
     setSwiperInstance(swiper);
   }, []);
+
+  // Block wheel events during slide transition to prevent double-jump
+  useEffect(() => {
+    if (!swiperInstance) return;
+    const el = swiperInstance.el;
+    if (!el) return;
+
+    const onTransitionStart = () => { isAnimating.current = true; };
+    const onTransitionEnd = () => { isAnimating.current = false; };
+
+    // Capture wheel at DOM level BEFORE Swiper sees it
+    const blockWheel = (e: WheelEvent) => {
+      if (isAnimating.current) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    el.addEventListener("wheel", blockWheel, { capture: true, passive: false });
+    swiperInstance.on("slideChangeTransitionStart", onTransitionStart);
+    swiperInstance.on("slideChangeTransitionEnd", onTransitionEnd);
+
+    return () => {
+      el.removeEventListener("wheel", blockWheel, { capture: true } as EventListenerOptions);
+      swiperInstance.off("slideChangeTransitionStart", onTransitionStart);
+      swiperInstance.off("slideChangeTransitionEnd", onTransitionEnd);
+    };
+  }, [swiperInstance]);
 
   // Lock html scroll for Swiper pages only
   useEffect(() => {
@@ -95,6 +124,8 @@ export default function SwiperLayout({
             mousewheel={{
               sensitivity: 1,
               forceToAxis: true,
+              thresholdDelta: 15,
+              thresholdTime: 400,
             }}
             speed={800}
             slidesPerView={1}
