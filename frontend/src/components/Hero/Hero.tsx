@@ -263,10 +263,11 @@ export default function Hero({
             {guest ? personalizedText : defaultText}
           </p>
         </div>
+      </div>
 
-        <div className={`mt-auto transition-all duration-1000 delay-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <SectionFooterNav settings={settings} />
-        </div>
+      {/* Footer — outside the centered content container */}
+      <div className={`hidden sm:block transition-all duration-1000 delay-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        <SectionFooterNav settings={settings} />
       </div>
     </section>
   );

@@ -30,12 +30,12 @@ export default function SectionFooterNav({
   return (
     <div className={`section-footer pb-2 sm:pb-0 ${className}`}>
       {/* Contact + scroll row */}
-      <div className="flex items-center justify-center w-full max-w-sm mx-auto sm:justify-center">
+      <div className="flex items-center justify-center mx-auto">
         {/* Left: Mireasa — mobile only */}
         {settings?.telefon_mireasa && (
           <a
             href={`tel:${settings.telefon_mireasa.replace(/\s/g, "")}`}
-            className="flex-1 flex flex-col items-center gap-0.5 group sm:hidden"
+            className="w-[150px] sm:w-[120px] flex flex-col items-center gap-0.5 group"
           >
             <span className="text-[0.55rem] text-text-muted">{couple.mireasa}</span>
             <span className="text-[0.6rem] text-button group-hover:text-button-hover transition-colors">
@@ -53,7 +53,7 @@ export default function SectionFooterNav({
         {settings?.telefon_mire && (
           <a
             href={`tel:${settings.telefon_mire.replace(/\s/g, "")}`}
-            className="flex-1 flex flex-col items-center gap-0.5 group sm:hidden"
+            className="w-[150px] sm:w-[120px] flex flex-col items-center gap-0.5 group"
           >
             <span className="text-[0.55rem] text-text-muted">{couple.mire}</span>
             <span className="text-[0.6rem] text-button group-hover:text-button-hover transition-colors">
