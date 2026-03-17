@@ -37,16 +37,17 @@ export default function Family({
       id="family"
       className="content-section bg-background"
     >
-      <div className="max-w-lg mx-auto w-full flex-1 flex flex-col sm:block">
-        {/* Section header */}
-        <div className="text-center mb-2 sm:mb-10">
-          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
-            Familie
-          </h2>
-          <SmallFlourish className="mx-auto mb-[30px] sm:mb-0" />
-        </div>
+      {/* Header */}
+      <div className="section-header">
+        <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+          Familie
+        </h2>
+        <SmallFlourish className="mx-auto" />
+      </div>
 
-        <div className="flex flex-col gap-2 sm:gap-4 mt-auto sm:mt-0">
+      {/* Content */}
+      <div className="section-content max-w-lg px-4">
+        <div className="flex flex-col gap-2 sm:gap-4 w-full">
           {/* Nasi */}
           {hasNasi && (
             <div className="family-card !py-3 sm:!py-4 text-center relative">
@@ -101,7 +102,11 @@ export default function Family({
           )}
         </div>
       </div>
-      <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
+
+      {/* Footer */}
+      <div className="section-footer">
+        <ScrollIndicator className="mx-auto" />
+      </div>
     </section>
   );
 }

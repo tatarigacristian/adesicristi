@@ -1,0 +1,2 @@
+ALTER TABLE rsvp_responses ADD COLUMN needs_transport BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE rsvp_responses ADD COLUMN vegetarian_menu BOOLEAN NOT NULL DEFAULT FALSE;

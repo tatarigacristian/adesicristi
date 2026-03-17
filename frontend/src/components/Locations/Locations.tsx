@@ -187,32 +187,29 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
         id="locations"
         className="content-section bg-background-soft"
       >
-        <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col sm:block">
-          <div className="text-center mb-2 sm:mb-10">
-            <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
-              Detaliile evenimentului
-            </h2>
-            <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
-            <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
-              Când și unde
-            </p>
-          </div>
+        {/* Header */}
+        <div className="section-header">
+          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+            Detaliile evenimentului
+          </h2>
+          <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
+          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+            Când și unde
+          </p>
+        </div>
 
+        {/* Content */}
+        <div className="section-content max-w-4xl px-4">
           {/* Mobile timeline */}
-          <div className="md:hidden my-auto px-6">
+          <div className="md:hidden px-6">
             <div className="relative pl-10">
-              {/* Vertical line */}
               <div className="absolute left-[15px] top-4 bottom-4 w-px bg-button/20" />
-
               <div className="flex flex-col gap-6">
                 {locations.map((loc, i) => (
                   <div key={loc.title} className="relative">
-                    {/* Icon circle on timeline */}
                     <div className="absolute -left-10 top-0 w-[30px] h-[30px] rounded-full flex items-center justify-center bg-button text-white">
                       <EventIcon type={loc.title} />
                     </div>
-
-                    {/* Content */}
                     <div>
                       <h3 className="serif-font text-base text-text-heading leading-tight">
                         {loc.title}
@@ -243,7 +240,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
           </div>
 
           {/* Desktop grid */}
-          <div className="hidden md:grid grid-cols-3 gap-5">
+          <div className="hidden md:grid grid-cols-3 gap-5 w-full">
             {locations.map((loc) => (
               <LocationCardDesktop
                 key={loc.title}
@@ -253,7 +250,11 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
             ))}
           </div>
         </div>
-        <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
+
+        {/* Footer */}
+        <div className="section-footer">
+          <ScrollIndicator className="mx-auto" />
+        </div>
       </section>
 
       {/* Mobile map drawer */}

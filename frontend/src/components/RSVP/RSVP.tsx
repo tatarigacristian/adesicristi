@@ -160,11 +160,25 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const [name, setName] = useState("");
   const [partnerName, setPartnerName] = useState("");
   const [message, setMessage] = useState("");
+  const [needsTransport, setNeedsTransport] = useState(false);
+  const [vegetarianMenu, setVegetarianMenu] = useState(false);
   const [formState, setFormState] = useState<FormState>(guest ? "loading" : "idle");
   const [rsvpId, setRsvpId] = useState<number | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [cancelling, setCancelling] = useState(false);
   const [step, setStep] = useState(1);
+  const [slideDir, setSlideDir] = useState<"left" | "right">("left");
+  const [animating, setAnimating] = useState(false);
+
+  const goToStep = (target: number) => {
+    if (animating) return;
+    setSlideDir(target > step ? "left" : "right");
+    setAnimating(true);
+    setTimeout(() => {
+      setStep(target);
+      setTimeout(() => setAnimating(false), 250);
+    }, 150);
+  };
 
   const nameRef = useRef<HTMLInputElement>(null);
   const partnerRef = useRef<HTMLInputElement>(null);
@@ -246,6 +260,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           message: message.trim() || undefined,
           attending,
           guest_id: guest?.id || undefined,
+          needs_transport: needsTransport,
+          vegetarian_menu: vegetarianMenu,
         }),
       });
 
@@ -395,227 +411,308 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     );
   }
 
+  const TOTAL_STEPS = 4;
+
+  /* helper: step animation classes (mobile only) */
+  function stepClass(s: number) {
+    if (step === s && !animating) return "opacity-100 translate-x-0";
+    if (step === s && animating) return slideDir === "left" ? "opacity-0 -translate-x-6" : "opacity-0 translate-x-6";
+    return "opacity-0 pointer-events-none absolute inset-0";
+  }
+
   return (
     <section
       id="rsvp"
       className="content-section bg-background"
     >
-      <div className="max-w-lg mx-auto w-full flex-1 flex flex-col">
-        {/* Section header */}
-        <div className="text-center mb-2 sm:mb-6">
-          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
-            Confirmare
-          </h2>
-          <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
-          <p className="text-xs text-text-muted leading-snug">
-            {audience ? getAsteptamLine(audience) : "Vă așteptăm cu drag!"}
-          </p>
-        </div>
+      {/* Header */}
+      <div className="section-header">
+        <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+          Confirmare
+        </h2>
+        <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
+        <p className="text-xs text-text-muted leading-snug">
+          {audience ? getAsteptamLine(audience) : "Vă așteptăm cu drag!"}
+        </p>
+      </div>
 
-        <div className="relative glass-card !p-4 sm:!p-8 mt-auto sm:mt-0 sm:my-auto">
-          <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-          <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-2 sm:space-y-4">
+      {/* Content */}
+      <div className="section-content max-w-md px-6">
+        <form onSubmit={(e: FormEvent) => e.preventDefault()} className="w-full">
 
-            {/* === STEP 1 (mobile) / always visible (desktop) === */}
-            <div className={`${step !== 1 ? "hidden sm:block" : ""}`}>
-              {/* Person count */}
-              <div>
-                <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                  Câte persoane
-                </label>
-                <select
-                  value={personCount}
-                  onChange={(e) => {
-                    setPersonCount(parseInt(e.target.value));
-                    setErrors((prev) => ({ ...prev, personCount: "" }));
-                  }}
-                  onKeyDown={handleKeyDown}
-                  disabled={isDisabled}
-                  className="w-full border border-border-light rounded-lg pl-3 pr-8 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
-                             focus:outline-none focus:border-accent transition-colors disabled:opacity-50 appearance-none
-                             bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E')]
-                             bg-[length:12px] bg-[right_0.75rem_center] bg-no-repeat"
-                >
-                  <option value={0}>Alege număr persoane</option>
-                  <option value={1}>O persoană</option>
-                  <option value={2}>Două persoane</option>
-                </select>
-                {errors.personCount && (
-                  <p className="text-xs text-button mt-1">{errors.personCount}</p>
-                )}
-              </div>
-
-              {/* Names row */}
-              {personCount > 0 && (
-                <div className={`grid gap-2 sm:gap-4 mt-2 sm:mt-4 ${personCount === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
-                  <div>
-                    <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                      Numele tău
-                    </label>
-                    <input
-                      ref={nameRef}
-                      type="text"
-                      value={name}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        setErrors((prev) => ({ ...prev, name: "" }));
-                      }}
-                      onKeyDown={handleKeyDown}
-                      disabled={isDisabled}
-                      placeholder="Nume"
-                      enterKeyHint="next"
-                      className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
-                                 focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
-                    />
-                    {errors.name && (
-                      <p className="text-xs text-button mt-1">{errors.name}</p>
-                    )}
-                  </div>
-
-                  {personCount === 2 && (
-                    <div>
-                      <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                        Nume partener
-                      </label>
-                      <input
-                        ref={partnerRef}
-                        type="text"
-                        value={partnerName}
-                        onChange={(e) => {
-                          setPartnerName(e.target.value);
-                          setErrors((prev) => ({ ...prev, partnerName: "" }));
-                        }}
-                        onKeyDown={handleKeyDown}
-                        disabled={isDisabled}
-                        placeholder="Partener"
-                        enterKeyHint="next"
-                        className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
-                                   focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
-                      />
-                      {errors.partnerName && (
-                        <p className="text-xs text-button mt-1">{errors.partnerName}</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Mobile: Continue button */}
-              <button
-                type="button"
-                onClick={() => {
-                  const newErrors: Record<string, string> = {};
-                  if (personCount === 0) newErrors.personCount = "Te rog să alegi numărul de persoane";
-                  if (personCount > 0 && !name.trim()) newErrors.name = "Te rog să introduci numele";
-                  if (personCount === 2 && !partnerName.trim()) newErrors.partnerName = "Te rog să introduci numele partenerului";
-                  setErrors(newErrors);
-                  if (Object.keys(newErrors).length === 0) setStep(2);
-                }}
-                className="sm:hidden w-full bg-button text-white py-2 px-4 rounded-lg text-sm font-medium
-                           hover:bg-button-hover transition-colors mt-4"
-              >
-                Continuă
-              </button>
-            </div>
-
-            {/* === STEP 2 (mobile) / always visible (desktop) === */}
-            <div className={`${step !== 2 ? "hidden sm:block" : ""}`}>
-              {/* Message */}
-              <div>
-                <label className="block text-xs text-text-muted mb-1 tracking-wide">
-                  Vrei să ne transmiți ceva?
-                </label>
-                <textarea
-                  ref={messageRef}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  disabled={isDisabled}
-                  rows={2}
-                  enterKeyHint="enter"
-                  className="w-full border border-border-light rounded-lg px-3 py-1.5 sm:py-2.5 text-base sm:text-sm bg-white
-                             focus:outline-none focus:border-accent transition-colors resize-none disabled:opacity-50"
-                />
-              </div>
-
-              {/* Error message */}
-              {formState === "error" && (
-                <p className="text-xs text-button text-center">
-                  A apărut o eroare. Te rog încearcă din nou.
-                </p>
-              )}
-
-              {/* Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-1 sm:pt-2">
-                <button
-                  type="button"
-                  onClick={() => handleSubmit(true)}
-                  disabled={isDisabled}
-                  className="flex-1 bg-button text-white py-2 sm:py-2.5 px-4 rounded-lg text-sm font-medium
-                             hover:bg-button-hover transition-colors disabled:opacity-50"
-                >
-                  {formState === "submitting" ? "Se trimite..." : "Da, confirm prezența"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSubmit(false)}
-                  disabled={isDisabled}
-                  className="flex-1 border border-button py-2 sm:py-2.5 px-4 rounded-lg text-sm
-                             text-foreground hover:bg-background-soft transition-colors disabled:opacity-50"
-                >
-                  Nu pot să particip
-                </button>
-              </div>
-
-              {/* Mobile: Back button */}
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="sm:hidden w-full text-xs text-text-muted hover:text-text-heading transition-colors mt-2 py-1"
-              >
-                ← Înapoi
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* Info below form */}
-        <div className="text-center mt-auto sm:pb-[50px] space-y-3">
-          {settings?.confirmare_pana_la && (
-            <div>
-              <p className="text-[0.65rem] tracking-[0.2em] uppercase text-text-muted mb-1">
-                Confirmați până la
-              </p>
-              <p className="serif-font text-base text-text-heading font-medium">
-                {formatDate(settings.confirmare_pana_la)}
-              </p>
-            </div>
-          )}
-
-          <div className="flex items-center justify-center gap-3">
-            <span className="block w-8 h-px bg-button/20" />
-            <span className="text-[0.6rem] tracking-[0.15em] uppercase text-text-muted">Contact</span>
-            <span className="block w-8 h-px bg-button/20" />
+          {/* ── Step dots (mobile only) ── */}
+          <div className="flex justify-center gap-2 mb-6 sm:hidden">
+            {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map((s) => (
+              <div
+                key={s}
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  s === step ? "w-5 bg-button" : "w-1.5 bg-button/20"
+                }`}
+              />
+            ))}
           </div>
 
-          {(settings?.telefon_mireasa || settings?.telefon_mire) && (
-            <div className="flex justify-center gap-6">
-              {settings.telefon_mireasa && (
-                <a href={`tel:${settings.telefon_mireasa.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
-                  <span className="text-[0.65rem] text-text-muted">{couple.mireasa}</span>
-                  <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mireasa}</span>
-                </a>
-              )}
-              {settings.telefon_mire && (
-                <a href={`tel:${settings.telefon_mire.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
-                  <span className="text-[0.65rem] text-text-muted">{couple.mire}</span>
-                  <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mire}</span>
-                </a>
+          {/* ── Step container (mobile: relative with fixed height; desktop: normal flow) ── */}
+          <div className="relative sm:space-y-5" style={{ minHeight: "160px" }}>
+
+            {/* ═══ STEP 1: Câte persoane ═══ */}
+            <div className={`sm:!opacity-100 sm:!translate-x-0 sm:!pointer-events-auto sm:!relative sm:!inset-auto
+              transition-all duration-300 ease-out flex flex-col items-center justify-center ${stepClass(1)}`}>
+              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-4">
+                Câte persoane participă?
+              </p>
+              <div className="flex gap-3 w-full max-w-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPersonCount(1);
+                    setErrors((prev) => ({ ...prev, personCount: "" }));
+                    goToStep(2);
+                  }}
+                  className={`flex-1 py-4 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center gap-2
+                    ${personCount === 1 ? "border-button bg-button/5" : "border-border-light bg-white hover:border-button/40"}`}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  <span className="text-xs font-medium text-text-heading">O persoană</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPersonCount(2);
+                    setErrors((prev) => ({ ...prev, personCount: "" }));
+                    goToStep(2);
+                  }}
+                  className={`flex-1 py-4 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center gap-2
+                    ${personCount === 2 ? "border-button bg-button/5" : "border-border-light bg-white hover:border-button/40"}`}
+                >
+                  <svg width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  <span className="text-xs font-medium text-text-heading">Două persoane</span>
+                </button>
+              </div>
+              {errors.personCount && (
+                <p className="text-[0.6rem] text-button mt-2">{errors.personCount}</p>
               )}
             </div>
-          )}
-        </div>
+
+            {/* ═══ STEP 2: Nume ═══ */}
+            <div className={`sm:!opacity-100 sm:!translate-x-0 sm:!pointer-events-auto sm:!relative sm:!inset-auto
+              transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(2)}`}>
+              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1 sm:hidden">
+                {personCount === 2 ? "Numele vostru" : "Numele tău"}
+              </p>
+
+              {/* Desktop: side by side labels visible */}
+              <div className="hidden sm:block text-center">
+                <label className="block text-[0.55rem] text-text-muted mb-1 tracking-[0.15em] uppercase">Numele tău</label>
+              </div>
+              <input
+                ref={nameRef}
+                type="text"
+                value={name}
+                onChange={(e) => { setName(e.target.value); setErrors((prev) => ({ ...prev, name: "" })); }}
+                onKeyDown={handleKeyDown}
+                disabled={isDisabled}
+                placeholder="Numele tău"
+                enterKeyHint="next"
+                className="w-full max-w-xs border border-border-light rounded-xl px-4 py-2.5 text-sm bg-white text-center
+                           focus:outline-none focus:border-button transition-colors disabled:opacity-50"
+              />
+              {errors.name && <p className="text-[0.6rem] text-button">{errors.name}</p>}
+
+              {personCount === 2 && (
+                <>
+                  <div className="hidden sm:block text-center">
+                    <label className="block text-[0.55rem] text-text-muted mb-1 tracking-[0.15em] uppercase">Nume partener</label>
+                  </div>
+                  <input
+                    ref={partnerRef}
+                    type="text"
+                    value={partnerName}
+                    onChange={(e) => { setPartnerName(e.target.value); setErrors((prev) => ({ ...prev, partnerName: "" })); }}
+                    onKeyDown={handleKeyDown}
+                    disabled={isDisabled}
+                    placeholder="Numele partenerului"
+                    enterKeyHint="next"
+                    className="w-full max-w-xs border border-border-light rounded-xl px-4 py-2.5 text-sm bg-white text-center
+                               focus:outline-none focus:border-button transition-colors disabled:opacity-50"
+                  />
+                  {errors.partnerName && <p className="text-[0.6rem] text-button">{errors.partnerName}</p>}
+                </>
+              )}
+
+              {/* Mobile nav */}
+              <div className="flex gap-3 w-full max-w-xs mt-2 sm:hidden">
+                <button type="button" onClick={() => goToStep(1)}
+                  className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
+                  Înapoi
+                </button>
+                <button type="button" onClick={() => {
+                  const e: Record<string, string> = {};
+                  if (!name.trim()) e.name = "Introdu numele";
+                  if (personCount === 2 && !partnerName.trim()) e.partnerName = "Introdu numele partenerului";
+                  setErrors(e);
+                  if (!Object.keys(e).length) goToStep(3);
+                }}
+                  className="flex-1 bg-button text-white py-2 rounded-xl text-xs font-medium hover:bg-button-hover transition-colors cursor-pointer">
+                  Continuă
+                </button>
+              </div>
+            </div>
+
+            {/* ═══ STEP 3: Preferințe ═══ */}
+            <div className={`sm:!opacity-100 sm:!translate-x-0 sm:!pointer-events-auto sm:!relative sm:!inset-auto
+              transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(3)}`}>
+              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1 sm:hidden">
+                Preferințe
+              </p>
+
+              {/* Transport */}
+              <button type="button" onClick={() => setNeedsTransport(!needsTransport)} disabled={isDisabled}
+                className={`w-full max-w-xs flex items-center justify-between py-3 px-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
+                  ${needsTransport ? "border-button bg-button/5" : "border-border-light bg-white"}`}>
+                <div className="flex items-center gap-2.5">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
+                    <path d="M3 7 Q3 5, 5 5 L19 5 Q21 5, 21 7 L21 15 Q21 17, 19 17 L5 17 Q3 17, 3 15Z" />
+                    <circle cx="7" cy="19" r="1.5" /><circle cx="17" cy="19" r="1.5" />
+                  </svg>
+                  <span className="text-xs text-text-heading">Transport</span>
+                </div>
+                <div className={`relative w-10 h-5 rounded-full transition-colors duration-200
+                  ${needsTransport ? "bg-button" : "bg-text-muted/20"}`}>
+                  <span className={`absolute top-[3px] left-[3px] w-3.5 h-3.5 rounded-full shadow-sm transition-transform duration-200
+                    ${needsTransport ? "translate-x-[18px] bg-white" : "translate-x-0 bg-white/80"}`} />
+                </div>
+              </button>
+
+              {/* Vegetarian */}
+              <button type="button" onClick={() => setVegetarianMenu(!vegetarianMenu)} disabled={isDisabled}
+                className={`w-full max-w-xs flex items-center justify-between py-3 px-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
+                  ${vegetarianMenu ? "border-button bg-button/5" : "border-border-light bg-white"}`}>
+                <div className="flex items-center gap-2.5">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10" />
+                    <path d="M15 3c-1 4-4 7-8 8" />
+                    <path d="M22 2c-4 1-7 4-8 8" />
+                  </svg>
+                  <span className="text-xs text-text-heading">Meniu vegetarian</span>
+                </div>
+                <div className={`relative w-10 h-5 rounded-full transition-colors duration-200
+                  ${vegetarianMenu ? "bg-button" : "bg-text-muted/20"}`}>
+                  <span className={`absolute top-[3px] left-[3px] w-3.5 h-3.5 rounded-full shadow-sm transition-transform duration-200
+                    ${vegetarianMenu ? "translate-x-[18px] bg-white" : "translate-x-0 bg-white/80"}`} />
+                </div>
+              </button>
+
+              {/* Mobile nav */}
+              <div className="flex gap-3 w-full max-w-xs mt-2 sm:hidden">
+                <button type="button" onClick={() => goToStep(2)}
+                  className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
+                  Înapoi
+                </button>
+                <button type="button" onClick={() => goToStep(4)}
+                  className="flex-1 bg-button text-white py-2 rounded-xl text-xs font-medium hover:bg-button-hover transition-colors cursor-pointer">
+                  Continuă
+                </button>
+              </div>
+            </div>
+
+            {/* ═══ STEP 4: Mesaj + Confirmare ═══ */}
+            <div className={`sm:!opacity-100 sm:!translate-x-0 sm:!pointer-events-auto sm:!relative sm:!inset-auto
+              transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(4)}`}>
+              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1 sm:hidden">
+                Un mesaj pentru noi?
+              </p>
+              <div className="hidden sm:block text-center">
+                <label className="block text-[0.55rem] text-text-muted mb-1 tracking-[0.15em] uppercase">Vrei să ne transmiți ceva?</label>
+              </div>
+              <textarea
+                ref={messageRef}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                disabled={isDisabled}
+                rows={2}
+                placeholder="Opțional"
+                className="w-full max-w-xs border border-border-light rounded-xl px-4 py-2.5 text-sm bg-white text-center
+                           focus:outline-none focus:border-button transition-colors resize-none disabled:opacity-50"
+              />
+
+              {formState === "error" && (
+                <p className="text-[0.6rem] text-button">A apărut o eroare. Încearcă din nou.</p>
+              )}
+
+              <div className="flex gap-3 w-full max-w-xs sm:max-w-none pt-1 sm:hidden">
+                <button type="button" onClick={() => goToStep(3)}
+                  className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
+                  Înapoi
+                </button>
+                <button type="button" onClick={() => handleSubmit(false)} disabled={isDisabled}
+                  className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors disabled:opacity-50 cursor-pointer">
+                  Nu pot
+                </button>
+              </div>
+              <button type="button" onClick={() => handleSubmit(true)} disabled={isDisabled}
+                className="w-full max-w-xs sm:max-w-none bg-button text-white py-2.5 rounded-xl text-xs sm:text-sm font-medium
+                           hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer">
+                {formState === "submitting" ? "Se trimite..." : "Da, confirm prezența"}
+              </button>
+              {/* Desktop: decline button */}
+              <button type="button" onClick={() => handleSubmit(false)} disabled={isDisabled}
+                className="hidden sm:block w-full border border-button py-2.5 rounded-xl text-sm
+                           text-text-muted hover:bg-background-soft transition-colors disabled:opacity-50 cursor-pointer">
+                Nu pot să particip
+              </button>
+            </div>
+
+          </div>
+        </form>
       </div>
-      <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
+
+      {/* Footer */}
+      <div className="section-footer space-y-2 pb-4 sm:pb-0">
+        {settings?.confirmare_pana_la && (
+          <div>
+            <p className="text-[0.65rem] tracking-[0.2em] uppercase text-text-muted mb-1">
+              Confirmați până la
+            </p>
+            <p className="serif-font text-base text-text-heading font-medium">
+              {formatDate(settings.confirmare_pana_la)}
+            </p>
+          </div>
+        )}
+
+        <div className="flex items-center justify-center gap-3">
+          <span className="block w-8 h-px bg-button/20" />
+          <span className="text-[0.6rem] tracking-[0.15em] uppercase text-text-muted">Contact</span>
+          <span className="block w-8 h-px bg-button/20" />
+        </div>
+
+        {(settings?.telefon_mireasa || settings?.telefon_mire) && (
+          <div className="flex justify-center gap-6">
+            {settings.telefon_mireasa && (
+              <a href={`tel:${settings.telefon_mireasa.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
+                <span className="text-[0.65rem] text-text-muted">{couple.mireasa}</span>
+                <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mireasa}</span>
+              </a>
+            )}
+            {settings.telefon_mire && (
+              <a href={`tel:${settings.telefon_mire.replace(/\s/g, "")}`} className="flex flex-col items-center gap-0.5 group">
+                <span className="text-[0.65rem] text-text-muted">{couple.mire}</span>
+                <span className="text-xs text-button group-hover:text-button-hover transition-colors">{settings.telefon_mire}</span>
+              </a>
+            )}
+          </div>
+        )}
+
+        <ScrollIndicator className="mx-auto" />
+      </div>
     </section>
   );
 }

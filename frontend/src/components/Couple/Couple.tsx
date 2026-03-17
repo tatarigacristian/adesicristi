@@ -106,45 +106,42 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       id="couple"
       className="content-section bg-background-soft"
     >
-      <div className="w-full max-w-5xl mx-auto px-6 flex-1 flex flex-col">
-        <div className="text-center mb-4 sm:mb-10">
-          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2 sm:mb-3">Noi doi</h2>
-          <SmallFlourish className="mx-auto mb-[30px] sm:mb-3" />
+      {/* Header */}
+      <div className="section-header">
+        <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2 sm:mb-3">Noi doi</h2>
+        <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
 
-          {/* Mobile: timeline in header */}
-          <div className="lg:hidden flex flex-col items-center">
-            {(() => {
-              const item = timeline[activeTimelineIndex];
-              const isLast = activeTimelineIndex === timeline.length - 1;
-              return (
-                <div
-                  className={`flex flex-col items-center text-center transition-opacity duration-400 ${
-                    timelineFading ? "opacity-0" : "opacity-100"
-                  }`}
-                >
-                  <p className="text-[0.6rem] tracking-[0.2em] uppercase text-text-muted mb-1">
-                    {formatDate(item.date)}
-                  </p>
-                  <p className={`serif-font text-xl leading-snug ${isLast ? "text-button font-medium" : "text-text-heading"}`}>
-                    {item.label}
-                  </p>
-                </div>
-              );
-            })()}
-          </div>
+        {/* Mobile: rotating timeline label */}
+        <div className="lg:hidden flex flex-col items-center">
+          {(() => {
+            const item = timeline[activeTimelineIndex];
+            const isLast = activeTimelineIndex === timeline.length - 1;
+            return (
+              <div
+                className={`flex flex-col items-center text-center transition-opacity duration-400 ${
+                  timelineFading ? "opacity-0" : "opacity-100"
+                }`}
+              >
+                <p className="text-[0.6rem] tracking-[0.2em] uppercase text-text-muted mb-1">
+                  {formatDate(item.date)}
+                </p>
+                <p className={`serif-font text-xl leading-snug ${isLast ? "text-button font-medium" : "text-text-heading"}`}>
+                  {item.label}
+                </p>
+              </div>
+            );
+          })()}
         </div>
+      </div>
 
-        {/* Mobile: stacked */}
-        <div className="flex flex-col-reverse lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14 mt-auto sm:mb-[50px]">
+      {/* Content */}
+      <div className="section-content max-w-5xl px-6">
+        <div className="flex flex-col-reverse lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14 w-full h-full sm:h-auto">
 
-          {/* Timeline — vertically centered with video on desktop */}
+          {/* Timeline — desktop only */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-end lg:self-center">
-
-            {/* Desktop: full vertical timeline */}
             <div className="hidden lg:block relative pl-8">
-              {/* Vertical line */}
               <div className="absolute left-[11px] top-2 bottom-2 w-px bg-button/20" />
-
               <div className="flex flex-col gap-8">
                 {timeline.map((item, i) => {
                   const isLast = i === timeline.length - 1;
@@ -174,10 +171,10 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
             </div>
           </div>
 
-          {/* Video */}
-          <div className="w-full lg:w-1/2 flex justify-center lg:justify-start">
-            <div className="w-full max-w-[220px] sm:max-w-xs lg:max-w-sm glass-card !p-0 overflow-hidden">
-              <div className="relative w-full" style={{ paddingBottom: "calc(150% - 20px)" }}>
+          {/* Video — h-full on mobile so it fills available space */}
+          <div className="w-full lg:w-1/2 flex justify-center lg:justify-start h-full sm:h-auto">
+            <div className="h-full sm:h-auto sm:max-w-xs lg:max-w-sm glass-card !p-0 overflow-hidden rounded-xl" style={{ aspectRatio: "2/3" }}>
+              <div className="relative w-full h-full">
                 {!playing ? (
                   <button
                     onClick={() => setPlaying(true)}
@@ -211,7 +208,11 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
           </div>
         </div>
       </div>
-      <ScrollIndicator className="absolute bottom-[20px] left-1/2 -translate-x-1/2" />
+
+      {/* Footer */}
+      <div className="section-footer">
+        <ScrollIndicator className="mx-auto" />
+      </div>
     </section>
   );
 }

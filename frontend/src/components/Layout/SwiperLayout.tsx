@@ -88,6 +88,7 @@ export default function SwiperLayout({
 
     const fullHeight = window.visualViewport?.height ?? window.innerHeight;
     panel.style.height = `${fullHeight}px`;
+    document.documentElement.style.setProperty("--real-vh", `${fullHeight}px`);
 
     const lastFullHeight = { current: fullHeight };
 
@@ -100,6 +101,7 @@ export default function SwiperLayout({
       if (h >= lastFullHeight.current * 0.85) {
         lastFullHeight.current = h;
         panel.style.height = `${h}px`;
+        document.documentElement.style.setProperty("--real-vh", `${h}px`);
         swiperInstance?.update();
       }
     };

@@ -58,8 +58,8 @@ function ColorPicker({ label, value, onChange }: {
   label: string; value: string; onChange: (v: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="relative">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3 min-w-0">
+      <div className="relative flex-shrink-0">
         <input
           type="color"
           value={value}
@@ -68,7 +68,7 @@ function ColorPicker({ label, value, onChange }: {
           style={{ backgroundColor: value }}
         />
       </div>
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <label className="block text-xs text-text-muted mb-1 tracking-wide">{label}</label>
         <input
           type="text"
@@ -76,8 +76,7 @@ function ColorPicker({ label, value, onChange }: {
           onChange={(e) => onChange(e.target.value)}
           placeholder="#000000"
           maxLength={7}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white font-mono
-                     focus:outline-none focus:border-accent transition-colors"
+          className="w-full min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white font-mono focus:outline-none focus:border-accent transition-colors"
         />
       </div>
     </div>
@@ -88,14 +87,14 @@ function SettingsInput({ label, value, onChange, type = "text", placeholder }: {
   label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label className="block text-xs text-text-muted mb-1 tracking-wide">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors"
+        className="w-full min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors box-border"
       />
     </div>
   );
@@ -103,19 +102,30 @@ function SettingsInput({ label, value, onChange, type = "text", placeholder }: {
 
 function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="family-card">
-      <h3 className="serif-font text-lg text-text-heading mb-4">{title}</h3>
-      <div className="space-y-3">
+    <div className="family-card min-w-0 overflow-hidden">
+      <h3 className="serif-font text-lg text-text-heading mb-4 break-words">{title}</h3>
+      <div className="space-y-3 min-w-0">
         {children}
       </div>
     </div>
   );
 }
 
+type TabId = "cuplu" | "program" | "familie" | "confirmare" | "aspect";
+
+const TABS: { id: TabId; label: string }[] = [
+  { id: "cuplu", label: "Cuplu & nași" },
+  { id: "program", label: "Program eveniment" },
+  { id: "familie", label: "Familie" },
+  { id: "confirmare", label: "Confirmare & contact" },
+  { id: "aspect", label: "Aspect" },
+];
+
 // ─── Settings Page ───────────────────────────────────────
 
 export default function SetariPage() {
   const { token, onUnauth } = useAdminAuth();
+  const [activeTab, setActiveTab] = useState<TabId>("cuplu");
   const [settings, setSettings] = useState<WeddingSettingsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -261,11 +271,11 @@ export default function SetariPage() {
   }
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-6">
-        <h2 className="serif-font text-2xl text-text-heading">Setari eveniment</h2>
+    <div className="min-w-0 w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+        <h2 className="serif-font text-xl sm:text-2xl text-text-heading break-words">Setari eveniment</h2>
         {settings && (
-          <p className="text-xs text-text-muted">
+          <p className="text-xs text-text-muted shrink-0">
             Ultima actualizare: {new Date(settings.updated_at).toLocaleDateString("ro-RO", {
               day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
             })}
@@ -273,135 +283,164 @@ export default function SetariPage() {
         )}
       </div>
 
+      {/* Tab bar: pe mobil unul sub altul cu background activ, pe desktop orizontal */}
+      <nav className="flex flex-col sm:flex-row sm:border-b sm:border-border-light gap-1 sm:gap-0 sm:mb-6 mb-4" aria-label="Setari">
+        {TABS.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`w-full sm:w-auto text-left px-4 py-3 sm:py-3 sm:px-4 text-sm font-medium rounded-lg sm:rounded-none sm:rounded-t-lg border-l-4 sm:border-l-0 sm:border-b-2 transition-colors cursor-pointer
+                ${isActive
+                  ? "bg-background-soft border-button text-text-heading sm:border-button sm:-mb-px"
+                  : "border-transparent text-text-muted hover:text-text-heading hover:bg-background-soft/50 sm:hover:bg-transparent sm:hover:border-border-light"
+                }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </nav>
+
       <form onSubmit={handleSave} className="space-y-6">
-        {/* Couple names */}
-        <SettingsSection title="Cuplu">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Nume mireasa" value={form.nume_mireasa} onChange={updateForm("nume_mireasa")} placeholder="Ade" />
-            <SettingsInput label="Nume mire" value={form.nume_mire} onChange={updateForm("nume_mire")} placeholder="Cristi" />
+        {/* Tab: Cuplu & nași */}
+        {activeTab === "cuplu" && (
+          <div className="space-y-6">
+            <SettingsSection title="Cuplu">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Nume mireasa" value={form.nume_mireasa} onChange={updateForm("nume_mireasa")} placeholder="Ade" />
+                <SettingsInput label="Nume mire" value={form.nume_mire} onChange={updateForm("nume_mire")} placeholder="Cristi" />
+              </div>
+            </SettingsSection>
+            <SettingsSection title="Nasii">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Prenume nasa" value={form.nasa_prenume} onChange={updateForm("nasa_prenume")} placeholder="Prenume" />
+                <SettingsInput label="Nume nasa" value={form.nasa_nume} onChange={updateForm("nasa_nume")} placeholder="Nume" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Prenume nas" value={form.nas_prenume} onChange={updateForm("nas_prenume")} placeholder="Prenume" />
+                <SettingsInput label="Nume nas" value={form.nas_nume} onChange={updateForm("nas_nume")} placeholder="Nume" />
+              </div>
+            </SettingsSection>
           </div>
-        </SettingsSection>
+        )}
 
-        {/* Nasi */}
-        <SettingsSection title="Nasii">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Prenume nasa" value={form.nasa_prenume} onChange={updateForm("nasa_prenume")} placeholder="Prenume" />
-            <SettingsInput label="Nume nasa" value={form.nasa_nume} onChange={updateForm("nasa_nume")} placeholder="Nume" />
+        {/* Tab: Program eveniment */}
+        {activeTab === "program" && (
+          <div className="space-y-6">
+            <SettingsSection title="Cununia Religioasa">
+              <SettingsInput label="Descriere / Titlu" value={form.ceremonie_descriere} onChange={updateForm("ceremonie_descriere")} placeholder="Cununia Religioasa" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Data" value={form.ceremonie_data} onChange={updateForm("ceremonie_data")} type="date" />
+                <SettingsInput label="Ora" value={form.ceremonie_ora} onChange={updateForm("ceremonie_ora")} type="time" />
+              </div>
+              <SettingsInput label="Adresa" value={form.ceremonie_adresa} onChange={updateForm("ceremonie_adresa")} placeholder="Adresa locatiei" />
+              <SettingsInput label="Link Google Maps" value={form.ceremonie_google_maps} onChange={updateForm("ceremonie_google_maps")} placeholder="https://maps.app.goo.gl/..." />
+            </SettingsSection>
+            <SettingsSection title="Transport">
+              <SettingsInput label="Descriere / Titlu" value={form.transport_descriere} onChange={updateForm("transport_descriere")} placeholder="Transport" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Data" value={form.transport_data} onChange={updateForm("transport_data")} type="date" />
+                <SettingsInput label="Ora" value={form.transport_ora} onChange={updateForm("transport_ora")} type="time" />
+              </div>
+              <SettingsInput label="Adresa" value={form.transport_adresa} onChange={updateForm("transport_adresa")} placeholder="Adresa locatiei" />
+              <SettingsInput label="Link Google Maps" value={form.transport_google_maps} onChange={updateForm("transport_google_maps")} placeholder="https://maps.app.goo.gl/..." />
+            </SettingsSection>
+            <SettingsSection title="Petrecerea">
+              <SettingsInput label="Descriere / Titlu" value={form.petrecere_descriere} onChange={updateForm("petrecere_descriere")} placeholder="Petrecerea" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Data" value={form.petrecere_data} onChange={updateForm("petrecere_data")} type="date" />
+                <SettingsInput label="Ora" value={form.petrecere_ora} onChange={updateForm("petrecere_ora")} type="time" />
+              </div>
+              <SettingsInput label="Adresa" value={form.petrecere_adresa} onChange={updateForm("petrecere_adresa")} placeholder="Adresa locatiei" />
+              <SettingsInput label="Link Google Maps" value={form.petrecere_google_maps} onChange={updateForm("petrecere_google_maps")} placeholder="https://maps.app.goo.gl/..." />
+            </SettingsSection>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Prenume nas" value={form.nas_prenume} onChange={updateForm("nas_prenume")} placeholder="Prenume" />
-            <SettingsInput label="Nume nas" value={form.nas_nume} onChange={updateForm("nas_nume")} placeholder="Nume" />
-          </div>
-        </SettingsSection>
+        )}
 
-        {/* Ceremonie */}
-        <SettingsSection title="Cununia Religioasa">
-          <SettingsInput label="Descriere / Titlu" value={form.ceremonie_descriere} onChange={updateForm("ceremonie_descriere")} placeholder="Cununia Religioasa" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Data" value={form.ceremonie_data} onChange={updateForm("ceremonie_data")} type="date" />
-            <SettingsInput label="Ora" value={form.ceremonie_ora} onChange={updateForm("ceremonie_ora")} type="time" />
+        {/* Tab: Familie */}
+        {activeTab === "familie" && (
+          <div className="space-y-6">
+            <SettingsSection title="Parintii miresei">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Prenume tata" value={form.tata_mireasa_prenume} onChange={updateForm("tata_mireasa_prenume")} placeholder="Vasile" />
+                <SettingsInput label="Nume tata" value={form.tata_mireasa_nume} onChange={updateForm("tata_mireasa_nume")} placeholder="Pop" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Prenume mama" value={form.mama_mireasa_prenume} onChange={updateForm("mama_mireasa_prenume")} placeholder="Veronica" />
+                <SettingsInput label="Nume mama" value={form.mama_mireasa_nume} onChange={updateForm("mama_mireasa_nume")} placeholder="Pop" />
+              </div>
+            </SettingsSection>
+            <SettingsSection title="Parintii mirelui">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Prenume tata" value={form.tata_mire_prenume} onChange={updateForm("tata_mire_prenume")} placeholder="Alexandru" />
+                <SettingsInput label="Nume tata" value={form.tata_mire_nume} onChange={updateForm("tata_mire_nume")} placeholder="Budai" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Prenume mama" value={form.mama_mire_prenume} onChange={updateForm("mama_mire_prenume")} placeholder="Marieta" />
+                <SettingsInput label="Nume mama" value={form.mama_mire_nume} onChange={updateForm("mama_mire_nume")} placeholder="Budai" />
+              </div>
+            </SettingsSection>
           </div>
-          <SettingsInput label="Adresa" value={form.ceremonie_adresa} onChange={updateForm("ceremonie_adresa")} placeholder="Adresa locatiei" />
-          <SettingsInput label="Link Google Maps" value={form.ceremonie_google_maps} onChange={updateForm("ceremonie_google_maps")} placeholder="https://maps.app.goo.gl/..." />
-        </SettingsSection>
+        )}
 
-        {/* Transport */}
-        <SettingsSection title="Transport">
-          <SettingsInput label="Descriere / Titlu" value={form.transport_descriere} onChange={updateForm("transport_descriere")} placeholder="Transport" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Data" value={form.transport_data} onChange={updateForm("transport_data")} type="date" />
-            <SettingsInput label="Ora" value={form.transport_ora} onChange={updateForm("transport_ora")} type="time" />
-          </div>
-          <SettingsInput label="Adresa" value={form.transport_adresa} onChange={updateForm("transport_adresa")} placeholder="Adresa locatiei" />
-          <SettingsInput label="Link Google Maps" value={form.transport_google_maps} onChange={updateForm("transport_google_maps")} placeholder="https://maps.app.goo.gl/..." />
-        </SettingsSection>
+        {/* Tab: Confirmare & contact */}
+        {activeTab === "confirmare" && (
+          <SettingsSection title="Confirmare invitatie">
+            <SettingsInput label="Confirmare pana la" value={form.confirmare_pana_la} onChange={updateForm("confirmare_pana_la")} type="date" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <SettingsInput label="Telefon mireasa" value={form.telefon_mireasa} onChange={updateForm("telefon_mireasa")} placeholder="0755 776 372" />
+              <SettingsInput label="Telefon mire" value={form.telefon_mire} onChange={updateForm("telefon_mire")} placeholder="0747 340 944" />
+            </div>
+            <div className="min-w-0">
+              <label className="block text-xs text-text-muted mb-1 tracking-wide">Info contact (pentru invitatie)</label>
+              <textarea
+                value={form.contact_info}
+                onChange={(e) => setForm((prev) => ({ ...prev, contact_info: e.target.value }))}
+                rows={3}
+                placeholder={"Vasile Pop: 0744 486 168 | Alexandru Budai: 0745 123 456"}
+                className="w-full min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none box-border"
+              />
+            </div>
+          </SettingsSection>
+        )}
 
-        {/* Petrecere */}
-        <SettingsSection title="Petrecerea">
-          <SettingsInput label="Descriere / Titlu" value={form.petrecere_descriere} onChange={updateForm("petrecere_descriere")} placeholder="Petrecerea" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Data" value={form.petrecere_data} onChange={updateForm("petrecere_data")} type="date" />
-            <SettingsInput label="Ora" value={form.petrecere_ora} onChange={updateForm("petrecere_ora")} type="time" />
+        {/* Tab: Aspect */}
+        {activeTab === "aspect" && (
+          <div className="space-y-6">
+            <SettingsSection title="Video">
+              <SettingsInput
+                label="Link YouTube (embed format)"
+                value={form.link_youtube_video}
+                onChange={updateForm("link_youtube_video")}
+                placeholder="https://www.youtube.com/embed/..."
+              />
+            </SettingsSection>
+            <SettingsSection title="Culori tema">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <ColorPicker label="Culoare principala (fundal)" value={form.color_main} onChange={updateForm("color_main")} />
+                <ColorPicker label="Culoare secundara (accent)" value={form.color_second} onChange={updateForm("color_second")} />
+                <ColorPicker label="Culoare butoane" value={form.color_button} onChange={updateForm("color_button")} />
+                <ColorPicker label="Culoare text" value={form.color_text} onChange={updateForm("color_text")} />
+              </div>
+              <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="rounded-lg h-12 border border-border-light min-h-[3rem]" style={{ backgroundColor: form.color_main }} />
+                <div className="rounded-lg h-12 border border-border-light min-h-[3rem]" style={{ backgroundColor: form.color_second }} />
+                <div className="rounded-lg h-12 border border-border-light min-h-[3rem]" style={{ backgroundColor: form.color_button }} />
+                <div className="rounded-lg h-12 border border-border-light min-h-[3rem]" style={{ backgroundColor: form.color_text }} />
+              </div>
+            </SettingsSection>
           </div>
-          <SettingsInput label="Adresa" value={form.petrecere_adresa} onChange={updateForm("petrecere_adresa")} placeholder="Adresa locatiei" />
-          <SettingsInput label="Link Google Maps" value={form.petrecere_google_maps} onChange={updateForm("petrecere_google_maps")} placeholder="https://maps.app.goo.gl/..." />
-        </SettingsSection>
+        )}
 
-        {/* Parinti mireasa */}
-        <SettingsSection title="Parintii miresei">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Prenume tata" value={form.tata_mireasa_prenume} onChange={updateForm("tata_mireasa_prenume")} placeholder="Vasile" />
-            <SettingsInput label="Nume tata" value={form.tata_mireasa_nume} onChange={updateForm("tata_mireasa_nume")} placeholder="Pop" />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Prenume mama" value={form.mama_mireasa_prenume} onChange={updateForm("mama_mireasa_prenume")} placeholder="Veronica" />
-            <SettingsInput label="Nume mama" value={form.mama_mireasa_nume} onChange={updateForm("mama_mireasa_nume")} placeholder="Pop" />
-          </div>
-        </SettingsSection>
-
-        {/* Parinti mire */}
-        <SettingsSection title="Parintii mirelui">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Prenume tata" value={form.tata_mire_prenume} onChange={updateForm("tata_mire_prenume")} placeholder="Alexandru" />
-            <SettingsInput label="Nume tata" value={form.tata_mire_nume} onChange={updateForm("tata_mire_nume")} placeholder="Budai" />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <SettingsInput label="Prenume mama" value={form.mama_mire_prenume} onChange={updateForm("mama_mire_prenume")} placeholder="Marieta" />
-            <SettingsInput label="Nume mama" value={form.mama_mire_nume} onChange={updateForm("mama_mire_nume")} placeholder="Budai" />
-          </div>
-        </SettingsSection>
-
-        {/* Confirmare */}
-        <SettingsSection title="Confirmare invitatie">
-          <SettingsInput label="Confirmare pana la" value={form.confirmare_pana_la} onChange={updateForm("confirmare_pana_la")} type="date" />
-          <div className="grid grid-cols-2 gap-4">
-            <SettingsInput label="Telefon mireasa" value={form.telefon_mireasa} onChange={updateForm("telefon_mireasa")} placeholder="0755 776 372" />
-            <SettingsInput label="Telefon mire" value={form.telefon_mire} onChange={updateForm("telefon_mire")} placeholder="0747 340 944" />
-          </div>
-          <div>
-            <label className="block text-xs text-text-muted mb-1 tracking-wide">Info contact (pentru invitatie)</label>
-            <textarea
-              value={form.contact_info}
-              onChange={(e) => setForm((prev) => ({ ...prev, contact_info: e.target.value }))}
-              rows={3}
-              placeholder={"Vasile Pop: 0744 486 168 | Alexandru Budai: 0745 123 456"}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none"
-            />
-          </div>
-        </SettingsSection>
-
-        {/* YouTube */}
-        <SettingsSection title="Video">
-          <SettingsInput
-            label="Link YouTube (embed format)"
-            value={form.link_youtube_video}
-            onChange={updateForm("link_youtube_video")}
-            placeholder="https://www.youtube.com/embed/..."
-          />
-        </SettingsSection>
-
-        {/* Colors */}
-        <SettingsSection title="Culori tema">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <ColorPicker label="Culoare principala (fundal)" value={form.color_main} onChange={updateForm("color_main")} />
-            <ColorPicker label="Culoare secundara (accent)" value={form.color_second} onChange={updateForm("color_second")} />
-            <ColorPicker label="Culoare butoane" value={form.color_button} onChange={updateForm("color_button")} />
-            <ColorPicker label="Culoare text" value={form.color_text} onChange={updateForm("color_text")} />
-          </div>
-          <div className="mt-3 flex gap-2">
-            <div className="flex-1 rounded-lg h-12 border border-border-light" style={{ backgroundColor: form.color_main }} />
-            <div className="flex-1 rounded-lg h-12 border border-border-light" style={{ backgroundColor: form.color_second }} />
-            <div className="flex-1 rounded-lg h-12 border border-border-light" style={{ backgroundColor: form.color_button }} />
-            <div className="flex-1 rounded-lg h-12 border border-border-light" style={{ backgroundColor: form.color_text }} />
-          </div>
-        </SettingsSection>
-
-        {/* Save button */}
-        <div className="flex items-center gap-4">
+        {/* Save button - visible on all tabs */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
           <button
             type="submit"
             disabled={saving}
-            className="bg-button text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer"
+            className="w-full sm:w-auto bg-button text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer"
           >
             {saving ? "Se salveaza..." : "Salveaza setarile"}
           </button>
