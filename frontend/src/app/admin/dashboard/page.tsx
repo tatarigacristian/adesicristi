@@ -19,6 +19,29 @@ interface TableAssignment {
   table_number: number;
 }
 
+interface InvitationLog {
+  guest_id: number;
+  open_count: number;
+  last_open_at: string | null;
+  device: string | null;
+  browser: string | null;
+  nume: string;
+  prenume: string;
+  slug: string | null;
+  plus_one: boolean;
+  partner_id: number | null;
+}
+
+function relativeTime(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `acum ${mins}m`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `acum ${hours}h`;
+  const days = Math.floor(hours / 24);
+  return `acum ${days}z`;
+}
+
 function formatPrice(v: number) {
   return Number(v).toLocaleString("ro-RO", {
     minimumFractionDigits: 0,
@@ -33,6 +56,7 @@ export default function DashboardPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [settings, setSettings] = useState<Record<string, string | null>>({});
   const [assignments, setAssignments] = useState<TableAssignment[]>([]);
+  const [invitationLogs, setInvitationLogs] = useState<InvitationLog[]>([]);
   const [optimismLevel, setOptimismLevel] = useState(50);
   const [onlyConfirmed, setOnlyConfirmed] = useState(false);
   const [subtractAvans, setSubtractAvans] = useState(false);
@@ -40,7 +64,7 @@ export default function DashboardPage() {
 
   const fetchAll = useCallback(async () => {
     try {
-      const [guestsRes, rsvpRes, servicesRes, settingsRes, assignRes] =
+      const [guestsRes, rsvpRes, servicesRes, settingsRes, assignRes, logsRes] =
         await Promise.all([
           fetch(`${API_URL}/api/admin/guests`, {
             headers: authHeaders(token),
@@ -51,6 +75,9 @@ export default function DashboardPage() {
           }),
           fetch(`${API_URL}/api/wedding-settings`),
           fetch(`${API_URL}/api/admin/table-assignments`, {
+            headers: authHeaders(token),
+          }),
+          fetch(`${API_URL}/api/admin/invitation-logs`, {
             headers: authHeaders(token),
           }),
         ]);
@@ -78,6 +105,9 @@ export default function DashboardPage() {
       if (assignRes.ok) {
         const assignData = await assignRes.json();
         setAssignments(assignData.guests || []);
+      }
+      if (logsRes.ok) {
+        setInvitationLogs(await logsRes.json());
       }
     } finally {
       setLoading(false);
@@ -514,9 +544,20 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left: Services breakdown */}
           <div>
-            <h3 className="text-xs uppercase tracking-wide text-text-muted mb-3">
-              Costuri servicii
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs uppercase tracking-wide text-text-muted">
+                Costuri servicii
+              </h3>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={subtractAvans}
+                  onChange={(e) => setSubtractAvans(e.target.checked)}
+                  className="w-3.5 h-3.5 accent-accent cursor-pointer"
+                />
+                <span className="text-[11px] text-text-muted">Scade avansul</span>
+              </label>
+            </div>
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-text-muted">Cost total</span>
@@ -531,9 +572,9 @@ export default function DashboardPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-text-muted">Rest de plata</span>
+                <span className="text-sm text-text-muted">{subtractAvans ? "Rest de plata" : "De achitat"}</span>
                 <span className="text-sm font-medium text-red-600">
-                  {formatPrice(stats.remainingToPay)} RON
+                  {formatPrice(subtractAvans ? stats.remainingToPay : stats.totalServiceCost)} RON
                 </span>
               </div>
             </div>
@@ -550,6 +591,78 @@ export default function DashboardPage() {
                 />
               </div>
             </div>
+            {/* Dar vs Servicii progress bar */}
+            {stats.estimatedGift > 0 && (
+              <div className="mt-4">
+                {(() => {
+                  const costRef = subtractAvans ? stats.remainingToPay : stats.totalServiceCost;
+                  const darPct = costRef > 0 ? Math.min(100, Math.round((stats.estimatedGift / costRef) * 100)) : 0;
+                  const isPositive = stats.estimatedGift >= costRef;
+                  return (
+                    <>
+                      <div className="flex justify-between text-xs text-text-muted mb-1">
+                        <span>Dar estimat vs. {subtractAvans ? "rest plata" : "cost total"}</span>
+                        <span className={isPositive ? "text-green-600" : "text-red-600"}>{darPct}%</span>
+                      </div>
+                      <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${isPositive ? "bg-green-500" : "bg-amber-500"}`}
+                          style={{ width: `${darPct}%` }}
+                        />
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+            {/* Avans + Dar vs Cost total */}
+            {stats.totalServiceCost > 0 && (
+              <div className="mt-4">
+                {(() => {
+                  const costRef = subtractAvans ? stats.remainingToPay : stats.totalServiceCost;
+                  const darPctSlice = costRef > 0 ? Math.min(100, Math.round((stats.estimatedGift / costRef) * 100)) : 0;
+                  const remaining = Math.max(0, costRef - stats.estimatedGift);
+                  if (subtractAvans) {
+                    return (
+                      <>
+                        <div className="flex justify-between text-xs text-text-muted mb-1">
+                          <span>Dar estimat vs. rest de plata</span>
+                          <span className={darPctSlice >= 100 ? "text-green-600" : "text-text-heading"}>{darPctSlice}%</span>
+                        </div>
+                        <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden flex">
+                          <div className="h-full bg-blue-400 transition-all duration-500" style={{ width: `${darPctSlice}%` }} />
+                        </div>
+                        <div className="flex gap-4 text-[10px] text-text-muted mt-1">
+                          <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-blue-400" />Dar ({formatPrice(Math.round(stats.estimatedGift))})</span>
+                          <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-gray-200" />Rest ({formatPrice(remaining)})</span>
+                        </div>
+                      </>
+                    );
+                  }
+                  const covered = stats.totalAvans + stats.estimatedGift;
+                  const coveredPct = Math.min(100, Math.round((covered / stats.totalServiceCost) * 100));
+                  const avansPctSlice = Math.round((stats.totalAvans / stats.totalServiceCost) * 100);
+                  const darSlice = Math.min(100 - avansPctSlice, Math.round((stats.estimatedGift / stats.totalServiceCost) * 100));
+                  return (
+                    <>
+                      <div className="flex justify-between text-xs text-text-muted mb-1">
+                        <span>Acoperire cost total (avans + dar)</span>
+                        <span className={coveredPct >= 100 ? "text-green-600" : "text-text-heading"}>{coveredPct}%</span>
+                      </div>
+                      <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden flex">
+                        <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${avansPctSlice}%` }} />
+                        <div className="h-full bg-blue-400 transition-all duration-500" style={{ width: `${darSlice}%` }} />
+                      </div>
+                      <div className="flex gap-4 text-[10px] text-text-muted mt-1">
+                        <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-green-500" />Avans ({formatPrice(stats.totalAvans)})</span>
+                        <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-blue-400" />Dar ({formatPrice(Math.round(stats.estimatedGift))})</span>
+                        <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-gray-200" />Rest ({formatPrice(Math.max(0, stats.totalServiceCost - covered))})</span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
           </div>
 
           {/* Right: Gift estimation */}
@@ -594,19 +707,25 @@ export default function DashboardPage() {
               <span>Max: {formatPrice(stats.estimatedGiftMax)} RON</span>
             </div>
             {/* Comparison with cost */}
-            <div
-              className={`mt-3 text-center py-2 rounded-lg ${
-                stats.giftVsCost >= 0
-                  ? "bg-green-100 text-green-600"
-                  : "bg-red-100 text-red-600"
-              }`}
-            >
-              <span className="text-sm font-medium">
-                {stats.giftVsCost >= 0 ? "+" : ""}
-                {formatPrice(Math.round(stats.giftVsCost))} RON
-              </span>
-              <span className="text-xs ml-1.5">vs. cost servicii</span>
-            </div>
+            {(() => {
+              const costRef = subtractAvans ? stats.remainingToPay : stats.totalServiceCost;
+              const diff = stats.estimatedGift - costRef;
+              return (
+                <div
+                  className={`mt-3 text-center py-2 rounded-lg ${
+                    diff >= 0
+                      ? "bg-green-100 text-green-600"
+                      : "bg-red-100 text-red-600"
+                  }`}
+                >
+                  <span className="text-sm font-medium">
+                    {diff >= 0 ? "+" : ""}
+                    {formatPrice(Math.round(diff))} RON
+                  </span>
+                  <span className="text-xs ml-1.5">vs. {subtractAvans ? "rest plata" : "cost servicii"}</span>
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -654,41 +773,81 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Quick stats */}
+        {/* Progress stats */}
         <div className="family-card">
           <h2 className="text-sm font-medium text-text-heading mb-4">
             Statistici rapide
           </h2>
-          <div className="space-y-3">
-            {[
-              { label: "Invitati cu +1", value: stats.withPlusOne },
-              { label: "Invitati cu slug", value: stats.withSlug },
-              {
-                label: "Servicii cu contract",
-                value: stats.servicesWithContract,
-              },
-              {
-                label: "Servicii cu loc la masa",
-                value: stats.servicesWithSeat,
-              },
-              {
-                label: "Zile pana la nunta",
-                value:
-                  stats.daysUntilWedding != null
-                    ? stats.daysUntilWedding
-                    : "N/A",
-              },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center justify-between py-1.5 border-b border-border-light last:border-0"
-              >
-                <span className="text-sm text-text-muted">{item.label}</span>
-                <span className="text-sm font-medium text-text-heading">
-                  {item.value}
-                </span>
+          <div className="space-y-4">
+            {(() => {
+              const totalMain = mainGuests.length;
+              const totalWithSlug = mainGuests.filter((g) => g.slug).length;
+              const openedCount = invitationLogs.filter((l) => l.open_count > 0).length;
+              const bars = [
+                { label: "Invitati cu +1", count: stats.withPlusOne, total: totalMain, color: "bg-blue-500" },
+                { label: "Invitatii deschise", count: openedCount, total: totalWithSlug, color: "bg-purple-500" },
+              ];
+              return bars.map((b) => {
+                const pct = b.total > 0 ? Math.round((b.count / b.total) * 100) : 0;
+                return (
+                  <div key={b.label}>
+                    <div className="flex justify-between text-xs text-text-muted mb-1">
+                      <span>{b.label}</span>
+                      <span>{b.count}/{b.total}</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className={`h-full ${b.color} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+            {/* Bar chart: opens per guest */}
+            {invitationLogs.length > 0 && (() => {
+              const sorted = [...invitationLogs].sort((a, b) => b.open_count - a.open_count).slice(0, 10);
+              const maxCount = sorted[0]?.open_count || 1;
+              return (
+                <div className="pt-3 border-t border-border-light">
+                  <p className="text-xs uppercase tracking-wide text-text-muted mb-2">Vizualizari per invitat</p>
+                  <div className="space-y-1.5">
+                    {sorted.map((l) => (
+                      <div key={l.guest_id} className="flex items-center gap-2">
+                        <span className="text-xs text-text-muted w-20 truncate flex-shrink-0">{l.prenume}</span>
+                        <div className="flex-1 h-4 bg-gray-100 rounded overflow-hidden">
+                          <div className="h-full bg-blue-500 rounded transition-all duration-500" style={{ width: `${(l.open_count / maxCount) * 100}%` }} />
+                        </div>
+                        <span className="text-xs font-medium text-text-heading w-6 text-right flex-shrink-0">{l.open_count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+            {/* Timeline: last opens */}
+            {invitationLogs.filter((l) => l.last_open_at).length > 0 && (() => {
+              const withDate = invitationLogs.filter((l) => l.last_open_at).sort((a, b) => new Date(b.last_open_at!).getTime() - new Date(a.last_open_at!).getTime()).slice(0, 8);
+              return (
+                <div className="pt-3 border-t border-border-light">
+                  <p className="text-xs uppercase tracking-wide text-text-muted mb-2">Ultima deschidere</p>
+                  <div className="space-y-2">
+                    {withDate.map((l) => (
+                      <div key={l.guest_id} className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0" />
+                        <span className="text-xs text-text-heading flex-1 truncate">{l.prenume} {l.nume}</span>
+                        <span className="text-[10px] text-text-muted flex-shrink-0">{relativeTime(l.last_open_at!)}</span>
+                        {l.device && <span className="text-[9px] bg-gray-100 text-text-muted px-1.5 py-0.5 rounded flex-shrink-0">{l.device}</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+            {stats.daysUntilWedding != null && (
+              <div className="flex items-center justify-between pt-2 border-t border-border-light">
+                <span className="text-sm text-text-muted">Zile pana la nunta</span>
+                <span className="text-sm font-medium text-text-heading">{stats.daysUntilWedding}</span>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

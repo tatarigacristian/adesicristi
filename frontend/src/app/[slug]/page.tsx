@@ -29,6 +29,13 @@ export default function SlugPage() {
   const [loading, setLoading] = useState(true);
   const [settingsUnavailable, setSettingsUnavailable] = useState(false);
 
+  // Log invitation open (fire-and-forget)
+  useEffect(() => {
+    if (slug) {
+      fetch(`${API_URL}/api/invitation-log/${slug}`, { method: "POST" }).catch(() => {});
+    }
+  }, [slug]);
+
   useEffect(() => {
     async function fetchData() {
       try {
