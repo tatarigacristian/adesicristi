@@ -25,7 +25,8 @@ export interface Guest {
   intro_long: string | null;
   slug: string | null;
   sex: "M" | "F" | null;
-  estimated_gift: number | null;
+  estimated_gift_min: number | null;
+  estimated_gift_max: number | null;
   partner_id: number | null;
   created_at: string;
 }

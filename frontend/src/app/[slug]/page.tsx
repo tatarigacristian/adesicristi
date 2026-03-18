@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import SwiperLayout from "@/components/Layout/SwiperLayout";
 import MaintenancePage from "@/components/MaintenancePage";
-import { WeddingSettings, getCoupleNames, applyThemeColors } from "@/utils/settings";
+import WeddingPageLoader from "@/components/WeddingPageLoader";
+import { WeddingSettings, applyThemeColors } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -25,6 +26,7 @@ export default function SlugPage() {
   const [guest, setGuest] = useState<GuestData | null>(null);
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [ready, setReady] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [settingsUnavailable, setSettingsUnavailable] = useState(false);
 
   useEffect(() => {
@@ -46,16 +48,19 @@ export default function SlugPage() {
       } catch {
         setSettingsUnavailable(true);
       } finally {
+        setLoading(false);
         requestAnimationFrame(() => setReady(true));
       }
     }
     fetchData();
   }, [slug]);
 
-  const couple = getCoupleNames(settings);
-
   if (settingsUnavailable) {
     return <MaintenancePage />;
+  }
+
+  if (loading) {
+    return <WeddingPageLoader />;
   }
 
   return (
@@ -71,16 +76,7 @@ export default function SlugPage() {
         }}
       />
 
-      {!ready ? (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <p className="script-font text-3xl text-text-heading mb-2">{couple.display}</p>
-            <p className="text-xs text-text-muted tracking-widest uppercase">Se încarcă...</p>
-          </div>
-        </div>
-      ) : (
-        <SwiperLayout settings={settings} guest={guest} />
-      )}
+      <SwiperLayout settings={settings} guest={guest} />
     </>
   );
 }

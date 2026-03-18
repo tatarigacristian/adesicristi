@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import SwiperLayout from "@/components/Layout/SwiperLayout";
 import MaintenancePage from "@/components/MaintenancePage";
+import WeddingPageLoader from "@/components/WeddingPageLoader";
 import { WeddingSettings, applyThemeColors } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
@@ -10,6 +11,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 export default function Home() {
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [ready, setReady] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [settingsUnavailable, setSettingsUnavailable] = useState(false);
 
   useEffect(() => {
@@ -26,6 +28,7 @@ export default function Home() {
       } catch {
         setSettingsUnavailable(true);
       } finally {
+        setLoading(false);
         requestAnimationFrame(() => setReady(true));
       }
     }
@@ -34,6 +37,10 @@ export default function Home() {
 
   if (settingsUnavailable) {
     return <MaintenancePage />;
+  }
+
+  if (loading) {
+    return <WeddingPageLoader />;
   }
 
   return (

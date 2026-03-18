@@ -11,7 +11,7 @@ export default function GuestsPage() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editGuest, setEditGuest] = useState<Guest | null>(null);
-  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "" as "" | "M" | "F", estimated_gift: "" });
+  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "" as "" | "M" | "F", estimated_gift_min: "", estimated_gift_max: "" });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<{ message: string; field?: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Guest | null>(null);
@@ -75,7 +75,7 @@ export default function GuestsPage() {
   function openNew() {
     setEditGuest(null);
     setSaveError(null);
-    setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "", estimated_gift: "" });
+    setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "", estimated_gift_min: "", estimated_gift_max: "" });
     setShowForm(true);
   }
 
@@ -93,7 +93,8 @@ export default function GuestsPage() {
       partner_nume: partner?.nume || "",
       partner_prenume: partner?.prenume || "",
       sex: g.sex || "",
-      estimated_gift: g.estimated_gift != null ? String(g.estimated_gift) : "",
+      estimated_gift_min: g.estimated_gift_min != null ? String(g.estimated_gift_min) : "",
+      estimated_gift_max: g.estimated_gift_max != null ? String(g.estimated_gift_max) : "",
     });
     setSaveError(null);
     setShowForm(true);
@@ -105,7 +106,7 @@ export default function GuestsPage() {
     setSaveError(null);
     const method = editGuest ? "PUT" : "POST";
     const url = editGuest ? `${API_URL}/api/admin/guests/${editGuest.id}` : `${API_URL}/api/admin/guests`;
-    const payload = { ...form, sex: form.sex || null, estimated_gift: form.estimated_gift ? Number(form.estimated_gift) : null };
+    const payload = { ...form, sex: form.sex || null, estimated_gift_min: form.estimated_gift_min ? Number(form.estimated_gift_min) : null, estimated_gift_max: form.estimated_gift_max ? Number(form.estimated_gift_max) : null };
     const res = await fetch(url, { method, headers: authHeaders(token), body: JSON.stringify(payload) });
     let data: { error?: string; field?: string } = {};
     try {
@@ -251,12 +252,21 @@ export default function GuestsPage() {
                   rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
                 <p className="text-xs text-text-muted text-right mt-1">{form.intro_long.length}/400</p>
               </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Cadou estimat de nunta (RON)</label>
-                <input type="number" value={form.estimated_gift} onChange={(e) => setForm({ ...form, estimated_gift: e.target.value })}
-                  placeholder="ex: 500"
-                  min="0"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-text-muted mb-1">Cadou estimat min (RON)</label>
+                  <input type="number" value={form.estimated_gift_min} onChange={(e) => setForm({ ...form, estimated_gift_min: e.target.value })}
+                    placeholder="ex: 300"
+                    min="0"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-xs text-text-muted mb-1">Cadou estimat max (RON)</label>
+                  <input type="number" value={form.estimated_gift_max} onChange={(e) => setForm({ ...form, estimated_gift_max: e.target.value })}
+                    placeholder="ex: 500"
+                    min="0"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                </div>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={saving}
