@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 /**
@@ -15,6 +15,7 @@ export function useTabParam<T extends string>(
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const skipSync = useRef(false);
 
   const getInitial = (): T => {
     const raw = searchParams.get(paramName);
@@ -26,18 +27,20 @@ export function useTabParam<T extends string>(
 
   const [tab, setTabState] = useState<T>(getInitial);
 
-  // Sync from URL changes (e.g. browser back/forward)
+  // Sync from URL changes (e.g. browser back/forward) — skip if we just set it programmatically
   useEffect(() => {
-    const raw = searchParams.get(paramName);
-    if (raw && (validValues as readonly string[]).includes(raw)) {
-      setTabState(raw as T);
-    } else {
-      setTabState(defaultValue);
+    if (skipSync.current) {
+      skipSync.current = false;
+      return;
     }
+    const raw = searchParams.get(paramName);
+    const resolved = raw && (validValues as readonly string[]).includes(raw) ? raw as T : defaultValue;
+    setTabState(resolved);
   }, [searchParams, paramName, validValues, defaultValue]);
 
   const setTab = useCallback(
     (newTab: T) => {
+      skipSync.current = true;
       setTabState(newTab);
       const params = new URLSearchParams(searchParams.toString());
       if (newTab === defaultValue) {
