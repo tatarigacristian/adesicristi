@@ -657,6 +657,13 @@ export default function GuestsPage() {
                       {g.children && g.children.length > 0 && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">{g.children.length} {g.children.length === 1 ? "copil" : "copii"}</span>
                       )}
+                      {(g.estimated_gift_min != null || g.estimated_gift_max != null) && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-50 text-green-700">
+                          {g.estimated_gift_min != null && g.estimated_gift_max != null
+                            ? `~${Math.round((g.estimated_gift_min + g.estimated_gift_max) / 2)} RON`
+                            : `${g.estimated_gift_min ?? g.estimated_gift_max} RON`}
+                        </span>
+                      )}
                     </div>
                     {(g.intro_short || g.intro_long) && (
                       <p className="text-xs text-foreground/50 line-clamp-2">{g.intro_short || g.intro_long}</p>
@@ -677,6 +684,7 @@ export default function GuestsPage() {
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Din partea</th>
                     <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Copii</th>
                     <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Scaun</th>
+                    <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Cadou est.</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Notite</th>
                     <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Actiuni</th>
                   </tr>
@@ -718,6 +726,13 @@ export default function GuestsPage() {
                           ) : (
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">Doar dar</span>
                           )}
+                        </td>
+                        <td className="px-4 py-3 text-right text-foreground/70 whitespace-nowrap">
+                          {g.estimated_gift_min != null && g.estimated_gift_max != null
+                            ? `${Math.round((g.estimated_gift_min + g.estimated_gift_max) / 2)} RON`
+                            : g.estimated_gift_min != null ? `${g.estimated_gift_min} RON`
+                            : g.estimated_gift_max != null ? `${g.estimated_gift_max} RON`
+                            : "\u2014"}
                         </td>
                         <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{g.intro_short || g.intro_long || "\u2014"}</td>
                         <td className="px-4 py-3 text-right whitespace-nowrap">
