@@ -419,7 +419,7 @@ export default function MesePage() {
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 shrink-0">{s.people}p</span>
                       <button
                         onClick={() => unassignService(s.id)}
-                        className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-red-500 transition-all cursor-pointer p-1"
+                        className="text-text-muted/40 hover:text-red-500 md:opacity-0 md:group-hover:opacity-100 transition-all cursor-pointer p-1"
                         title="Elimina de la masa"
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -434,7 +434,7 @@ export default function MesePage() {
                       <RsvpBadge guestId={g.id} />
                       <button
                         onClick={() => unassignGuest(g.id)}
-                        className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-red-500 transition-all cursor-pointer p-1"
+                        className="text-text-muted/40 hover:text-red-500 md:opacity-0 md:group-hover:opacity-100 transition-all cursor-pointer p-1"
                         title="Elimina de la masa"
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
