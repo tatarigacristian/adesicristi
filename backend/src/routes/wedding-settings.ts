@@ -36,6 +36,8 @@ export async function weddingSettingsRoutes(fastify: FastifyInstance) {
       'telefon_mireasa', 'telefon_mire',
       'confirmare_pana_la', 'contact_info',
       'color_main', 'color_second', 'color_button', 'color_text',
+      'numar_mese', 'min_persoane_masa', 'max_persoane_masa',
+      'numar_estimativ_invitati', 'numar_estimativ_staff',
     ];
 
     const setClauses: string[] = [];

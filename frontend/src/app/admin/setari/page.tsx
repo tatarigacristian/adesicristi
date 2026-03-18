@@ -49,6 +49,11 @@ interface WeddingSettingsData {
   color_text: string;
   telefon_mireasa: string | null;
   telefon_mire: string | null;
+  numar_mese: number | null;
+  min_persoane_masa: number | null;
+  max_persoane_masa: number | null;
+  numar_estimativ_invitati: number | null;
+  numar_estimativ_staff: number | null;
   updated_at: string;
 }
 
@@ -111,7 +116,7 @@ function SettingsSection({ title, children }: { title: string; children: React.R
   );
 }
 
-type TabId = "cuplu" | "program" | "familie" | "confirmare" | "aspect";
+type TabId = "cuplu" | "program" | "familie" | "confirmare" | "aspect" | "logistica";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "cuplu", label: "Cuplu & nași" },
@@ -119,6 +124,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "familie", label: "Familie" },
   { id: "confirmare", label: "Confirmare & contact" },
   { id: "aspect", label: "Aspect" },
+  { id: "logistica", label: "Mese & logistica" },
 ];
 
 // ─── Settings Page ───────────────────────────────────────
@@ -171,6 +177,11 @@ export default function SetariPage() {
     color_second: "#C4A484",
     color_button: "#C4A484",
     color_text: "#3A3A3A",
+    numar_mese: "",
+    min_persoane_masa: "",
+    max_persoane_masa: "",
+    numar_estimativ_invitati: "",
+    numar_estimativ_staff: "",
   });
 
   async function fetchSettings() {
@@ -221,6 +232,11 @@ export default function SetariPage() {
           color_second: data.color_second || "#C4A484",
           color_button: data.color_button || "#C4A484",
           color_text: data.color_text || "#3A3A3A",
+          numar_mese: data.numar_mese != null ? String(data.numar_mese) : "",
+          min_persoane_masa: data.min_persoane_masa != null ? String(data.min_persoane_masa) : "",
+          max_persoane_masa: data.max_persoane_masa != null ? String(data.max_persoane_masa) : "",
+          numar_estimativ_invitati: data.numar_estimativ_invitati != null ? String(data.numar_estimativ_invitati) : "",
+          numar_estimativ_staff: data.numar_estimativ_staff != null ? String(data.numar_estimativ_staff) : "",
         });
       }
     } catch {
@@ -430,6 +446,25 @@ export default function SetariPage() {
                 <div className="rounded-lg h-12 border border-border-light min-h-[3rem]" style={{ backgroundColor: form.color_second }} />
                 <div className="rounded-lg h-12 border border-border-light min-h-[3rem]" style={{ backgroundColor: form.color_button }} />
                 <div className="rounded-lg h-12 border border-border-light min-h-[3rem]" style={{ backgroundColor: form.color_text }} />
+              </div>
+            </SettingsSection>
+          </div>
+        )}
+
+        {/* Tab: Mese & logistica */}
+        {activeTab === "logistica" && (
+          <div className="space-y-6">
+            <SettingsSection title="Configurare mese">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <SettingsInput label="Numar de mese" value={form.numar_mese} onChange={updateForm("numar_mese")} type="number" placeholder="20" />
+                <SettingsInput label="Min persoane / masa" value={form.min_persoane_masa} onChange={updateForm("min_persoane_masa")} type="number" placeholder="8" />
+                <SettingsInput label="Max persoane / masa" value={form.max_persoane_masa} onChange={updateForm("max_persoane_masa")} type="number" placeholder="12" />
+              </div>
+            </SettingsSection>
+            <SettingsSection title="Estimari">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SettingsInput label="Numar estimativ invitati" value={form.numar_estimativ_invitati} onChange={updateForm("numar_estimativ_invitati")} type="number" placeholder="200" />
+                <SettingsInput label="Numar estimativ staff" value={form.numar_estimativ_staff} onChange={updateForm("numar_estimativ_staff")} type="number" placeholder="15" />
               </div>
             </SettingsSection>
           </div>
