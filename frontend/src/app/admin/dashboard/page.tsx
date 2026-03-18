@@ -802,55 +802,119 @@ export default function DashboardPage() {
       {dashTab === "invitati" && (<>
       {/* Row 5 - Two columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Gender distribution */}
+        {/* Distributie */}
         <div className="family-card">
           <h2 className="text-sm font-medium text-text-heading mb-4">
-            Distributie gen
+            Distributie
           </h2>
-          <div className="space-y-3">
-            {[
-              {
-                label: "Barbati (M)",
-                count: stats.maleCount,
-                color: "bg-blue-500",
-              },
-              {
-                label: "Femei (F)",
-                count: stats.femaleCount,
-                color: "bg-pink-500",
-              },
-              {
-                label: "Nespecificat",
-                count: stats.unspecifiedCount,
-                color: "bg-gray-400",
-              },
-            ].map((item) => (
-              <div key={item.label}>
-                <div className="flex justify-between text-xs text-text-muted mb-1">
-                  <span>{item.label}</span>
-                  <span>{item.count}</span>
+
+          {/* Gen */}
+          {(() => {
+            const segments = [
+              { label: "Barbati", count: stats.maleCount, color: "bg-blue-500" },
+              { label: "Femei", count: stats.femaleCount, color: "bg-pink-500" },
+            ].filter((s) => s.count > 0);
+            const total = segments.reduce((sum, s) => sum + s.count, 0);
+            if (total === 0) return null;
+            return (
+              <div className="mb-5">
+                <h3 className="text-xs text-text-muted mb-3">Gen</h3>
+                <div className="flex h-3 rounded-full overflow-hidden mb-3">
+                  {segments.map((s) => (
+                    <div key={s.label} className={`${s.color} transition-all duration-500`}
+                      style={{ width: `${(s.count / total) * 100}%` }} title={`${s.label}: ${s.count}`} />
+                  ))}
                 </div>
-                <div className="h-5 bg-gray-100 rounded overflow-hidden">
-                  <div
-                    className={`h-full ${item.color} rounded transition-all duration-500`}
-                    style={{
-                      width: `${(item.count / genderMax) * 100}%`,
-                    }}
-                  />
+                <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                  {segments.map((s) => (
+                    <div key={s.label} className="flex items-center gap-1.5">
+                      <span className={`w-2.5 h-2.5 rounded-full ${s.color}`} />
+                      <span className="text-xs text-text-muted">{s.label}</span>
+                      <span className="text-xs font-medium text-text-heading">{s.count}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })()}
+
+          {/* Persoane */}
+          {(() => {
+            const singuri = mainGuests.filter((g) => !g.plus_one).length;
+            const cupluri = stats.withPlusOne;
+            const copii = stats.totalChildren;
+            const total = singuri + cupluri + copii;
+            if (total === 0) return null;
+            const segments = [
+              { label: "Singuri", count: singuri, color: "bg-emerald-500" },
+              { label: "Cupluri (+1)", count: cupluri, color: "bg-indigo-500" },
+              { label: "Copii", count: copii, color: "bg-amber-500" },
+            ].filter((s) => s.count > 0);
+            return (
+              <div className="mb-5 pt-4 border-t border-border-light">
+                <h3 className="text-xs text-text-muted mb-3">Persoane</h3>
+                <div className="flex h-3 rounded-full overflow-hidden mb-3">
+                  {segments.map((s) => (
+                    <div key={s.label} className={`${s.color} transition-all duration-500`}
+                      style={{ width: `${(s.count / total) * 100}%` }} title={`${s.label}: ${s.count}`} />
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                  {segments.map((s) => (
+                    <div key={s.label} className="flex items-center gap-1.5">
+                      <span className={`w-2.5 h-2.5 rounded-full ${s.color}`} />
+                      <span className="text-xs text-text-muted">{s.label}</span>
+                      <span className="text-xs font-medium text-text-heading">{s.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Din partea */}
+          {Object.keys(stats.dinPartea).length > 0 && (() => {
+            const labels: Record<string, string> = {
+              mire: "Mire", mireasa: "Mireasa", nasi: "Nasi",
+              parintii_mire: "Par. mire", parintii_mireasa: "Par. mireasa",
+            };
+            const colors: Record<string, string> = {
+              mire: "bg-blue-500", mireasa: "bg-pink-500", nasi: "bg-purple-500",
+              parintii_mire: "bg-cyan-500", parintii_mireasa: "bg-rose-400",
+            };
+            const entries = Object.entries(stats.dinPartea).filter(([key]) => key !== "neatribuit").sort((a, b) => b[1] - a[1]);
+            const total = entries.reduce((sum, [, v]) => sum + v, 0);
+            if (entries.length === 0) return null;
+            return (
+              <div className="pt-4 border-t border-border-light">
+                <h3 className="text-xs text-text-muted mb-3">Din partea</h3>
+                <div className="flex h-3 rounded-full overflow-hidden mb-3">
+                  {entries.map(([key, count]) => (
+                    <div key={key} className={`${colors[key] || "bg-gray-300"} transition-all duration-500`}
+                      style={{ width: `${(count / total) * 100}%` }} title={`${labels[key] || key}: ${count}`} />
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                  {entries.map(([key, count]) => (
+                    <div key={key} className="flex items-center gap-1.5">
+                      <span className={`w-2.5 h-2.5 rounded-full ${colors[key] || "bg-gray-300"}`} />
+                      <span className="text-xs text-text-muted">{labels[key] || key}</span>
+                      <span className="text-xs font-medium text-text-heading">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
-        {/* Progress stats */}
+        {/* Statistici rapide */}
         <div className="family-card">
           <h2 className="text-sm font-medium text-text-heading mb-4">
             Statistici rapide
           </h2>
           <div className="space-y-4">
             {(() => {
-              const totalMain = mainGuests.length;
               const totalWithSlug = mainGuests.filter((g) => g.slug).length;
               const openedCount = invitationLogs.filter((l) => l.open_count > 0).length;
               const bars = [
@@ -872,84 +936,6 @@ export default function DashboardPage() {
               });
             })()}
           </div>
-
-          {/* Din partea chart */}
-          {Object.keys(stats.dinPartea).length > 0 && (() => {
-            const labels: Record<string, string> = {
-              mire: "Mire", mireasa: "Mireasa", nasi: "Nasi",
-              parintii_mire: "Par. mire", parintii_mireasa: "Par. mireasa",
-            };
-            const colors: Record<string, string> = {
-              mire: "bg-blue-500", mireasa: "bg-pink-500", nasi: "bg-purple-500",
-              parintii_mire: "bg-cyan-500", parintii_mireasa: "bg-rose-400",
-            };
-            const entries = Object.entries(stats.dinPartea).filter(([key]) => key !== "neatribuit").sort((a, b) => b[1] - a[1]);
-            const total = entries.reduce((sum, [, v]) => sum + v, 0);
-            return (
-              <div className="mt-5 pt-4 border-t border-border-light">
-                <h3 className="text-xs text-text-muted mb-3">Din partea</h3>
-                {/* Stacked bar */}
-                <div className="flex h-3 rounded-full overflow-hidden mb-3">
-                  {entries.map(([key, count]) => (
-                    <div
-                      key={key}
-                      className={`${colors[key] || "bg-gray-300"} transition-all duration-500`}
-                      style={{ width: `${(count / total) * 100}%` }}
-                      title={`${labels[key] || key}: ${count}`}
-                    />
-                  ))}
-                </div>
-                {/* Legend */}
-                <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-                  {entries.map(([key, count]) => (
-                    <div key={key} className="flex items-center gap-1.5">
-                      <span className={`w-2.5 h-2.5 rounded-full ${colors[key] || "bg-gray-300"}`} />
-                      <span className="text-xs text-text-muted">{labels[key] || key}</span>
-                      <span className="text-xs font-medium text-text-heading">{count}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Distributie persoane */}
-          {(() => {
-            const singuri = mainGuests.filter((g) => !g.plus_one).length;
-            const cupluri = stats.withPlusOne;
-            const copii = stats.totalChildren;
-            const total = singuri + cupluri + copii;
-            if (total === 0) return null;
-            const segments = [
-              { label: "Singuri", count: singuri, color: "bg-emerald-500" },
-              { label: "Cupluri (+1)", count: cupluri, color: "bg-blue-500" },
-              { label: "Copii", count: copii, color: "bg-amber-500" },
-            ].filter((s) => s.count > 0);
-            return (
-              <div className="mt-5 pt-4 border-t border-border-light">
-                <h3 className="text-xs text-text-muted mb-3">Distributie persoane</h3>
-                <div className="flex h-3 rounded-full overflow-hidden mb-3">
-                  {segments.map((s) => (
-                    <div
-                      key={s.label}
-                      className={`${s.color} transition-all duration-500`}
-                      style={{ width: `${(s.count / total) * 100}%` }}
-                      title={`${s.label}: ${s.count}`}
-                    />
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-                  {segments.map((s) => (
-                    <div key={s.label} className="flex items-center gap-1.5">
-                      <span className={`w-2.5 h-2.5 rounded-full ${s.color}`} />
-                      <span className="text-xs text-text-muted">{s.label}</span>
-                      <span className="text-xs font-medium text-text-heading">{s.count}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
         </div>
       </div>
 
