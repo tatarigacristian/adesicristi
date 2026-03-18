@@ -129,9 +129,12 @@ function MeseContent() {
         .filter((g) => assignmentMap.get(g.id) === i)
         .map((g) => {
           const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
-          const name = partner
+          let name = partner
             ? `${g.prenume} & ${partner.prenume} ${g.nume}${g.nume !== partner.nume ? ` / ${partner.nume}` : ""}`
             : `${g.prenume} ${g.nume}`;
+          if (g.children && g.children.length > 0) {
+            name += ` +${g.children.length} copil${g.children.length > 1 ? "i" : ""}`;
+          }
           return { id: g.id, name, partnerId: g.partner_id };
         });
       const tableServices = serviceAssignments
@@ -145,7 +148,10 @@ function MeseContent() {
   function countPeople(tableGuests: { id: number; partnerId: number | null }[], tableServices: { people: number }[] = []) {
     const guestCount = tableGuests.reduce((sum, g) => {
       const guest = mainGuests.find((mg) => mg.id === g.id);
-      return sum + (guest?.plus_one ? 2 : 1);
+      if (!guest) return sum;
+      const adults = guest.plus_one ? 2 : 1;
+      const children = guest.children ? guest.children.length : 0;
+      return sum + adults + children;
     }, 0);
     const serviceCount = tableServices.reduce((sum, s) => sum + s.people, 0);
     return guestCount + serviceCount;
@@ -247,7 +253,7 @@ function MeseContent() {
   }
 
   const totalAssigned = tables.reduce((sum, t) => sum + countPeople(t.guests, t.services), 0);
-  const totalUnassigned = unassigned.reduce((sum, g) => sum + (g.plus_one ? 2 : 1), 0) + unassignedServices.reduce((sum, s) => sum + s.numar_persoane, 0);
+  const totalUnassigned = unassigned.reduce((sum, g) => sum + (g.plus_one ? 2 : 1) + (g.children ? g.children.length : 0), 0) + unassignedServices.reduce((sum, s) => sum + s.numar_persoane, 0);
 
   return (
     <div>
@@ -373,14 +379,19 @@ function MeseContent() {
                       const displayName = partner
                         ? `${g.prenume} & ${partner.prenume} ${g.nume}${g.nume !== partner.nume ? ` / ${partner.nume}` : ""}`
                         : `${g.prenume} ${g.nume}`;
+                      const childCount = g.children ? g.children.length : 0;
+                      const totalPeople = (g.plus_one ? 2 : 1) + childCount;
                       return (
                         <button
                           key={g.id}
                           onClick={() => { assignGuest(g.id, addToTable); setAddToTable(null); }}
                           className="w-full text-left px-3 py-2 rounded-lg hover:bg-background-soft transition-colors cursor-pointer flex items-center justify-between gap-2"
                         >
-                          <span className="text-sm text-text-heading">{displayName}</span>
-                          <span className="text-xs text-text-muted shrink-0">{g.plus_one ? "2p" : "1p"}</span>
+                          <span className="text-sm text-text-heading">
+                            {displayName}
+                            {childCount > 0 && <span className="text-text-muted text-xs ml-1">+{childCount} copil{childCount > 1 ? "i" : ""}</span>}
+                          </span>
+                          <span className="text-xs text-text-muted shrink-0">{totalPeople}p</span>
                         </button>
                       );
                     })}
@@ -427,16 +438,21 @@ function MeseContent() {
                 const displayName = partner
                   ? `${g.prenume} & ${partner.prenume} ${g.nume}`
                   : `${g.prenume} ${g.nume}`;
+                const childCount = g.children ? g.children.length : 0;
+                const totalPeople = (g.plus_one ? 2 : 1) + childCount;
                 return (
                   <button
                     key={g.id}
                     onClick={() => { setAssigning(g.id); setAssigningType("guest"); }}
                     className="w-full text-left px-3 py-2 rounded-lg hover:bg-background-soft transition-colors cursor-pointer flex items-center justify-between gap-2"
                   >
-                    <span className="text-sm text-text-heading">{displayName}</span>
+                    <span className="text-sm text-text-heading">
+                      {displayName}
+                      {childCount > 0 && <span className="text-text-muted text-xs ml-1">+{childCount} copil{childCount > 1 ? "i" : ""}</span>}
+                    </span>
                     <div className="flex items-center gap-2 shrink-0">
                       <RsvpBadge guestId={g.id} />
-                      <span className="text-xs text-text-muted">{g.plus_one ? "2p" : "1p"}</span>
+                      <span className="text-xs text-text-muted">{totalPeople}p</span>
                     </div>
                   </button>
                 );
