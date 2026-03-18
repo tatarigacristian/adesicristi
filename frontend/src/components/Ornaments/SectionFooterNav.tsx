@@ -20,17 +20,17 @@ export default function SectionFooterNav({
         {settings?.telefon_mireasa && (
           <a
             href={`tel:${settings.telefon_mireasa.replace(/\s/g, "")}`}
-            className="flex-1 flex flex-col items-center gap-0.5 group"
+            className="flex-1 min-w-0 flex flex-col items-center gap-0.5 group"
           >
-            <span className="text-[0.55rem] text-text-muted">{couple.mireasa}</span>
-            <span className="text-[0.6rem] text-button group-hover:text-button-hover transition-colors">
+            <span className="text-[0.5rem] sm:text-[0.55rem] text-text-muted truncate max-w-full">{couple.mireasa}</span>
+            <span className="text-[0.55rem] sm:text-[0.6rem] text-button group-hover:text-button-hover transition-colors truncate max-w-full">
               {settings.telefon_mireasa}
             </span>
           </a>
         )}
 
         {/* Center: scroll indicator */}
-        <div className="flex flex-col items-center shrink-0 px-4 sm:px-0">
+        <div className="flex flex-col items-center shrink-0 px-2 sm:px-4">
           <ScrollIndicator />
         </div>
 
@@ -38,10 +38,10 @@ export default function SectionFooterNav({
         {settings?.telefon_mire && (
           <a
             href={`tel:${settings.telefon_mire.replace(/\s/g, "")}`}
-            className="flex-1 flex flex-col items-center gap-0.5 group"
+            className="flex-1 min-w-0 flex flex-col items-center gap-0.5 group"
           >
-            <span className="text-[0.55rem] text-text-muted">{couple.mire}</span>
-            <span className="text-[0.6rem] text-button group-hover:text-button-hover transition-colors">
+            <span className="text-[0.5rem] sm:text-[0.55rem] text-text-muted truncate max-w-full">{couple.mire}</span>
+            <span className="text-[0.55rem] sm:text-[0.6rem] text-button group-hover:text-button-hover transition-colors truncate max-w-full">
               {settings.telefon_mire}
             </span>
           </a>
