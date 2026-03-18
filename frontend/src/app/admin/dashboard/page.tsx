@@ -873,12 +873,6 @@ export default function DashboardPage() {
                 );
               });
             })()}
-            {stats.totalChildren > 0 && (
-              <div className="flex items-center justify-between pt-2 border-t border-border-light">
-                <span className="text-sm text-text-muted">Total copii</span>
-                <span className="text-sm font-medium text-text-heading">{stats.totalChildren}</span>
-              </div>
-            )}
             {stats.daysUntilWedding != null && (
               <div className="flex items-center justify-between pt-2 border-t border-border-light">
                 <span className="text-sm text-text-muted">Zile pana la nunta</span>
@@ -922,6 +916,44 @@ export default function DashboardPage() {
                       <span className={`w-2.5 h-2.5 rounded-full ${colors[key] || "bg-gray-300"}`} />
                       <span className="text-xs text-text-muted">{labels[key] || key}</span>
                       <span className="text-xs font-medium text-text-heading">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Distributie persoane */}
+          {(() => {
+            const singuri = mainGuests.filter((g) => !g.plus_one).length;
+            const cupluri = stats.withPlusOne;
+            const copii = stats.totalChildren;
+            const total = singuri + cupluri + copii;
+            if (total === 0) return null;
+            const segments = [
+              { label: "Singuri", count: singuri, color: "bg-emerald-500" },
+              { label: "Cupluri (+1)", count: cupluri, color: "bg-blue-500" },
+              { label: "Copii", count: copii, color: "bg-amber-500" },
+            ].filter((s) => s.count > 0);
+            return (
+              <div className="mt-5 pt-4 border-t border-border-light">
+                <h3 className="text-xs text-text-muted mb-3">Distributie persoane</h3>
+                <div className="flex h-3 rounded-full overflow-hidden mb-3">
+                  {segments.map((s) => (
+                    <div
+                      key={s.label}
+                      className={`${s.color} transition-all duration-500`}
+                      style={{ width: `${(s.count / total) * 100}%` }}
+                      title={`${s.label}: ${s.count}`}
+                    />
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                  {segments.map((s) => (
+                    <div key={s.label} className="flex items-center gap-1.5">
+                      <span className={`w-2.5 h-2.5 rounded-full ${s.color}`} />
+                      <span className="text-xs text-text-muted">{s.label}</span>
+                      <span className="text-xs font-medium text-text-heading">{s.count}</span>
                     </div>
                   ))}
                 </div>
