@@ -1,0 +1,1 @@
+ALTER TABLE guests ADD COLUMN estimated_gift INT DEFAULT NULL;
