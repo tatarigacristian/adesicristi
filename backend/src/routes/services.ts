@@ -40,14 +40,15 @@ export async function serviceRoutes(fastify: FastifyInstance) {
     }
 
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO services (nume, numar_persoane, pret, avans, perioada_contract, loc_la_masa, link, contract_path, telefon)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO services (nume, numar_persoane, pret, avans, contract_start, contract_end, loc_la_masa, link, contract_path, telefon)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         fields.nume,
         parseInt(fields.numar_persoane),
         parseFloat(fields.pret),
         fields.avans ? parseFloat(fields.avans) : null,
-        fields.perioada_contract || null,
+        fields.contract_start || null,
+        fields.contract_end || null,
         fields.loc_la_masa === 'true' || fields.loc_la_masa === '1' ? 1 : 0,
         fields.link || null,
         contractPath,
@@ -94,7 +95,8 @@ export async function serviceRoutes(fastify: FastifyInstance) {
     if (fields.numar_persoane !== undefined) { updateFields.push('numar_persoane = ?'); updateValues.push(parseInt(fields.numar_persoane)); }
     if (fields.pret !== undefined) { updateFields.push('pret = ?'); updateValues.push(parseFloat(fields.pret)); }
     if (fields.avans !== undefined) { updateFields.push('avans = ?'); updateValues.push(fields.avans ? parseFloat(fields.avans) : null); }
-    if (fields.perioada_contract !== undefined) { updateFields.push('perioada_contract = ?'); updateValues.push(fields.perioada_contract || null); }
+    if (fields.contract_start !== undefined) { updateFields.push('contract_start = ?'); updateValues.push(fields.contract_start || null); }
+    if (fields.contract_end !== undefined) { updateFields.push('contract_end = ?'); updateValues.push(fields.contract_end || null); }
     if (fields.loc_la_masa !== undefined) { updateFields.push('loc_la_masa = ?'); updateValues.push(fields.loc_la_masa === 'true' || fields.loc_la_masa === '1' ? 1 : 0); }
     if (fields.link !== undefined) { updateFields.push('link = ?'); updateValues.push(fields.link || null); }
     if (fields.telefon !== undefined) { updateFields.push('telefon = ?'); updateValues.push(fields.telefon || null); }

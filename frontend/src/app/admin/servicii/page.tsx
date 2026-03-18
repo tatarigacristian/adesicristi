@@ -10,7 +10,8 @@ interface Service {
   numar_persoane: number;
   pret: number;
   avans: number | null;
-  perioada_contract: string | null;
+  contract_start: string | null;
+  contract_end: string | null;
   loc_la_masa: boolean;
   link: string | null;
   contract_path: string | null;
@@ -18,12 +19,23 @@ interface Service {
   created_at: string;
 }
 
+function formatPrice(val: number | string) {
+  return Number(val).toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function formatDateTime(d: string | null) {
+  if (!d) return null;
+  const date = new Date(d);
+  return date.toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
 export default function ServiciiPage() {
   const { token, onUnauth } = useAdminAuth();
   const [services, setServices] = useState<Service[]>([]);
+  const [weddingDate, setWeddingDate] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editService, setEditService] = useState<Service | null>(null);
-  const [form, setForm] = useState({ nume: "", numar_persoane: "", pret: "", avans: "", perioada_contract: "", loc_la_masa: false, link: "", telefon: "" });
+  const [form, setForm] = useState({ nume: "", numar_persoane: "", pret: "", avans: "", contract_start: "", contract_end: "", loc_la_masa: false, link: "", telefon: "" });
   const [contractFile, setContractFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<Service | null>(null);
@@ -31,10 +43,31 @@ export default function ServiciiPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
+  // Default datetime values from wedding date
+  function getDefaultStart() {
+    if (!weddingDate) return "";
+    const d = weddingDate.split("T")[0];
+    return `${d}T15:00`;
+  }
+  function getDefaultEnd() {
+    if (!weddingDate) return "";
+    const d = new Date(weddingDate.split("T")[0]);
+    d.setDate(d.getDate() + 1);
+    const next = d.toISOString().split("T")[0];
+    return `${next}T06:00`;
+  }
+
   async function fetchServices() {
-    const res = await fetch(`${API_URL}/api/admin/services`, { headers: authHeaders(token) });
-    if (res.status === 401) { onUnauth(); return; }
-    setServices(await res.json());
+    const [servicesRes, settingsRes] = await Promise.all([
+      fetch(`${API_URL}/api/admin/services`, { headers: authHeaders(token) }),
+      fetch(`${API_URL}/api/wedding-settings`),
+    ]);
+    if (servicesRes.status === 401) { onUnauth(); return; }
+    setServices(await servicesRes.json());
+    if (settingsRes.ok) {
+      const s = await settingsRes.json();
+      setWeddingDate(s.ceremonie_data || null);
+    }
   }
 
   useEffect(() => { fetchServices(); }, []);
@@ -44,8 +77,7 @@ export default function ServiciiPage() {
     const q = search.toLowerCase();
     return services.filter((s) =>
       s.nume.toLowerCase().includes(q) ||
-      (s.telefon && s.telefon.toLowerCase().includes(q)) ||
-      (s.perioada_contract && s.perioada_contract.toLowerCase().includes(q))
+      (s.telefon && s.telefon.toLowerCase().includes(q))
     );
   }, [services, search]);
 
@@ -55,12 +87,12 @@ export default function ServiciiPage() {
 
   useEffect(() => { setPage(1); }, [search]);
 
-  const totalCost = useMemo(() => services.reduce((sum, s) => sum + s.pret, 0), [services]);
-  const totalAvans = useMemo(() => services.reduce((sum, s) => sum + (s.avans || 0), 0), [services]);
+  const totalCost = useMemo(() => services.reduce((sum, s) => sum + Number(s.pret), 0), [services]);
+  const totalAvans = useMemo(() => services.reduce((sum, s) => sum + Number(s.avans || 0), 0), [services]);
 
   function openNew() {
     setEditService(null);
-    setForm({ nume: "", numar_persoane: "", pret: "", avans: "", perioada_contract: "", loc_la_masa: false, link: "", telefon: "" });
+    setForm({ nume: "", numar_persoane: "", pret: "", avans: "", contract_start: getDefaultStart(), contract_end: getDefaultEnd(), loc_la_masa: false, link: "", telefon: "" });
     setContractFile(null);
     setShowForm(true);
   }
@@ -72,7 +104,8 @@ export default function ServiciiPage() {
       numar_persoane: String(s.numar_persoane),
       pret: String(s.pret),
       avans: s.avans != null ? String(s.avans) : "",
-      perioada_contract: s.perioada_contract || "",
+      contract_start: s.contract_start ? s.contract_start.slice(0, 16) : getDefaultStart(),
+      contract_end: s.contract_end ? s.contract_end.slice(0, 16) : getDefaultEnd(),
       loc_la_masa: s.loc_la_masa,
       link: s.link || "",
       telefon: s.telefon || "",
@@ -93,7 +126,8 @@ export default function ServiciiPage() {
     fd.append("numar_persoane", form.numar_persoane);
     fd.append("pret", form.pret);
     fd.append("avans", form.avans);
-    fd.append("perioada_contract", form.perioada_contract);
+    fd.append("contract_start", form.contract_start);
+    fd.append("contract_end", form.contract_end);
     fd.append("loc_la_masa", String(form.loc_la_masa));
     fd.append("link", form.link);
     fd.append("telefon", form.telefon);
@@ -127,11 +161,11 @@ export default function ServiciiPage() {
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="family-card px-4 py-3">
           <p className="text-xs text-text-muted mb-1">Cost total</p>
-          <p className="text-lg font-medium text-text-heading">{totalCost.toLocaleString("ro-RO")} <span className="text-sm text-text-muted font-normal">RON</span></p>
+          <p className="text-lg font-medium text-text-heading">{formatPrice(totalCost)} <span className="text-sm text-text-muted font-normal">RON</span></p>
         </div>
         <div className="family-card px-4 py-3">
           <p className="text-xs text-text-muted mb-1">Avans total</p>
-          <p className="text-lg font-medium text-text-heading">{totalAvans.toLocaleString("ro-RO")} <span className="text-sm text-text-muted font-normal">RON</span></p>
+          <p className="text-lg font-medium text-text-heading">{formatPrice(totalAvans)} <span className="text-sm text-text-muted font-normal">RON</span></p>
         </div>
       </div>
 
@@ -166,16 +200,20 @@ export default function ServiciiPage() {
                     required min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
               </div>
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Avans (RON)</label>
+                <input type="number" value={form.avans} onChange={(e) => setForm({ ...form, avans: e.target.value })}
+                  min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-text-muted mb-1">Avans (RON)</label>
-                  <input type="number" value={form.avans} onChange={(e) => setForm({ ...form, avans: e.target.value })}
-                    min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  <label className="block text-xs text-text-muted mb-1">Inceput contract</label>
+                  <input type="datetime-local" value={form.contract_start} onChange={(e) => setForm({ ...form, contract_start: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-xs text-text-muted mb-1">Perioada contract</label>
-                  <input type="text" value={form.perioada_contract} onChange={(e) => setForm({ ...form, perioada_contract: e.target.value })}
-                    placeholder="ex: 01.06 - 30.09"
+                  <label className="block text-xs text-text-muted mb-1">Sfarsit contract</label>
+                  <input type="datetime-local" value={form.contract_end} onChange={(e) => setForm({ ...form, contract_end: e.target.value })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
               </div>
@@ -307,14 +345,16 @@ export default function ServiciiPage() {
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
                     <span className="text-foreground/60"><span className="text-text-muted">Persoane:</span> {s.numar_persoane}</span>
-                    <span className="text-foreground/60"><span className="text-text-muted">Pret:</span> {s.pret.toLocaleString("ro-RO")} RON</span>
+                    <span className="text-foreground/60"><span className="text-text-muted">Pret:</span> {formatPrice(s.pret)} RON</span>
                     {s.avans != null && s.avans > 0 && (
-                      <span className="text-foreground/60"><span className="text-text-muted">Avans:</span> {s.avans.toLocaleString("ro-RO")} RON</span>
+                      <span className="text-foreground/60"><span className="text-text-muted">Avans:</span> {formatPrice(s.avans)} RON</span>
                     )}
                     <span className="text-foreground/60"><span className="text-text-muted">Loc masa:</span> {s.loc_la_masa ? "Da" : "Nu"}</span>
                   </div>
-                  {s.perioada_contract && (
-                    <p className="text-xs text-foreground/50">{s.perioada_contract}</p>
+                  {(s.contract_start || s.contract_end) && (
+                    <p className="text-xs text-foreground/50">
+                      {formatDateTime(s.contract_start)} — {formatDateTime(s.contract_end)}
+                    </p>
                   )}
                 </div>
               ))}
@@ -330,7 +370,7 @@ export default function ServiciiPage() {
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Pret</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Avans</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Loc masa</th>
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Contract</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Perioada</th>
                     <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Actiuni</th>
                   </tr>
                 </thead>
@@ -344,9 +384,9 @@ export default function ServiciiPage() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-foreground/70">{s.numar_persoane}</td>
-                      <td className="px-4 py-3 text-foreground/70">{s.pret.toLocaleString("ro-RO")} RON</td>
+                      <td className="px-4 py-3 text-foreground/70">{formatPrice(s.pret)} RON</td>
                       <td className="px-4 py-3 text-foreground/70">
-                        {s.avans != null && s.avans > 0 ? `${s.avans.toLocaleString("ro-RO")} RON` : "\u2014"}
+                        {s.avans != null && s.avans > 0 ? `${formatPrice(s.avans)} RON` : "\u2014"}
                       </td>
                       <td className="px-4 py-3">
                         {s.loc_la_masa ? (
@@ -355,21 +395,10 @@ export default function ServiciiPage() {
                           <span className="inline-flex items-center gap-1 text-xs text-foreground/40">Nu</span>
                         )}
                       </td>
-                      <td className="px-4 py-3">
-                        {s.contract_path ? (
-                          <button onClick={() => window.open(`${API_URL}/api/admin/services/${s.id}/contract`, '_blank')}
-                            className="inline-flex items-center gap-1 text-xs text-accent hover:text-accent/80 transition-colors cursor-pointer">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                              <polyline points="14 2 14 8 20 8" />
-                              <line x1="12" y1="12" x2="12" y2="18" />
-                              <polyline points="9 15 12 18 15 15" />
-                            </svg>
-                            Descarca
-                          </button>
-                        ) : (
-                          <span className="text-foreground/30">\u2014</span>
-                        )}
+                      <td className="px-4 py-3 text-xs text-foreground/70">
+                        {s.contract_start || s.contract_end
+                          ? <>{formatDateTime(s.contract_start) || "\u2014"} — {formatDateTime(s.contract_end) || "\u2014"}</>
+                          : "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-0.5">
@@ -381,6 +410,18 @@ export default function ServiciiPage() {
                               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
                           </button>
+                          {s.contract_path && (
+                            <button onClick={() => window.open(`${API_URL}/api/admin/services/${s.id}/contract`, '_blank')}
+                              className="text-foreground/50 hover:text-accent transition-colors cursor-pointer p-2 rounded-lg hover:bg-background-soft/50 inline-flex items-center justify-center"
+                              title="Descarca contract">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="12" y1="12" x2="12" y2="18" />
+                                <polyline points="9 15 12 18 15 15" />
+                              </svg>
+                            </button>
+                          )}
                           <button onClick={() => setDeleteConfirm(s)}
                             className="text-foreground/50 hover:text-accent-rose transition-colors cursor-pointer p-2 rounded-lg hover:bg-background-soft/50 inline-flex items-center justify-center"
                             title="Sterge">
