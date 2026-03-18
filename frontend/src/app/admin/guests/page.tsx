@@ -22,6 +22,7 @@ export default function GuestsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<Guest | null>(null);
   const [invitatiePicker, setInvitatiePicker] = useState<Guest | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [openModePicker, setOpenModePicker] = useState<Guest | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<GuestFilter>("all");
   const [page, setPage] = useState(1);
@@ -565,6 +566,54 @@ export default function GuestsPage() {
         </div>
       )}
 
+      {/* Open mode picker modal */}
+      {openModePicker && openModePicker.slug && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl w-full max-w-xs flex flex-col">
+            <div className="p-5 pb-3 text-center">
+              <h3 className="serif-font text-lg text-text-heading mb-1">Deschide invitatie</h3>
+              <p className="text-xs text-text-muted">
+                {openModePicker.prenume} {openModePicker.nume}
+              </p>
+            </div>
+            <div className="px-5 flex flex-col gap-3">
+              <button
+                onClick={() => { window.open(`/${openModePicker.slug}`, '_blank'); setOpenModePicker(null); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
+                </svg>
+                <div>
+                  <p className="text-sm font-medium text-text-heading">Standard</p>
+                  <p className="text-xs text-text-muted">Se salveaza logurile de vizualizare</p>
+                </div>
+              </button>
+              <button
+                onClick={() => { window.open(`/${openModePicker.slug}?incognito=true`, '_blank'); setOpenModePicker(null); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+                <div>
+                  <p className="text-sm font-medium text-text-heading">Incognito</p>
+                  <p className="text-xs text-text-muted">Nu se salveaza logurile</p>
+                </div>
+              </button>
+            </div>
+            <div className="p-5 pt-3 border-t border-border-light rounded-b-xl mt-3">
+              <button onClick={() => setOpenModePicker(null)}
+                className="w-full py-2.5 border border-border rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer">
+                Anuleaza
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Table (desktop) / Cards (mobile) */}
       <div className="family-card p-0 overflow-hidden">
         {paginated.length === 0 ? (
@@ -611,7 +660,7 @@ export default function GuestsPage() {
                           </button>
                         )}
                         {g.slug && (
-                          <button onClick={() => window.open(`/${g.slug}`, '_blank')}
+                          <button onClick={() => setOpenModePicker(g)}
                             className="text-foreground/50 hover:text-accent transition-colors cursor-pointer p-2.5 rounded-lg hover:bg-background-soft/50"
                             title="Pagina invitatie">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -739,7 +788,7 @@ export default function GuestsPage() {
                               </button>
                             )}
                             {g.slug && (
-                              <button onClick={() => window.open(`/${g.slug}`, '_blank')}
+                              <button onClick={() => setOpenModePicker(g)}
                                 className="text-foreground/50 hover:text-accent transition-colors cursor-pointer p-2 rounded-lg hover:bg-background-soft/50 inline-flex items-center justify-center"
                                 title="Pagina invitatie">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

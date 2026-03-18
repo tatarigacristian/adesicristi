@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import SwiperLayout from "@/components/Layout/SwiperLayout";
 import MaintenancePage from "@/components/MaintenancePage";
 import WeddingPageLoader from "@/components/WeddingPageLoader";
@@ -22,19 +22,21 @@ export interface GuestData {
 
 export default function SlugPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const slug = params.slug as string;
+  const isIncognito = searchParams.get("incognito") === "true";
   const [guest, setGuest] = useState<GuestData | null>(null);
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [settingsUnavailable, setSettingsUnavailable] = useState(false);
 
-  // Log invitation open (fire-and-forget)
+  // Log invitation open (fire-and-forget, skip in incognito mode)
   useEffect(() => {
-    if (slug) {
+    if (slug && !isIncognito) {
       fetch(`${API_URL}/api/invitation-log/${slug}`, { method: "POST" }).catch(() => {});
     }
-  }, [slug]);
+  }, [slug, isIncognito]);
 
   useEffect(() => {
     async function fetchData() {
