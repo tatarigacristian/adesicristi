@@ -854,8 +854,6 @@ export default function DashboardPage() {
               const totalWithSlug = mainGuests.filter((g) => g.slug).length;
               const openedCount = invitationLogs.filter((l) => l.open_count > 0).length;
               const bars = [
-                { label: "Invitati cu +1", count: stats.withPlusOne, total: totalMain, color: "bg-blue-500" },
-                { label: "Invitati cu copii", count: stats.withChildren, total: totalMain, color: "bg-amber-500" },
                 { label: "Invitatii deschise", count: openedCount, total: totalWithSlug, color: "bg-purple-500" },
               ];
               return bars.map((b) => {
@@ -873,12 +871,6 @@ export default function DashboardPage() {
                 );
               });
             })()}
-            {stats.daysUntilWedding != null && (
-              <div className="flex items-center justify-between pt-2 border-t border-border-light">
-                <span className="text-sm text-text-muted">Zile pana la nunta</span>
-                <span className="text-sm font-medium text-text-heading">{stats.daysUntilWedding}</span>
-              </div>
-            )}
           </div>
 
           {/* Din partea chart */}
@@ -886,14 +878,12 @@ export default function DashboardPage() {
             const labels: Record<string, string> = {
               mire: "Mire", mireasa: "Mireasa", nasi: "Nasi",
               parintii_mire: "Par. mire", parintii_mireasa: "Par. mireasa",
-              neatribuit: "Neatribuit",
             };
             const colors: Record<string, string> = {
               mire: "bg-blue-500", mireasa: "bg-pink-500", nasi: "bg-purple-500",
               parintii_mire: "bg-cyan-500", parintii_mireasa: "bg-rose-400",
-              neatribuit: "bg-gray-300",
             };
-            const entries = Object.entries(stats.dinPartea).sort((a, b) => b[1] - a[1]);
+            const entries = Object.entries(stats.dinPartea).filter(([key]) => key !== "neatribuit").sort((a, b) => b[1] - a[1]);
             const total = entries.reduce((sum, [, v]) => sum + v, 0);
             return (
               <div className="mt-5 pt-4 border-t border-border-light">
