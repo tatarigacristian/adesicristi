@@ -7,6 +7,7 @@ import { rsvpRoutes } from './routes/rsvp.js';
 import { guestRoutes } from './routes/guests.js';
 import { weddingSettingsRoutes } from './routes/wedding-settings.js';
 import { tableAssignmentRoutes } from './routes/table-assignments.js';
+import { serviceRoutes } from './routes/services.js';
 import { runMigrations } from './db/migrate.js';
 
 const fastify = Fastify({ logger: true });
@@ -31,6 +32,7 @@ async function start() {
   await fastify.register(guestRoutes);
   await fastify.register(weddingSettingsRoutes);
   await fastify.register(tableAssignmentRoutes);
+  await fastify.register(serviceRoutes);
 
   fastify.get('/api/health', async () => {
     return { status: 'ok' };

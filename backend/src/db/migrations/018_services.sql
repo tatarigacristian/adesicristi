@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS services (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nume VARCHAR(200) NOT NULL,
+  numar_persoane INT NOT NULL,
+  pret DECIMAL(10,2) NOT NULL,
+  avans DECIMAL(10,2) NULL,
+  perioada_contract VARCHAR(200) NULL,
+  loc_la_masa BOOLEAN NOT NULL DEFAULT FALSE,
+  link VARCHAR(500) NULL,
+  contract_path VARCHAR(500) NULL,
+  telefon VARCHAR(50) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
