@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
@@ -31,6 +31,7 @@ export default function Hero({
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const nestedRef = useRef<SwiperType | null>(null);
   const parentSwiper = useSwiper();
 
   const couple = getCoupleNames(settings ?? null);
@@ -60,6 +61,7 @@ export default function Hero({
 
   // Nested Swiper callback — control parent based on nested position
   const onNestedSwiper = useCallback((nested: SwiperType) => {
+    nestedRef.current = nested;
     if (!parentSwiper) return;
 
     console.log("[Hero] Nested init. Parent activeIndex:", parentSwiper.activeIndex, "Parent enabled:", parentSwiper.enabled);
@@ -109,7 +111,15 @@ export default function Hero({
 
     const onParentSlideChange = () => {
       console.log("[Hero] Parent slideChange → activeIndex:", parentSwiper.activeIndex);
-      // No re-blocking needed — once nested is done, parent stays enabled
+      if (parentSwiper.activeIndex === 0) {
+        const nested = nestedRef.current;
+        if (nested) {
+          nested.slideTo(0, 0);
+          nested.enable();
+          nested.el.style.pointerEvents = "";
+          parentSwiper.disable();
+        }
+      }
     };
 
     parentSwiper.on("slideChange", onParentSlideChange);
@@ -179,10 +189,10 @@ export default function Hero({
                   <div className="flex-1 flex flex-col items-center justify-center">
                     {guest && audience && (
                       <>
-                        <p className="serif-font text-base italic text-text-muted mb-1">
+                        <p className={`serif-font text-base italic text-text-muted mb-1 transition-all duration-700 ease-out delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
                           {getGreeting(audience)}
                         </p>
-                        <p className="serif-font text-xl text-text-heading font-light mb-3">
+                        <p className={`serif-font text-xl text-text-heading font-light mb-3 transition-all duration-700 ease-out delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
                           {guest.partner
                             ? guest.nume === guest.partner.nume
                               ? `${guest.prenume} și ${guest.partner.prenume} ${guest.nume}`
@@ -191,10 +201,10 @@ export default function Hero({
                         </p>
                       </>
                     )}
-                    <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-3 font-medium mt-2">
+                    <p className={`text-[0.6rem] tracking-[0.4em] uppercase text-button mb-3 font-medium mt-2 transition-all duration-700 ease-out delay-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
                       {audience ? getInvitationLine(audience) : "Cu drag vă invităm"}
                     </p>
-                    <h2 className="serif-font text-xl font-light italic text-text-heading leading-relaxed">
+                    <h2 className={`serif-font text-xl font-light italic text-text-heading leading-relaxed transition-all duration-700 ease-out delay-[900ms] ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
                       {audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}
                     </h2>
                   </div>

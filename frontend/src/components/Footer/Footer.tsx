@@ -3,8 +3,10 @@
 import { WeddingSettings, getCoupleNames } from "@/utils/settings";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import { useSlideActive } from "@/hooks/useSlideActive";
 
 export default function Footer({ settings }: { settings?: WeddingSettings | null }) {
+  const showContent = useSlideActive("footer");
   const couple = getCoupleNames(settings ?? null);
   const initialMireasa = couple.mireasa.charAt(0).toUpperCase();
   const initialMire = couple.mire.charAt(0).toUpperCase();
@@ -23,7 +25,7 @@ export default function Footer({ settings }: { settings?: WeddingSettings | null
       </div>
 
       {/* Content — Monogram */}
-      <div className="section-content">
+      <div className={`section-content transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
         <div className="relative w-36 h-36">
           <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />

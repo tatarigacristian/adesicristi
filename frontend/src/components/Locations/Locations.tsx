@@ -5,6 +5,7 @@ import { WeddingSettings, formatDate } from "@/utils/settings";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import { useSlideActive } from "@/hooks/useSlideActive";
 
 interface LocationCard {
   title: string;
@@ -160,6 +161,7 @@ function EventIcon({ type }: { type: string }) {
 }
 
 export default function Locations({ settings }: { settings?: WeddingSettings | null }) {
+  const showContent = useSlideActive("locations");
   const [drawerLocation, setDrawerLocation] = useState<LocationCard | null>(null);
 
   const locations = useMemo(() => buildLocations(settings ?? null), [settings]);
@@ -190,14 +192,18 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
         </div>
 
         {/* Content */}
-        <div className="section-content max-w-4xl px-4">
+        <div className={`section-content max-w-4xl px-4 transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           {/* Mobile timeline */}
           <div className="md:hidden px-6">
             <div className="relative pl-10">
               <div className="absolute left-[15px] top-4 bottom-4 w-px bg-button/20" />
               <div className="flex flex-col gap-6">
                 {locations.map((loc, i) => (
-                  <div key={loc.title} className="relative">
+                  <div
+                    key={loc.title}
+                    className="relative cursor-pointer"
+                    onClick={() => loc.googleMapsUrl && handleMapClick(loc)}
+                  >
                     <div className="absolute -left-10 top-0 w-[30px] h-[30px] rounded-full flex items-center justify-center bg-button text-white">
                       <EventIcon type={loc.title} />
                     </div>
@@ -212,16 +218,13 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                         {loc.address}
                       </p>
                       {loc.googleMapsUrl && (
-                        <button
-                          onClick={() => handleMapClick(loc)}
-                          className="mt-1.5 text-[0.6rem] tracking-[0.1em] uppercase text-button flex items-center gap-1 cursor-pointer hover:text-button-hover transition-colors"
-                        >
+                        <p className="mt-1.5 text-[0.6rem] tracking-[0.1em] uppercase text-button flex items-center gap-1">
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                             <circle cx="12" cy="10" r="3" />
                           </svg>
                           Vezi pe hartă
-                        </button>
+                        </p>
                       )}
                     </div>
                   </div>

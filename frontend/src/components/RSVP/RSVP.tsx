@@ -7,6 +7,7 @@ import Flourish from "@/components/Ornaments/Flourish";
 import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import { useSlideActive } from "@/hooks/useSlideActive";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -162,6 +163,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const [message, setMessage] = useState("");
   const [needsTransport, setNeedsTransport] = useState(false);
   const [vegetarianMenu, setVegetarianMenu] = useState(false);
+  const showContent = useSlideActive("rsvp");
   const [formState, setFormState] = useState<FormState>(guest ? "loading" : "idle");
   const [rsvpId, setRsvpId] = useState<number | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -332,7 +334,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             Prezența ta contează
           </p>
         </div>
-        <div className="section-content">
+        <div className={`section-content transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <p className="text-sm text-text-muted">Se încarcă...</p>
         </div>
         <SectionFooterNav settings={settings} />
@@ -354,7 +356,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           </p>
         </div>
 
-        <div className="section-content max-w-md px-6">
+        <div className={`section-content max-w-md px-6 transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="w-full flex flex-col items-center text-center animate-fade-in-up">
             {/* Icon */}
             <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${isPositive ? "bg-button/10" : "bg-text-muted/10"}`}>
@@ -445,7 +447,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       </div>
 
       {/* Content */}
-      <div className="section-content max-w-md px-6">
+      <div className="section-content max-w-md px-6" style={{ opacity: showContent ? 1 : 0, transform: showContent ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.7s ease-out, transform 0.7s ease-out" }}>
         <form onSubmit={(e: FormEvent) => e.preventDefault()} className="w-full">
 
           {/* ── Step dots (mobile only) ── */}

@@ -3,6 +3,7 @@
 import { WeddingSettings } from "@/utils/settings";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import { useSlideActive } from "@/hooks/useSlideActive";
 
 export default function Family({
   settings,
@@ -25,6 +26,7 @@ export default function Family({
     ? `${settings.mama_mire_prenume} & ${settings.tata_mire_prenume} ${settings.tata_mire_nume}`
     : settings?.parinti_mire || null;
 
+  const showContent = useSlideActive("family");
   const hasNasi = !!nasNume;
   const hasParinti = !!parintiMireasa || !!parintiMire;
 
@@ -47,7 +49,7 @@ export default function Family({
       </div>
 
       {/* Content */}
-      <div className="section-content max-w-md px-6">
+      <div className={`section-content max-w-md px-6 transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
         <div className="flex flex-col items-center w-full gap-6 sm:gap-10">
 
           {/* Nasi */}

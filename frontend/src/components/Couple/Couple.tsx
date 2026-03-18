@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import { useSlideActive } from "@/hooks/useSlideActive";
 
 const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/embed/jEj57Rqeuy8";
 
@@ -70,6 +71,7 @@ function TimelineIcon({ icon }: { icon: string }) {
 }
 
 export default function Couple({ settings }: { settings?: WeddingSettings | null }) {
+  const showContent = useSlideActive("couple");
   const [playing, setPlaying] = useState(false);
   const [activeTimelineIndex, setActiveTimelineIndex] = useState(0);
   const [timelineFading, setTimelineFading] = useState(false);
@@ -116,7 +118,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       </div>
 
       {/* Content */}
-      <div className="section-content max-w-5xl px-6">
+      <div className={`section-content max-w-5xl px-6 transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
         <div className="flex flex-col lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14 w-full">
 
           {/* Desktop: full vertical timeline (left side) */}
