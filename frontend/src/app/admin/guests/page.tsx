@@ -460,7 +460,7 @@ export default function GuestsPage() {
       {/* Invitation type picker modal */}
       {invitatiePicker && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="bg-white rounded-xl w-full max-w-xs max-h-[70vh] flex flex-col">
+          <div className="bg-white rounded-xl w-full max-w-sm max-h-[70vh] flex flex-col">
             <div className="p-5 pb-3 text-center">
               <h3 className="serif-font text-lg text-text-heading mb-1">Alege tipul invitatiei</h3>
               <p className="text-xs text-text-muted">
@@ -468,112 +468,110 @@ export default function GuestsPage() {
               </p>
             </div>
             <div className="px-5 overflow-y-auto flex-1">
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={() => { window.open(`/admin/card?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                  <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
-                  <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
-                </svg>
-                <div>
-                  <p className="text-sm font-medium text-text-heading">Carte de vizita cu QR</p>
-                  <p className="text-xs text-text-muted">Format carte de vizita cu cod QR</p>
+              <div className="flex flex-col gap-4">
+                {/* Invitatie V1 */}
+                <div className="rounded-lg border border-border-light p-3">
+                  <div className="flex items-center gap-2.5 mb-2.5">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-text-heading">Invitatie V1</p>
+                      <p className="text-[10px] text-text-muted">Text personalizat per invitat</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { window.open(`/admin/invitatie?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
+                      className="flex-1 py-2 rounded-lg text-xs font-medium bg-background-soft hover:bg-border-light transition-colors cursor-pointer text-text-heading">
+                      Privat
+                    </button>
+                    {invitatiePicker.slug && (
+                      <button onClick={() => { window.open(`/invitatie/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
+                        className="flex-1 py-2 rounded-lg text-xs font-medium bg-button/10 hover:bg-button/20 transition-colors cursor-pointer text-button">
+                        Public
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </button>
-              <button
-                onClick={() => { window.open(`/admin/invitatie?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg>
-                <div>
-                  <p className="text-sm font-medium text-text-heading">Invitatie clasica V1</p>
-                  <p className="text-xs text-text-muted">Text personalizat per invitat</p>
+
+                {/* Invitatie V2 */}
+                <div className="rounded-lg border border-border-light p-3">
+                  <div className="flex items-center gap-2.5 mb-2.5">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="12" y1="11" x2="12" y2="17" /><line x1="9" y1="14" x2="15" y2="14" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-text-heading">Invitatie V2</p>
+                      <p className="text-[10px] text-text-muted">Parinti si nasi, text generic</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { window.open(`/admin/invitatie-v2?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
+                      className="flex-1 py-2 rounded-lg text-xs font-medium bg-background-soft hover:bg-border-light transition-colors cursor-pointer text-text-heading">
+                      Privat
+                    </button>
+                    {invitatiePicker.slug && (
+                      <button onClick={() => { window.open(`/invitatie-v2/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
+                        className="flex-1 py-2 rounded-lg text-xs font-medium bg-button/10 hover:bg-button/20 transition-colors cursor-pointer text-button">
+                        Public
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </button>
-              <button
-                onClick={() => { window.open(`/admin/invitatie-v2?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="12" y1="11" x2="12" y2="17" />
-                  <line x1="9" y1="14" x2="15" y2="14" />
-                </svg>
-                <div>
-                  <p className="text-sm font-medium text-text-heading">Invitatie clasica V2</p>
-                  <p className="text-xs text-text-muted">Parinti si nasi, text generic</p>
+
+                {/* Card QR */}
+                <div className="rounded-lg border border-border-light p-3">
+                  <div className="flex items-center gap-2.5 mb-2.5">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                      <rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" />
+                      <rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-text-heading">Card QR</p>
+                      <p className="text-[10px] text-text-muted">Format carte de vizita cu cod QR</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { window.open(`/admin/card?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
+                      className="flex-1 py-2 rounded-lg text-xs font-medium bg-background-soft hover:bg-border-light transition-colors cursor-pointer text-text-heading">
+                      Privat
+                    </button>
+                    {invitatiePicker.slug && (
+                      <button onClick={() => { window.open(`/card/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
+                        className="flex-1 py-2 rounded-lg text-xs font-medium bg-button/10 hover:bg-button/20 transition-colors cursor-pointer text-button">
+                        Public
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </button>
-              {invitatiePicker.slug && (
-                <>
-                  <p className="text-xs text-text-muted mt-2 mb-1 px-1">Pagini publice</p>
-                  <button
-                    onClick={() => { window.open(`/invitatie/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                      <polyline points="15 3 21 3 21 9" />
-                      <line x1="10" y1="14" x2="21" y2="3" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-medium text-text-heading">Invitatie V1 publica</p>
-                      <p className="text-xs text-text-muted">/invitatie/{invitatiePicker.slug}</p>
+
+                {/* Pagina principala */}
+                {invitatiePicker.slug && (
+                  <div className="rounded-lg border border-border-light p-3">
+                    <div className="flex items-center gap-2.5 mb-2.5">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                      </svg>
+                      <div>
+                        <p className="text-sm font-medium text-text-heading">Pagina principala</p>
+                        <p className="text-[10px] text-text-muted">/{invitatiePicker.slug}</p>
+                      </div>
                     </div>
-                  </button>
-                  <button
-                    onClick={() => { window.open(`/invitatie-v2/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                      <polyline points="15 3 21 3 21 9" />
-                      <line x1="10" y1="14" x2="21" y2="3" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-medium text-text-heading">Invitatie V2 publica</p>
-                      <p className="text-xs text-text-muted">/invitatie-v2/{invitatiePicker.slug}</p>
+                    <div className="flex gap-2">
+                      <button onClick={() => { window.open(`/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
+                        className="flex-1 py-2 rounded-lg text-xs font-medium bg-button/10 hover:bg-button/20 transition-colors cursor-pointer text-button">
+                        Public
+                      </button>
                     </div>
-                  </button>
-                  <button
-                    onClick={() => { window.open(`/card/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                      <polyline points="15 3 21 3 21 9" />
-                      <line x1="10" y1="14" x2="21" y2="3" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-medium text-text-heading">Card QR public</p>
-                      <p className="text-xs text-text-muted">/card/{invitatiePicker.slug}</p>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => { window.open(`/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border-light hover:bg-background-soft transition-colors cursor-pointer text-left"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                      <polyline points="15 3 21 3 21 9" />
-                      <line x1="10" y1="14" x2="21" y2="3" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-medium text-text-heading">Pagina principala</p>
-                      <p className="text-xs text-text-muted">/{invitatiePicker.slug}</p>
-                    </div>
-                  </button>
-                </>
-              )}
-            </div>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="p-5 pt-3 border-t border-border-light rounded-b-xl">
               <button onClick={() => setInvitatiePicker(null)}
