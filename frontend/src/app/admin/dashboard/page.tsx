@@ -15,6 +15,7 @@ interface Service {
   has_pret_per_invitat: boolean;
   loc_la_masa: boolean;
   contract_path: string | null;
+  type: "supplier" | "expense";
 }
 
 interface TableAssignment {
@@ -64,7 +65,7 @@ function DashboardContent() {
   const [onlyConfirmed, setOnlyConfirmed] = useState(false);
   const [subtractAvans, setSubtractAvans] = useState(false);
   const [showEuro, setShowEuro] = useState(false);
-  const [extraCosts, setExtraCosts] = useState(0);
+  const [subtractExtra, setSubtractExtra] = useState(false);
   const [logSearchState, setLogSearchState] = useState("");
   const [miniLogSearch, setMiniLogSearch] = useState("");
   const [logPage, setLogPage] = useState(1);
@@ -184,7 +185,8 @@ function DashboardContent() {
     const seatedGuests = assignments.length;
     const unseatedGuests = totalInvited - seatedGuests;
 
-    const serviceCost = services.reduce(
+    const filteredServices = subtractExtra ? services.filter((s) => s.type !== "expense") : services;
+    const totalServiceCost = filteredServices.reduce(
       (sum, s) => {
         if (s.has_pret_per_invitat && s.pret_per_invitat != null) {
           return sum + Number(s.pret_per_invitat) * totalInvited;
@@ -193,8 +195,7 @@ function DashboardContent() {
       },
       0
     );
-    const totalServiceCost = serviceCost + extraCosts;
-    const totalAvans = services.reduce(
+    const totalAvans = filteredServices.reduce(
       (sum, s) => sum + Number(s.avans || 0),
       0
     );
@@ -300,7 +301,7 @@ function DashboardContent() {
     settings,
     optimismLevel,
     onlyConfirmed,
-    extraCosts,
+    subtractExtra,
   ]);
 
   // ── Percentages for RSVP chart ──
@@ -354,18 +355,6 @@ function DashboardContent() {
         <h1 className="serif-font text-2xl text-text-heading">
           Panou de comanda
         </h1>
-        {cursEuro && (
-          <button
-            onClick={() => setShowEuro(!showEuro)}
-            className={`text-xs px-3 py-1.5 rounded-full border transition-colors cursor-pointer font-medium ${
-              showEuro
-                ? "bg-blue-50 text-blue-700 border-blue-200"
-                : "bg-gray-50 text-text-muted border-gray-200"
-            }`}
-          >
-            {showEuro ? `EUR (1€ = ${cursEuro} RON)` : "RON"}
-          </button>
-        )}
       </div>
 
       {/* Tab bar */}
@@ -638,212 +627,218 @@ function DashboardContent() {
       </>)}
 
       {dashTab === "financiar" && (<>
+      {/* Global financial filters */}
+      <div className="flex flex-wrap items-center gap-4">
+        {cursEuro && (
+          <button
+            onClick={() => setShowEuro(!showEuro)}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-colors cursor-pointer font-medium ${
+              showEuro
+                ? "bg-blue-50 text-blue-700 border-blue-200"
+                : "bg-gray-50 text-text-muted border-gray-200"
+            }`}
+          >
+            {showEuro ? `EUR (1€ = ${cursEuro} RON)` : "RON"}
+          </button>
+        )}
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={subtractAvans}
+            onChange={(e) => setSubtractAvans(e.target.checked)}
+            className="w-3.5 h-3.5 accent-accent cursor-pointer"
+          />
+          <span className="text-xs text-text-muted">Scade avansul</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={subtractExtra}
+            onChange={(e) => setSubtractExtra(e.target.checked)}
+            className="w-3.5 h-3.5 accent-accent cursor-pointer"
+          />
+          <span className="text-xs text-text-muted">Scade costuri personale</span>
+        </label>
+      </div>
+
       {/* Row 4 - Financial overview */}
       <div className="family-card">
         <h2 className="text-sm font-medium text-text-heading mb-5">
           Buget & servicii
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left: Services breakdown */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs uppercase tracking-wide text-text-muted">
-                Costuri servicii
-              </h3>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={subtractAvans}
-                  onChange={(e) => setSubtractAvans(e.target.checked)}
-                  className="w-3.5 h-3.5 accent-accent cursor-pointer"
-                />
-                <span className="text-[11px] text-text-muted">Scade avansul</span>
-              </label>
-            </div>
-            {/* Extra costs input */}
-            <div className="flex items-center gap-2 mb-3 p-2.5 rounded-lg bg-background-soft/50 border border-border-light">
-              <label className="text-xs text-text-muted whitespace-nowrap">Costuri extra (RON)</label>
-              <input
-                type="number"
-                min="0"
-                step="100"
-                value={extraCosts || ""}
-                onChange={(e) => setExtraCosts(Number(e.target.value) || 0)}
-                placeholder="0"
-                className="w-full border border-border-light rounded-lg px-3 py-1.5 text-sm bg-white text-right focus:outline-none focus:border-accent transition-colors"
-              />
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-text-muted">Cost total</span>
-                <span className="text-sm font-medium text-text-heading">
-                  {formatPrice(stats.totalServiceCost)} {currency}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-text-muted">Total avans</span>
-                <span className="text-sm font-medium text-green-600">
-                  {formatPrice(stats.totalAvans)} {currency}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-text-muted">{subtractAvans ? "Rest de plata" : "De achitat"}</span>
-                <span className="text-sm font-medium text-red-600">
-                  {formatPrice(subtractAvans ? stats.remainingToPay : stats.totalServiceCost)} {currency}
-                </span>
-              </div>
-            </div>
-            {/* Avans progress bar */}
-            <div className="mt-4">
-              <div className="flex justify-between text-xs text-text-muted mb-1">
-                <span>Avans platit</span>
-                <span>{avansPct}%</span>
-              </div>
-              <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-green-500 rounded-full transition-all duration-500"
-                  style={{ width: `${avansPct}%` }}
-                />
-              </div>
-            </div>
-            {/* Dar vs Servicii progress bar */}
-            {stats.estimatedGift > 0 && (
-              <div className="mt-4">
-                {(() => {
-                  const costRef = subtractAvans ? stats.remainingToPay : stats.totalServiceCost;
-                  const darPct = costRef > 0 ? Math.min(100, Math.round((stats.estimatedGift / costRef) * 100)) : 0;
-                  const isPositive = stats.estimatedGift >= costRef;
-                  return (
-                    <>
-                      <div className="flex justify-between text-xs text-text-muted mb-1">
-                        <span>Dar estimat vs. {subtractAvans ? "rest plata" : "cost total"}</span>
-                        <span className={isPositive ? "text-green-600" : "text-red-600"}>{darPct}%</span>
-                      </div>
-                      <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-500 ${isPositive ? "bg-green-500" : "bg-amber-500"}`}
-                          style={{ width: `${darPct}%` }}
-                        />
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-            )}
-            {/* Avans + Dar vs Cost total */}
-            {stats.totalServiceCost > 0 && (
-              <div className="mt-4">
-                {(() => {
-                  const costRef = subtractAvans ? stats.remainingToPay : stats.totalServiceCost;
-                  const darPctSlice = costRef > 0 ? Math.min(100, Math.round((stats.estimatedGift / costRef) * 100)) : 0;
-                  const remaining = Math.max(0, costRef - stats.estimatedGift);
-                  if (subtractAvans) {
-                    return (
-                      <>
-                        <div className="flex justify-between text-xs text-text-muted mb-1">
-                          <span>Dar estimat vs. rest de plata</span>
-                          <span className={darPctSlice >= 100 ? "text-green-600" : "text-text-heading"}>{darPctSlice}%</span>
-                        </div>
-                        <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden flex">
-                          <div className="h-full bg-blue-400 transition-all duration-500" style={{ width: `${darPctSlice}%` }} />
-                        </div>
-                        <div className="flex gap-4 text-[10px] text-text-muted mt-1">
-                          <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-blue-400" />Dar ({formatPrice(Math.round(stats.estimatedGift))})</span>
-                          <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-gray-200" />Rest ({formatPrice(remaining)})</span>
-                        </div>
-                      </>
-                    );
-                  }
-                  const covered = stats.totalAvans + stats.estimatedGift;
-                  const coveredPct = Math.min(100, Math.round((covered / stats.totalServiceCost) * 100));
-                  const avansPctSlice = Math.round((stats.totalAvans / stats.totalServiceCost) * 100);
-                  const darSlice = Math.min(100 - avansPctSlice, Math.round((stats.estimatedGift / stats.totalServiceCost) * 100));
-                  return (
-                    <>
-                      <div className="flex justify-between text-xs text-text-muted mb-1">
-                        <span>Acoperire cost total (avans + dar)</span>
-                        <span className={coveredPct >= 100 ? "text-green-600" : "text-text-heading"}>{coveredPct}%</span>
-                      </div>
-                      <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden flex">
-                        <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${avansPctSlice}%` }} />
-                        <div className="h-full bg-blue-400 transition-all duration-500" style={{ width: `${darSlice}%` }} />
-                      </div>
-                      <div className="flex gap-4 text-[10px] text-text-muted mt-1">
-                        <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-green-500" />Avans ({formatPrice(stats.totalAvans)})</span>
-                        <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-blue-400" />Dar ({formatPrice(Math.round(stats.estimatedGift))})</span>
-                        <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-gray-200" />Rest ({formatPrice(Math.max(0, stats.totalServiceCost - covered))})</span>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-            )}
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-sm text-text-muted">Cost total</span>
+            <span className="text-sm font-medium text-text-heading">
+              {formatPrice(stats.totalServiceCost)} {currency}
+            </span>
           </div>
-
-          {/* Right: Gift estimation */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs uppercase tracking-wide text-text-muted">
-                Estimare dar
-              </h3>
-              <button
-                onClick={() => setOnlyConfirmed(!onlyConfirmed)}
-                className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
-                  onlyConfirmed
-                    ? "bg-green-50 text-green-700 border-green-200"
-                    : "bg-amber-50 text-amber-700 border-amber-200"
-                }`}
-              >
-                {onlyConfirmed ? "Doar confirmati" : "Toti invitatii"}
-              </button>
-            </div>
-            {/* Slider */}
-            <div className="mb-3">
-              <div className="flex justify-between text-xs text-text-muted mb-1.5">
-                <span>Pesimist</span>
-                <span className="font-medium text-text-heading">{optimismLevel}%</span>
-                <span>Optimist</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                step="5"
-                value={optimismLevel}
-                onChange={(e) => setOptimismLevel(Number(e.target.value))}
-                className="w-full accent-accent h-2 cursor-pointer"
-              />
-            </div>
-            {/* Current value */}
-            <p className="text-3xl font-semibold text-text-heading text-center my-2">
-              {formatPrice(Math.round(stats.estimatedGift))} {currency}
-            </p>
-            <div className="flex justify-between text-xs text-text-muted">
-              <span>Min: {formatPrice(stats.estimatedGiftMin)} {currency}</span>
-              <span>Max: {formatPrice(stats.estimatedGiftMax)} {currency}</span>
-            </div>
-            {/* Comparison with cost */}
+          <div className="flex justify-between">
+            <span className="text-sm text-text-muted">Total avans</span>
+            <span className="text-sm font-medium text-green-600">
+              {formatPrice(stats.totalAvans)} {currency}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-text-muted">{subtractAvans ? "Rest de plata" : "De achitat"}</span>
+            <span className="text-sm font-medium text-red-600">
+              {formatPrice(subtractAvans ? stats.remainingToPay : stats.totalServiceCost)} {currency}
+            </span>
+          </div>
+        </div>
+        {/* Avans progress bar */}
+        <div className="mt-4">
+          <div className="flex justify-between text-xs text-text-muted mb-1">
+            <span>Avans platit</span>
+            <span>{avansPct}%</span>
+          </div>
+          <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-green-500 rounded-full transition-all duration-500"
+              style={{ width: `${avansPct}%` }}
+            />
+          </div>
+        </div>
+        {/* Dar vs Servicii progress bar */}
+        {stats.estimatedGift > 0 && (
+          <div className="mt-4">
             {(() => {
               const costRef = subtractAvans ? stats.remainingToPay : stats.totalServiceCost;
-              const diff = stats.estimatedGift - costRef;
+              const darPct = costRef > 0 ? Math.min(100, Math.round((stats.estimatedGift / costRef) * 100)) : 0;
+              const isPositive = stats.estimatedGift >= costRef;
               return (
-                <div
-                  className={`mt-3 text-center py-2 rounded-lg ${
-                    diff >= 0
-                      ? "bg-green-100 text-green-600"
-                      : "bg-red-100 text-red-600"
-                  }`}
-                >
-                  <span className="text-sm font-medium">
-                    {diff >= 0 ? "+" : ""}
-                    {formatPrice(Math.round(diff))} {currency}
-                  </span>
-                  <span className="text-xs ml-1.5">vs. {subtractAvans ? "rest plata" : "cost servicii"}</span>
-                </div>
+                <>
+                  <div className="flex justify-between text-xs text-text-muted mb-1">
+                    <span>Dar estimat vs. {subtractAvans ? "rest plata" : "cost total"}</span>
+                    <span className={isPositive ? "text-green-600" : "text-red-600"}>{darPct}%</span>
+                  </div>
+                  <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${isPositive ? "bg-green-500" : "bg-amber-500"}`}
+                      style={{ width: `${darPct}%` }}
+                    />
+                  </div>
+                </>
               );
             })()}
           </div>
+        )}
+        {/* Avans + Dar vs Cost total */}
+        {stats.totalServiceCost > 0 && (
+          <div className="mt-4">
+            {(() => {
+              const costRef = subtractAvans ? stats.remainingToPay : stats.totalServiceCost;
+              const darPctSlice = costRef > 0 ? Math.min(100, Math.round((stats.estimatedGift / costRef) * 100)) : 0;
+              const remaining = Math.max(0, costRef - stats.estimatedGift);
+              if (subtractAvans) {
+                return (
+                  <>
+                    <div className="flex justify-between text-xs text-text-muted mb-1">
+                      <span>Dar estimat vs. rest de plata</span>
+                      <span className={darPctSlice >= 100 ? "text-green-600" : "text-text-heading"}>{darPctSlice}%</span>
+                    </div>
+                    <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden flex">
+                      <div className="h-full bg-blue-400 transition-all duration-500" style={{ width: `${darPctSlice}%` }} />
+                    </div>
+                    <div className="flex gap-4 text-[10px] text-text-muted mt-1">
+                      <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-blue-400" />Dar ({formatPrice(Math.round(stats.estimatedGift))})</span>
+                      <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-gray-200" />Rest ({formatPrice(remaining)})</span>
+                    </div>
+                  </>
+                );
+              }
+              const covered = stats.totalAvans + stats.estimatedGift;
+              const coveredPct = Math.min(100, Math.round((covered / stats.totalServiceCost) * 100));
+              const avansPctSlice = Math.round((stats.totalAvans / stats.totalServiceCost) * 100);
+              const darSlice = Math.min(100 - avansPctSlice, Math.round((stats.estimatedGift / stats.totalServiceCost) * 100));
+              return (
+                <>
+                  <div className="flex justify-between text-xs text-text-muted mb-1">
+                    <span>Acoperire cost total (avans + dar)</span>
+                    <span className={coveredPct >= 100 ? "text-green-600" : "text-text-heading"}>{coveredPct}%</span>
+                  </div>
+                  <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden flex">
+                    <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${avansPctSlice}%` }} />
+                    <div className="h-full bg-blue-400 transition-all duration-500" style={{ width: `${darSlice}%` }} />
+                  </div>
+                  <div className="flex gap-4 text-[10px] text-text-muted mt-1">
+                    <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-green-500" />Avans ({formatPrice(stats.totalAvans)})</span>
+                    <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-blue-400" />Dar ({formatPrice(Math.round(stats.estimatedGift))})</span>
+                    <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-gray-200" />Rest ({formatPrice(Math.max(0, stats.totalServiceCost - covered))})</span>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        )}
+      </div>
+
+      {/* Estimare dar - full width card */}
+      <div className="family-card">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-medium text-text-heading">
+            Estimare dar
+          </h3>
+          <button
+            onClick={() => setOnlyConfirmed(!onlyConfirmed)}
+            className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
+              onlyConfirmed
+                ? "bg-green-50 text-green-700 border-green-200"
+                : "bg-amber-50 text-amber-700 border-amber-200"
+            }`}
+          >
+            {onlyConfirmed ? "Doar confirmati" : "Toti invitatii"}
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          {/* Slider */}
+          <div>
+            <div className="flex justify-between text-xs text-text-muted mb-1.5">
+              <span>Pesimist</span>
+              <span className="font-medium text-text-heading">{optimismLevel}%</span>
+              <span>Optimist</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value={optimismLevel}
+              onChange={(e) => setOptimismLevel(Number(e.target.value))}
+              className="w-full accent-accent h-2 cursor-pointer"
+            />
+            <div className="flex justify-between text-xs text-text-muted mt-1.5">
+              <span>Min: {formatPrice(stats.estimatedGiftMin)} {currency}</span>
+              <span>Max: {formatPrice(stats.estimatedGiftMax)} {currency}</span>
+            </div>
+          </div>
+          {/* Current value */}
+          <div className="text-center">
+            <p className="text-3xl font-semibold text-text-heading">
+              {formatPrice(Math.round(stats.estimatedGift))} {currency}
+            </p>
+          </div>
+          {/* Comparison with cost */}
+          {(() => {
+            const costRef = subtractAvans ? stats.remainingToPay : stats.totalServiceCost;
+            const diff = stats.estimatedGift - costRef;
+            return (
+              <div
+                className={`text-center py-3 rounded-lg ${
+                  diff >= 0
+                    ? "bg-green-100 text-green-600"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                <span className="text-sm font-medium">
+                  {diff >= 0 ? "+" : ""}
+                  {formatPrice(Math.round(diff))} {currency}
+                </span>
+                <span className="text-xs ml-1.5">vs. {subtractAvans ? "rest plata" : "cost servicii"}</span>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -1112,22 +1107,11 @@ function DashboardContent() {
       {/* ── Cost per invitat ── */}
       {services.length > 0 && stats.totalInvited > 0 && (
         <div className="family-card">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs uppercase tracking-wide text-text-muted">
-              Cost per invitat
-            </h3>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={subtractAvans}
-                onChange={(e) => setSubtractAvans(e.target.checked)}
-                className="w-3.5 h-3.5 accent-accent cursor-pointer"
-              />
-              <span className="text-[11px] text-text-muted">Scade avansul</span>
-            </label>
-          </div>
+          <h3 className="text-xs uppercase tracking-wide text-text-muted mb-4">
+            Cost per invitat
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-            {services.map((s) => {
+            {(subtractExtra ? services.filter((s) => s.type !== "expense") : services).map((s) => {
               const hasPPI = Boolean(s.has_pret_per_invitat) && s.pret_per_invitat != null;
               const pret = hasPPI ? Number(s.pret_per_invitat) * stats.totalInvited : Number(s.pret);
               const avans = Number(s.avans || 0);

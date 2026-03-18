@@ -31,8 +31,10 @@ export function useTabParam<T extends string>(
     const raw = searchParams.get(paramName);
     if (raw && (validValues as readonly string[]).includes(raw)) {
       setTabState(raw as T);
+    } else {
+      setTabState(defaultValue);
     }
-  }, [searchParams, paramName, validValues]);
+  }, [searchParams, paramName, validValues, defaultValue]);
 
   const setTab = useCallback(
     (newTab: T) => {
