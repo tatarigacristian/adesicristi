@@ -78,6 +78,17 @@ function Flourish({ width = 180, color }: { width?: number; color: string }) {
   );
 }
 
+function SmallFlourish({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 200 12" style={{ width: 100, height: 6 }} xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="6" x2="70" y2="6" stroke={color} strokeWidth="0.4" />
+      <line x1="130" y1="6" x2="200" y2="6" stroke={color} strokeWidth="0.4" />
+      <path d="M80 6 Q90 1, 100 6 Q110 11, 120 6" fill="none" stroke={color} strokeWidth="0.6" />
+      <circle cx="100" cy="6" r="1.5" fill={color} />
+    </svg>
+  );
+}
+
 function PreviewMeseContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -226,9 +237,14 @@ function PreviewMeseContent() {
           {/* Content */}
           <div style={{ textAlign: "center", position: "relative" }}>
             {/* Title */}
-            <p style={{ fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color: muted, marginBottom: 8 }}>
+            <p style={{ fontSize: 14, letterSpacing: 4, textTransform: "uppercase", color: muted, marginBottom: 6, fontWeight: 500 }}>
               Masa
             </p>
+
+            <div style={{ display: "flex", justifyContent: "center", margin: "4px 0 10px" }}>
+              <SmallFlourish color={ornament} />
+            </div>
+
             <p style={{
               fontFamily: '"Alex Brush", cursive',
               fontSize: 52,

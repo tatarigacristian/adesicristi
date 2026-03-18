@@ -207,9 +207,14 @@ function PreviewMeniuContent() {
 
           <div style={{ textAlign: "center", position: "relative" }}>
             {/* Title */}
-            <p style={{ fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color: muted, marginBottom: 8 }}>
+            <p style={{ fontSize: 14, letterSpacing: 4, textTransform: "uppercase", color: muted, marginBottom: 6, fontWeight: 500 }}>
               Meniul
             </p>
+
+            <div style={{ display: "flex", justifyContent: "center", margin: "4px 0 10px" }}>
+              <SmallFlourish color={ornament} />
+            </div>
+
             <p style={{
               fontFamily: '"Alex Brush", cursive',
               fontSize: 46,
