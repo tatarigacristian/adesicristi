@@ -675,58 +675,40 @@ export default function GuestsPage() {
 
             {/* Desktop table view */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm table-fixed">
                 <thead>
                   <tr className="border-b border-border-light bg-background-soft/50">
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Invitat</th>
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Slug</th>
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Partener (+1)</th>
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Din partea</th>
-                    <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Copii</th>
-                    <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Scaun</th>
-                    <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Cadou est.</th>
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Notite</th>
-                    <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Actiuni</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide w-[45%]">Invitat</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide w-[12%]">Slug</th>
+                    <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide w-[15%]">Cadou est.</th>
+                    <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide w-[28%]">Actiuni</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginated.map((g) => {
                     const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
                     return (
-                      <tr key={g.id} className="border-b border-border-light/50 hover:bg-background-soft/30 transition-colors">
+                      <tr key={g.id} className="border-b border-border-light/50 hover:bg-background-soft/30 transition-colors align-top">
                         <td className="px-4 py-3">
-                          <span className="text-text-heading font-medium">{g.nume}</span>{" "}
-                          <span className="text-foreground/70">{g.prenume}</span>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-text-heading font-medium">{g.prenume} {g.nume}</span>
+                              {g.din_partea && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">{DIN_PARTEA_LABELS[g.din_partea]}</span>
+                              )}
+                              {!g.loc_pe_scaun && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">Doar dar</span>
+                              )}
+                            </div>
+                            {partner && (
+                              <p className="text-foreground/60 text-xs">{partner.prenume} {partner.nume}</p>
+                            )}
+                            {g.children && g.children.length > 0 && g.children.map((c, ci) => (
+                              <p key={ci} className="text-foreground/50 text-xs">{c.prenume} {c.nume} <span className="text-text-muted">(copil)</span></p>
+                            ))}
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-foreground/50 text-xs font-mono">{g.slug || "\u2014"}</td>
-                        <td className="px-4 py-3">
-                          {partner ? (
-                            <span className="text-foreground/70">{partner.nume} {partner.prenume}</span>
-                          ) : (
-                            <span className="text-foreground/30">\u2014</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          {g.din_partea ? (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">{DIN_PARTEA_LABELS[g.din_partea]}</span>
-                          ) : (
-                            <span className="text-foreground/30">\u2014</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          {g.children && g.children.length > 0 ? (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700" title={g.children.map((c) => `${c.prenume} ${c.nume}`).join(", ")}>{g.children.length}</span>
-                          ) : (
-                            <span className="text-foreground/30">\u2014</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          {g.loc_pe_scaun ? (
-                            <span className="inline-flex items-center text-xs text-green-700">Da</span>
-                          ) : (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">Doar dar</span>
-                          )}
-                        </td>
                         <td className="px-4 py-3 text-right text-foreground/70 whitespace-nowrap">
                           {g.estimated_gift_min != null && g.estimated_gift_max != null
                             ? `${Math.round((g.estimated_gift_min + g.estimated_gift_max) / 2)} RON`
@@ -734,7 +716,6 @@ export default function GuestsPage() {
                             : g.estimated_gift_max != null ? `${g.estimated_gift_max} RON`
                             : "\u2014"}
                         </td>
-                        <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{g.intro_short || g.intro_long || "\u2014"}</td>
                         <td className="px-4 py-3 text-right whitespace-nowrap">
                           <div className="flex items-center justify-end gap-0.5">
                             <button onClick={() => openEdit(g)}
