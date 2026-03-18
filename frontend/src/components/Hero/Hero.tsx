@@ -88,65 +88,70 @@ export default function Hero({
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  // Attach end-detection listeners to nested swiper; returns cleanup fn
+  const attachNestedEndListeners = useCallback((nested: SwiperType) => {
+    if (!parentSwiper) return () => {};
+
+    const onSlideChange = () => {
+      if (nested.isEnd) {
+        nested.disable();
+        nested.el.style.pointerEvents = "none";
+        parentSwiper.enable();
+      }
+    };
+    const onReachEnd = () => {
+      nested.disable();
+      nested.el.style.pointerEvents = "none";
+      parentSwiper.enable();
+    };
+
+    nested.on("slideChange", onSlideChange);
+    nested.on("reachEnd", onReachEnd);
+
+    return () => {
+      nested.off("slideChange", onSlideChange);
+      nested.off("reachEnd", onReachEnd);
+    };
+  }, [parentSwiper]);
+
+  // Track cleanup for nested listeners
+  const cleanupNestedRef = useRef<() => void>(() => {});
+
   // Nested Swiper callback — control parent based on nested position
   const onNestedSwiper = useCallback((nested: SwiperType) => {
     nestedRef.current = nested;
     if (!parentSwiper) return;
 
-    console.log("[Hero] Nested init. Parent activeIndex:", parentSwiper.activeIndex, "Parent enabled:", parentSwiper.enabled);
-
     // Fully disable parent so it doesn't capture any touch/wheel events
     if (parentSwiper.activeIndex === 0) {
-      console.log("[Hero] Disabling parent completely");
       parentSwiper.disable();
     }
 
-    // Ignore reachEnd during init
-    let initialized = false;
+    // Ignore reachEnd during init — attach listeners after a delay
     setTimeout(() => {
-      initialized = true;
-      console.log("[Hero] Nested ready. activeIndex:", nested.activeIndex);
-      // Re-disable parent in case reachEnd during init re-enabled it
       if (parentSwiper.activeIndex === 0 && nested.activeIndex === 0) {
-        console.log("[Hero] Re-disabling parent after init");
         parentSwiper.disable();
       }
+      cleanupNestedRef.current = attachNestedEndListeners(nested);
     }, 300);
-
-    nested.on("slideChange", () => {
-      if (!initialized) return;
-      console.log("[Hero] Nested slideChange → index:", nested.activeIndex, "isEnd:", nested.isEnd);
-      if (nested.isEnd) {
-        console.log("[Hero] Nested at end → disabling nested, enabling parent");
-        nested.disable();
-        nested.el.style.pointerEvents = "none";
-        parentSwiper.enable();
-        console.log("[Hero] Parent enabled:", parentSwiper.enabled);
-      }
-    });
-
-    nested.on("reachEnd", () => {
-      if (!initialized) return;
-      console.log("[Hero] Nested reachEnd → disabling nested, enabling parent");
-      nested.disable();
-      nested.el.style.pointerEvents = "none";
-      parentSwiper.enable();
-    });
-  }, [parentSwiper]);
+  }, [parentSwiper, attachNestedEndListeners]);
 
   // Re-block parent when navigating back to Hero slide
   useEffect(() => {
     if (!parentSwiper || !isMobile) return;
 
     const onParentSlideChange = () => {
-      console.log("[Hero] Parent slideChange → activeIndex:", parentSwiper.activeIndex);
       if (parentSwiper.activeIndex === 0) {
         const nested = nestedRef.current;
         if (nested) {
+          // Clean up old listeners before re-attaching
+          cleanupNestedRef.current();
           nested.slideTo(0, 0);
           nested.enable();
           nested.el.style.pointerEvents = "";
           parentSwiper.disable();
+          // Re-attach fresh end-detection listeners
+          cleanupNestedRef.current = attachNestedEndListeners(nested);
         }
       }
     };
@@ -155,7 +160,7 @@ export default function Hero({
     return () => {
       parentSwiper.off("slideChange", onParentSlideChange);
     };
-  }, [parentSwiper, isMobile]);
+  }, [parentSwiper, isMobile, attachNestedEndListeners]);
 
   return (
     <section className="content-section bg-background relative overflow-hidden">
