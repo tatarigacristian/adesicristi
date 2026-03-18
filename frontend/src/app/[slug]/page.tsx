@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import SwiperLayout from "@/components/Layout/SwiperLayout";
-import { WeddingSettings, fetchWeddingSettings, getCoupleNames, applyThemeColors } from "@/utils/settings";
+import MaintenancePage from "@/components/MaintenancePage";
+import { WeddingSettings, getCoupleNames, applyThemeColors } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -24,21 +25,26 @@ export default function SlugPage() {
   const [guest, setGuest] = useState<GuestData | null>(null);
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [ready, setReady] = useState(false);
+  const [settingsUnavailable, setSettingsUnavailable] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [guestRes, settingsData] = await Promise.all([
-          fetch(`${API_URL}/api/guests/${slug}`),
-          fetchWeddingSettings(),
-        ]);
+        const settingsRes = await fetch(`${API_URL}/api/wedding-settings`);
+        if (!settingsRes.ok) {
+          setSettingsUnavailable(true);
+          return;
+        }
+        const settingsData: WeddingSettings = await settingsRes.json();
+        setSettings(settingsData);
+        applyThemeColors(settingsData);
+
+        const guestRes = await fetch(`${API_URL}/api/guests/${slug}`);
         if (guestRes.ok) {
           setGuest(await guestRes.json());
         }
-        setSettings(settingsData);
-        applyThemeColors(settingsData);
       } catch {
-        // silently fail, show default message
+        setSettingsUnavailable(true);
       } finally {
         requestAnimationFrame(() => setReady(true));
       }
@@ -47,6 +53,10 @@ export default function SlugPage() {
   }, [slug]);
 
   const couple = getCoupleNames(settings);
+
+  if (settingsUnavailable) {
+    return <MaintenancePage />;
+  }
 
   return (
     <>

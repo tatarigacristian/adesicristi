@@ -13,6 +13,7 @@ export default function GuestsPage() {
   const [editGuest, setEditGuest] = useState<Guest | null>(null);
   const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "" as "" | "M" | "F", estimated_gift: "" });
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<{ message: string; field?: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Guest | null>(null);
   const [invitatiePicker, setInvitatiePicker] = useState<Guest | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -73,6 +74,7 @@ export default function GuestsPage() {
 
   function openNew() {
     setEditGuest(null);
+    setSaveError(null);
     setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "", estimated_gift: "" });
     setShowForm(true);
   }
@@ -93,16 +95,37 @@ export default function GuestsPage() {
       sex: g.sex || "",
       estimated_gift: g.estimated_gift != null ? String(g.estimated_gift) : "",
     });
+    setSaveError(null);
     setShowForm(true);
   }
 
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setSaveError(null);
     const method = editGuest ? "PUT" : "POST";
     const url = editGuest ? `${API_URL}/api/admin/guests/${editGuest.id}` : `${API_URL}/api/admin/guests`;
     const payload = { ...form, sex: form.sex || null, estimated_gift: form.estimated_gift ? Number(form.estimated_gift) : null };
-    await fetch(url, { method, headers: authHeaders(token), body: JSON.stringify(payload) });
+    const res = await fetch(url, { method, headers: authHeaders(token), body: JSON.stringify(payload) });
+    let data: { error?: string; field?: string } = {};
+    try {
+      data = await res.json();
+    } catch {
+      /* empty */
+    }
+    if (res.status === 401) {
+      onUnauth();
+      setSaving(false);
+      return;
+    }
+    if (!res.ok) {
+      setSaveError({
+        message: typeof data.error === "string" ? data.error : "Eroare la salvare.",
+        field: data.field,
+      });
+      setSaving(false);
+      return;
+    }
     setSaving(false);
     setShowForm(false);
     fetchGuests();
@@ -147,6 +170,11 @@ export default function GuestsPage() {
             <h3 className="serif-font text-lg text-text-heading mb-4">
               {editGuest ? "Editeaza invitat" : "Invitat nou"}
             </h3>
+            {saveError && (
+              <div className="mb-3 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-800">
+                {saveError.message}
+              </div>
+            )}
             <form onSubmit={handleSave} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -171,9 +199,23 @@ export default function GuestsPage() {
               </div>
               <div>
                 <label className="block text-xs text-text-muted mb-1">Slug (unic)</label>
-                <input type="text" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                <input
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => {
+                    setForm({ ...form, slug: e.target.value });
+                    if (saveError?.field === "slug") setSaveError(null);
+                  }}
                   placeholder="ex: ion-maria"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  className={`w-full rounded-lg px-3 py-2 text-sm bg-white focus:outline-none transition-colors ${
+                    saveError?.field === "slug"
+                      ? "border-2 border-red-500 focus:border-red-600"
+                      : "border border-gray-300 focus:border-accent"
+                  }`}
+                />
+                {saveError?.field === "slug" && (
+                  <p className="text-xs text-red-600 mt-1">Slug-ul trebuie sa fie unic pentru fiecare invitat.</p>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="plus_one" checked={form.plus_one}

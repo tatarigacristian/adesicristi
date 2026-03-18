@@ -82,14 +82,22 @@ export async function guestRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'Numele partenerului este obligatoriu cand exista +1' });
     }
 
-    // Check slug uniqueness
-    if (slug) {
+    const slugNorm = typeof slug === 'string' && slug.trim() ? slug.trim() : null;
+
+    const slugNotUniqueResponse = () =>
+      reply.status(400).send({
+        error: 'Slug-ul nu este unic. Un alt invitat foloseste deja acest link (slug). Alege un alt slug.',
+        field: 'slug',
+      });
+
+    if (slugNorm) {
       const pool = getPool();
       const [existing] = await pool.execute<RowDataPacket[]>(
-        'SELECT id FROM guests WHERE slug = ?', [slug]
+        'SELECT id FROM guests WHERE slug = ?',
+        [slugNorm]
       );
       if (existing.length > 0) {
-        return reply.status(400).send({ error: 'Slug-ul este deja folosit' });
+        return slugNotUniqueResponse();
       }
     }
 
@@ -101,7 +109,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
       // Create main guest
       const [result] = await conn.execute<ResultSetHeader>(
         'INSERT INTO guests (nume, prenume, plus_one, intro_short, intro_long, slug, sex, estimated_gift) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slug || null, sex || null, estimated_gift ?? null]
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNorm, sex || null, estimated_gift ?? null]
       );
       const mainId = result.insertId;
 
@@ -124,6 +132,10 @@ export async function guestRoutes(fastify: FastifyInstance) {
       return reply.status(201).send({ id: mainId });
     } catch (err) {
       await conn.rollback();
+      const e = err as { code?: string; errno?: number };
+      if (e.code === 'ER_DUP_ENTRY' || e.errno === 1062) {
+        return slugNotUniqueResponse();
+      }
       throw err;
     } finally {
       conn.release();
@@ -147,14 +159,19 @@ export async function guestRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'Numele partenerului este obligatoriu cand exista +1' });
     }
 
-    // Check slug uniqueness (exclude self)
-    if (slug) {
+    const slugNormPut = typeof slug === 'string' && slug.trim() ? slug.trim() : null;
+
+    if (slugNormPut) {
       const pool = getPool();
       const [existing] = await pool.execute<RowDataPacket[]>(
-        'SELECT id FROM guests WHERE slug = ? AND id != ?', [slug, id]
+        'SELECT id FROM guests WHERE slug = ? AND id != ?',
+        [slugNormPut, id]
       );
       if (existing.length > 0) {
-        return reply.status(400).send({ error: 'Slug-ul este deja folosit' });
+        return reply.status(400).send({
+          error: 'Slug-ul nu este unic. Un alt invitat foloseste deja acest link (slug). Alege un alt slug.',
+          field: 'slug',
+        });
       }
     }
 
@@ -176,7 +193,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
       // Update main guest
       await conn.execute(
         'UPDATE guests SET nume = ?, prenume = ?, plus_one = ?, intro_short = ?, intro_long = ?, slug = ?, sex = ?, estimated_gift = ? WHERE id = ?',
-        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slug || null, sex || null, estimated_gift ?? null, id]
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNormPut, sex || null, estimated_gift ?? null, id]
       );
 
       if (plus_one && partner_nume && partner_prenume) {
@@ -208,6 +225,13 @@ export async function guestRoutes(fastify: FastifyInstance) {
       return { success: true };
     } catch (err) {
       await conn.rollback();
+      const e = err as { code?: string; errno?: number };
+      if (e.code === 'ER_DUP_ENTRY' || e.errno === 1062) {
+        return reply.status(400).send({
+          error: 'Slug-ul nu este unic. Un alt invitat foloseste deja acest link (slug). Alege un alt slug.',
+          field: 'slug',
+        });
+      }
       throw err;
     } finally {
       conn.release();

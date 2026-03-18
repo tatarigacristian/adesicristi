@@ -2,19 +2,39 @@
 
 import { useEffect, useState } from "react";
 import SwiperLayout from "@/components/Layout/SwiperLayout";
-import { WeddingSettings, fetchWeddingSettings, applyThemeColors } from "@/utils/settings";
+import MaintenancePage from "@/components/MaintenancePage";
+import { WeddingSettings, applyThemeColors } from "@/utils/settings";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
 export default function Home() {
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [ready, setReady] = useState(false);
+  const [settingsUnavailable, setSettingsUnavailable] = useState(false);
 
   useEffect(() => {
-    fetchWeddingSettings().then((s) => {
-      setSettings(s);
-      applyThemeColors(s);
-      requestAnimationFrame(() => setReady(true));
-    });
+    async function load() {
+      try {
+        const res = await fetch(`${API_URL}/api/wedding-settings`);
+        if (!res.ok) {
+          setSettingsUnavailable(true);
+          return;
+        }
+        const s: WeddingSettings = await res.json();
+        setSettings(s);
+        applyThemeColors(s);
+      } catch {
+        setSettingsUnavailable(true);
+      } finally {
+        requestAnimationFrame(() => setReady(true));
+      }
+    }
+    load();
   }, []);
+
+  if (settingsUnavailable) {
+    return <MaintenancePage />;
+  }
 
   return (
     <>
