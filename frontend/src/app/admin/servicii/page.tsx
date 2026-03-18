@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, FormEvent } from "react";
 import { useAdminAuth } from "../_context";
-import { API_URL, authHeaders, Pagination, SearchInput, PAGE_SIZE } from "../_shared";
+import { API_URL, authHeaders, Pagination, SearchInput, FilterButton, PAGE_SIZE } from "../_shared";
 
 type ServiceType = "supplier" | "expense";
 
@@ -70,6 +70,7 @@ export default function ServiciiPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<Service | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | "supplier" | "expense">("all");
   const [page, setPage] = useState(1);
 
   // Default datetime values from wedding date
@@ -109,19 +110,23 @@ export default function ServiciiPage() {
   useEffect(() => { fetchServices(); }, []);
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return services;
-    const q = search.toLowerCase();
-    return services.filter((s) =>
-      s.nume.toLowerCase().includes(q) ||
-      (s.telefon && s.telefon.toLowerCase().includes(q))
-    );
-  }, [services, search]);
+    let result = services;
+    if (typeFilter !== "all") result = result.filter((s) => (s.type || "supplier") === typeFilter);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter((s) =>
+        s.nume.toLowerCase().includes(q) ||
+        (s.telefon && s.telefon.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }, [services, search, typeFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
-  useEffect(() => { setPage(1); }, [search]);
+  useEffect(() => { setPage(1); }, [search, typeFilter]);
 
   const totalCost = useMemo(() => services.reduce((sum, s) => {
     if (s.has_pret_per_invitat && s.pret_per_invitat != null && totalInvitati > 0) {
@@ -206,7 +211,7 @@ export default function ServiciiPage() {
         <h2 className="serif-font text-2xl text-text-heading">Cheltuieli</h2>
         <button onClick={openNew}
           className="bg-button text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
-          + Adauga cheltuiala
+          + Adauga cost
         </button>
       </div>
 
@@ -222,9 +227,16 @@ export default function ServiciiPage() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="mb-4">
-        <SearchInput value={search} onChange={setSearch} placeholder="Cauta dupa nume, telefon sau perioada..." />
+      {/* Search & Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="flex-1">
+          <SearchInput value={search} onChange={setSearch} placeholder="Cauta dupa nume, telefon sau perioada..." />
+        </div>
+        <div className="flex items-center gap-2">
+          <FilterButton label="Toate" active={typeFilter === "all"} count={services.length} onClick={() => setTypeFilter("all")} />
+          <FilterButton label="Furnizori" active={typeFilter === "supplier"} count={services.filter((s) => (s.type || "supplier") === "supplier").length} onClick={() => setTypeFilter("supplier")} />
+          <FilterButton label="Costuri" active={typeFilter === "expense"} count={services.filter((s) => s.type === "expense").length} onClick={() => setTypeFilter("expense")} />
+        </div>
       </div>
 
       {/* Form modal */}
@@ -233,7 +245,7 @@ export default function ServiciiPage() {
           <div className="bg-white rounded-xl w-full max-w-sm max-h-[70vh] flex flex-col">
             <div className="p-5 pb-3">
               <h3 className="serif-font text-lg text-text-heading mb-3">
-                {editService ? "Editeaza cheltuiala" : "Cheltuiala noua"}
+                {editService ? "Editeaza cost" : "Cost nou"}
               </h3>
               <div className="flex rounded-lg border border-border-light overflow-hidden">
                 <button type="button" onClick={() => setForm({ ...form, type: "supplier" })}
@@ -242,15 +254,15 @@ export default function ServiciiPage() {
                 </button>
                 <button type="button" onClick={() => setForm({ ...form, type: "expense" })}
                   className={`flex-1 py-2 text-xs font-medium transition-colors cursor-pointer ${form.type === "expense" ? "bg-button text-white" : "bg-background-soft text-text-muted hover:text-text-heading"}`}>
-                  Cheltuiala
-                </button>
+                  Cost
+</button>
               </div>
             </div>
             <form onSubmit={handleSave} className="flex flex-col flex-1 min-h-0">
             <div className="px-5 overflow-y-auto flex-1 space-y-3">
               {/* Common: Nume */}
               <div>
-                <label className="block text-xs text-text-muted mb-1">{form.type === "supplier" ? "Nume furnizor" : "Nume cheltuiala"}</label>
+                <label className="block text-xs text-text-muted mb-1">{form.type === "supplier" ? "Nume furnizor" : "Nume cost"}</label>
                 <input type="text" value={form.nume} onChange={(e) => setForm({ ...form, nume: e.target.value })}
                   required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
               </div>
@@ -436,9 +448,9 @@ export default function ServiciiPage() {
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                 </svg>
               </div>
-              <h3 className="serif-font text-lg text-text-heading mb-2">Sterge cheltuiala</h3>
+              <h3 className="serif-font text-lg text-text-heading mb-2">Sterge costul</h3>
               <p className="text-sm text-text-muted mb-1">
-                Esti sigur ca vrei sa stergi cheltuiala
+                Esti sigur ca vrei sa stergi costul
               </p>
               <p className="text-sm font-medium text-text-heading">
                 {deleteConfirm.nume}?
@@ -463,7 +475,7 @@ export default function ServiciiPage() {
         {paginated.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <p className="text-sm text-text-muted">
-              {search ? "Niciun rezultat gasit." : "Nicio cheltuiala adaugata."}
+              {search ? "Niciun rezultat gasit." : "Niciun cost adaugat."}
             </p>
           </div>
         ) : (
@@ -532,7 +544,7 @@ export default function ServiciiPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border-light bg-background-soft/50">
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Cheltuiala</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Nume</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Persoane</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Pret</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Avans</th>
