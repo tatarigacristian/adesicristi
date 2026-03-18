@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo, FormEvent } from "react";
 import { useAdminAuth } from "../_context";
 import { API_URL, authHeaders, Pagination, SearchInput, PAGE_SIZE } from "../_shared";
 
+type ServiceType = "supplier" | "expense";
+
 interface Service {
   id: number;
   nume: string;
@@ -18,6 +20,7 @@ interface Service {
   link: string | null;
   contract_path: string | null;
   telefon: string | null;
+  type: ServiceType;
   created_at: string;
 }
 
@@ -61,7 +64,7 @@ export default function ServiciiPage() {
   const [weddingDate, setWeddingDate] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editService, setEditService] = useState<Service | null>(null);
-  const [form, setForm] = useState({ nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: "", contract_end: "", numar_ore: "", loc_la_masa: false, link: "", telefon: "" });
+  const [form, setForm] = useState({ type: "supplier" as ServiceType, nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: "", contract_end: "", numar_ore: "", loc_la_masa: false, link: "", telefon: "" });
   const [contractFile, setContractFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<Service | null>(null);
@@ -130,7 +133,7 @@ export default function ServiciiPage() {
 
   function openNew() {
     setEditService(null);
-    setForm({ nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: getDefaultStart(), contract_end: getDefaultEnd(), numar_ore: computeHoursFromDates(getDefaultStart(), getDefaultEnd()), loc_la_masa: false, link: "", telefon: "" });
+    setForm({ type: "supplier", nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: getDefaultStart(), contract_end: getDefaultEnd(), numar_ore: computeHoursFromDates(getDefaultStart(), getDefaultEnd()), loc_la_masa: false, link: "", telefon: "" });
     setContractFile(null);
     setShowForm(true);
   }
@@ -138,6 +141,7 @@ export default function ServiciiPage() {
   function openEdit(s: Service) {
     setEditService(s);
     setForm({
+      type: s.type || "supplier",
       nume: s.nume,
       numar_persoane: String(s.numar_persoane),
       pret: Boolean(s.has_pret_per_invitat) && s.pret_per_invitat != null && totalInvitati > 0
@@ -168,18 +172,19 @@ export default function ServiciiPage() {
       ? `${API_URL}/api/admin/services/${editService.id}`
       : `${API_URL}/api/admin/services`;
     const fd = new FormData();
+    fd.append("type", form.type);
     fd.append("nume", form.nume);
-    fd.append("numar_persoane", form.numar_persoane);
+    fd.append("numar_persoane", form.type === "expense" ? "0" : form.numar_persoane);
     fd.append("pret", form.pret);
-    fd.append("avans", form.avans);
-    fd.append("pret_per_invitat", form.has_pret_per_invitat ? form.pret_per_invitat : "");
-    fd.append("has_pret_per_invitat", String(form.has_pret_per_invitat));
-    fd.append("contract_start", form.contract_start);
-    fd.append("contract_end", form.contract_end);
-    fd.append("loc_la_masa", String(form.loc_la_masa));
+    fd.append("avans", form.type === "expense" ? "" : form.avans);
+    fd.append("pret_per_invitat", form.type === "expense" ? "" : (form.has_pret_per_invitat ? form.pret_per_invitat : ""));
+    fd.append("has_pret_per_invitat", form.type === "expense" ? "false" : String(form.has_pret_per_invitat));
+    fd.append("contract_start", form.type === "expense" ? "" : form.contract_start);
+    fd.append("contract_end", form.type === "expense" ? "" : form.contract_end);
+    fd.append("loc_la_masa", form.type === "expense" ? "false" : String(form.loc_la_masa));
     fd.append("link", form.link);
-    fd.append("telefon", form.telefon);
-    if (contractFile) fd.append("contract", contractFile);
+    fd.append("telefon", form.type === "expense" ? "" : form.telefon);
+    if (contractFile && form.type === "supplier") fd.append("contract", contractFile);
     await fetch(url, { method, headers: { Authorization: `Bearer ${token}` }, body: fd });
     setSaving(false);
     setShowForm(false);
@@ -198,10 +203,10 @@ export default function ServiciiPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="serif-font text-2xl text-text-heading">Servicii</h2>
+        <h2 className="serif-font text-2xl text-text-heading">Cheltuieli</h2>
         <button onClick={openNew}
           className="bg-button text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
-          + Adauga serviciu
+          + Adauga cheltuiala
         </button>
       </div>
 
@@ -227,147 +232,183 @@ export default function ServiciiPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
           <div className="bg-white rounded-xl w-full max-w-sm max-h-[70vh] flex flex-col">
             <div className="p-5 pb-3">
-              <h3 className="serif-font text-lg text-text-heading">
-                {editService ? "Editeaza serviciu" : "Serviciu nou"}
+              <h3 className="serif-font text-lg text-text-heading mb-3">
+                {editService ? "Editeaza cheltuiala" : "Cheltuiala noua"}
               </h3>
+              <div className="flex rounded-lg border border-border-light overflow-hidden">
+                <button type="button" onClick={() => setForm({ ...form, type: "supplier" })}
+                  className={`flex-1 py-2 text-xs font-medium transition-colors cursor-pointer ${form.type === "supplier" ? "bg-button text-white" : "bg-background-soft text-text-muted hover:text-text-heading"}`}>
+                  Furnizor
+                </button>
+                <button type="button" onClick={() => setForm({ ...form, type: "expense" })}
+                  className={`flex-1 py-2 text-xs font-medium transition-colors cursor-pointer ${form.type === "expense" ? "bg-button text-white" : "bg-background-soft text-text-muted hover:text-text-heading"}`}>
+                  Cheltuiala
+                </button>
+              </div>
             </div>
             <form onSubmit={handleSave} className="flex flex-col flex-1 min-h-0">
             <div className="px-5 overflow-y-auto flex-1 space-y-3">
+              {/* Common: Nume */}
               <div>
-                <label className="block text-xs text-text-muted mb-1">Nume serviciu</label>
+                <label className="block text-xs text-text-muted mb-1">{form.type === "supplier" ? "Nume furnizor" : "Nume cheltuiala"}</label>
                 <input type="text" value={form.nume} onChange={(e) => setForm({ ...form, nume: e.target.value })}
                   required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+
+              {/* Supplier-only fields */}
+              {form.type === "supplier" && (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">Numar persoane</label>
+                      <input type="number" value={form.numar_persoane} onChange={(e) => setForm({ ...form, numar_persoane: e.target.value })}
+                        required min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    </div>
+                    <div>
+                      <label className={`block text-xs mb-1 ${form.has_pret_per_invitat ? "text-text-muted/40" : "text-text-muted"}`}>Pret fix (RON)</label>
+                      <input type="number" value={form.pret}
+                        onChange={(e) => setForm({ ...form, pret: e.target.value })}
+                        required={!form.has_pret_per_invitat} disabled={form.has_pret_per_invitat}
+                        min="0" step="1" className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors ${form.has_pret_per_invitat ? "opacity-40 cursor-not-allowed" : ""}`} />
+                      {form.has_pret_per_invitat && form.pret && (
+                        <p className="text-[10px] text-text-muted mt-0.5">{totalInvitati} invitati × {form.pret_per_invitat || 0} RON</p>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-text-muted mb-1">Avans (RON)</label>
+                    <input type="number" value={form.avans} onChange={(e) => setForm({ ...form, avans: e.target.value })}
+                      min="0" step="1" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <input type="checkbox" id="has_pret_per_invitat" checked={form.has_pret_per_invitat}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          if (checked) {
+                            setForm({ ...form, has_pret_per_invitat: true, pret: totalInvitati > 0 && form.pret_per_invitat ? String(Math.round(Number(form.pret_per_invitat) * totalInvitati)) : "" });
+                          } else {
+                            setForm({ ...form, has_pret_per_invitat: false, pret_per_invitat: "" });
+                          }
+                        }}
+                        className="w-3.5 h-3.5 accent-accent cursor-pointer" />
+                      <label htmlFor="has_pret_per_invitat" className="text-xs text-text-muted cursor-pointer">Pret per invitat (RON)</label>
+                    </div>
+                    {form.has_pret_per_invitat && (
+                      <>
+                        <input type="number" value={form.pret_per_invitat}
+                          onChange={(e) => {
+                            const ppi = e.target.value;
+                            const computed = ppi && totalInvitati > 0 ? String(Math.round(Number(ppi) * totalInvitati)) : "";
+                            setForm({ ...form, pret_per_invitat: ppi, pret: computed });
+                          }}
+                          required min="0" step="1" placeholder="ex: 200"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                        <p className="text-[10px] text-text-muted mt-0.5">{totalInvitati} invitati din baza de date</p>
+                      </>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-xs text-text-muted mb-1">Inceput contract</label>
+                    <div className="grid grid-cols-[1fr_100px] gap-2">
+                      <input type="date" value={form.contract_start.split("T")[0] || ""}
+                        onChange={(e) => {
+                          const time = form.contract_start.split("T")[1] || "15:00";
+                          const newStart = `${e.target.value}T${time}`;
+                          const newEnd = form.numar_ore && Number(form.numar_ore) > 0 ? computeEndFromHours(newStart, Number(form.numar_ore)) : form.contract_end;
+                          setForm({ ...form, contract_start: newStart, contract_end: newEnd });
+                        }}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                      <select value={form.contract_start.split("T")[1] || "15:00"}
+                        onChange={(e) => {
+                          const date = form.contract_start.split("T")[0] || "";
+                          const newStart = `${date}T${e.target.value}`;
+                          const newEnd = form.numar_ore && Number(form.numar_ore) > 0 ? computeEndFromHours(newStart, Number(form.numar_ore)) : form.contract_end;
+                          setForm({ ...form, contract_start: newStart, contract_end: newEnd });
+                        }}
+                        className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors">
+                        {Array.from({ length: 48 }, (_, i) => { const h = String(Math.floor(i / 2)).padStart(2, "0"); const m = i % 2 === 0 ? "00" : "30"; return `${h}:${m}`; }).map((t) => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-text-muted mb-1">Numar ore</label>
+                    <input type="number" value={form.numar_ore}
+                      onChange={(e) => {
+                        const ore = e.target.value;
+                        const newEnd = ore && Number(ore) > 0 ? computeEndFromHours(form.contract_start, Number(ore)) : form.contract_end;
+                        setForm({ ...form, numar_ore: ore, contract_end: newEnd });
+                      }}
+                      min="1" placeholder="ex: 8"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  </div>
+                  <div>
+                    <label className={`block text-xs mb-1 ${form.numar_ore ? "text-text-muted/40" : "text-text-muted"}`}>Sfarsit contract</label>
+                    <div className={`grid grid-cols-[1fr_100px] gap-2 ${form.numar_ore ? "opacity-40 pointer-events-none" : ""}`}>
+                      <input type="date" value={form.contract_end.split("T")[0] || ""}
+                        onChange={(e) => { const time = form.contract_end.split("T")[1] || "06:00"; setForm({ ...form, contract_end: `${e.target.value}T${time}` }); }}
+                        disabled={!!form.numar_ore}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                      <select value={form.contract_end.split("T")[1] || "06:00"}
+                        onChange={(e) => { const date = form.contract_end.split("T")[0] || ""; setForm({ ...form, contract_end: `${date}T${e.target.value}` }); }}
+                        disabled={!!form.numar_ore}
+                        className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors">
+                        {Array.from({ length: 48 }, (_, i) => { const h = String(Math.floor(i / 2)).padStart(2, "0"); const m = i % 2 === 0 ? "00" : "30"; return `${h}:${m}`; }).map((t) => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-text-muted mb-1">Telefon</label>
+                    <input type="text" value={form.telefon} onChange={(e) => setForm({ ...form, telefon: e.target.value })}
+                      placeholder="ex: 0722 123 456"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  </div>
+                </>
+              )}
+
+              {/* Expense-only: just Pret fix */}
+              {form.type === "expense" && (
                 <div>
-                  <label className="block text-xs text-text-muted mb-1">Numar persoane</label>
-                  <input type="number" value={form.numar_persoane} onChange={(e) => setForm({ ...form, numar_persoane: e.target.value })}
-                    required min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-                </div>
-                <div>
-                  <label className={`block text-xs mb-1 ${form.has_pret_per_invitat ? "text-text-muted/40" : "text-text-muted"}`}>Pret fix (RON)</label>
+                  <label className="block text-xs text-text-muted mb-1">Pret fix (RON)</label>
                   <input type="number" value={form.pret}
                     onChange={(e) => setForm({ ...form, pret: e.target.value })}
-                    required={!form.has_pret_per_invitat} disabled={form.has_pret_per_invitat}
-                    min="0" step="1" className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors ${form.has_pret_per_invitat ? "opacity-40 cursor-not-allowed" : ""}`} />
-                  {form.has_pret_per_invitat && form.pret && (
-                    <p className="text-[10px] text-text-muted mt-0.5">{totalInvitati} invitati × {form.pret_per_invitat || 0} RON</p>
-                  )}
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Avans (RON)</label>
-                <input type="number" value={form.avans} onChange={(e) => setForm({ ...form, avans: e.target.value })}
-                  min="0" step="1" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <input type="checkbox" id="has_pret_per_invitat" checked={form.has_pret_per_invitat}
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      if (checked) {
-                        setForm({ ...form, has_pret_per_invitat: true, pret: totalInvitati > 0 && form.pret_per_invitat ? String(Math.round(Number(form.pret_per_invitat) * totalInvitati)) : "" });
-                      } else {
-                        setForm({ ...form, has_pret_per_invitat: false, pret_per_invitat: "" });
-                      }
-                    }}
-                    className="w-3.5 h-3.5 accent-accent cursor-pointer" />
-                  <label htmlFor="has_pret_per_invitat" className="text-xs text-text-muted cursor-pointer">Pret per invitat (RON)</label>
-                </div>
-                {form.has_pret_per_invitat && (
-                  <>
-                    <input type="number" value={form.pret_per_invitat}
-                      onChange={(e) => {
-                        const ppi = e.target.value;
-                        const computed = ppi && totalInvitati > 0 ? String(Math.round(Number(ppi) * totalInvitati)) : "";
-                        setForm({ ...form, pret_per_invitat: ppi, pret: computed });
-                      }}
-                      required min="0" step="1" placeholder="ex: 200"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-                    <p className="text-[10px] text-text-muted mt-0.5">{totalInvitati} invitati din baza de date</p>
-                  </>
-                )}
-              </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Inceput contract</label>
-                <div className="grid grid-cols-[1fr_100px] gap-2">
-                  <input type="date" value={form.contract_start.split("T")[0] || ""}
-                    onChange={(e) => {
-                      const time = form.contract_start.split("T")[1] || "15:00";
-                      const newStart = `${e.target.value}T${time}`;
-                      const newEnd = form.numar_ore && Number(form.numar_ore) > 0 ? computeEndFromHours(newStart, Number(form.numar_ore)) : form.contract_end;
-                      setForm({ ...form, contract_start: newStart, contract_end: newEnd });
-                    }}
+                    required min="0" step="1"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-                  <select value={form.contract_start.split("T")[1] || "15:00"}
-                    onChange={(e) => {
-                      const date = form.contract_start.split("T")[0] || "";
-                      const newStart = `${date}T${e.target.value}`;
-                      const newEnd = form.numar_ore && Number(form.numar_ore) > 0 ? computeEndFromHours(newStart, Number(form.numar_ore)) : form.contract_end;
-                      setForm({ ...form, contract_start: newStart, contract_end: newEnd });
-                    }}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors">
-                    {Array.from({ length: 48 }, (_, i) => { const h = String(Math.floor(i / 2)).padStart(2, "0"); const m = i % 2 === 0 ? "00" : "30"; return `${h}:${m}`; }).map((t) => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Numar ore</label>
-                <input type="number" value={form.numar_ore}
-                  onChange={(e) => {
-                    const ore = e.target.value;
-                    const newEnd = ore && Number(ore) > 0 ? computeEndFromHours(form.contract_start, Number(ore)) : form.contract_end;
-                    setForm({ ...form, numar_ore: ore, contract_end: newEnd });
-                  }}
-                  min="1" placeholder="ex: 8"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-              </div>
-              <div>
-                <label className={`block text-xs mb-1 ${form.numar_ore ? "text-text-muted/40" : "text-text-muted"}`}>Sfarsit contract</label>
-                <div className={`grid grid-cols-[1fr_100px] gap-2 ${form.numar_ore ? "opacity-40 pointer-events-none" : ""}`}>
-                  <input type="date" value={form.contract_end.split("T")[0] || ""}
-                    onChange={(e) => { const time = form.contract_end.split("T")[1] || "06:00"; setForm({ ...form, contract_end: `${e.target.value}T${time}` }); }}
-                    disabled={!!form.numar_ore}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-                  <select value={form.contract_end.split("T")[1] || "06:00"}
-                    onChange={(e) => { const date = form.contract_end.split("T")[0] || ""; setForm({ ...form, contract_end: `${date}T${e.target.value}` }); }}
-                    disabled={!!form.numar_ore}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors">
-                    {Array.from({ length: 48 }, (_, i) => { const h = String(Math.floor(i / 2)).padStart(2, "0"); const m = i % 2 === 0 ? "00" : "30"; return `${h}:${m}`; }).map((t) => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Telefon</label>
-                <input type="text" value={form.telefon} onChange={(e) => setForm({ ...form, telefon: e.target.value })}
-                  placeholder="ex: 0722 123 456"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-              </div>
+              )}
+
+              {/* Common: Link */}
               <div>
                 <label className="block text-xs text-text-muted mb-1">Link</label>
                 <input type="text" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })}
                   placeholder="https://..."
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
               </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" id="loc_la_masa" checked={form.loc_la_masa}
-                  onChange={(e) => setForm({ ...form, loc_la_masa: e.target.checked })}
-                  className="w-4 h-4 accent-accent" />
-                <label htmlFor="loc_la_masa" className="text-sm text-foreground">Loc la masa</label>
-              </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Contract (PDF)</label>
-                <input type="file" accept=".pdf"
-                  onChange={(e) => setContractFile(e.target.files?.[0] || null)}
-                  className="w-full text-sm text-text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-gray-300 file:text-sm file:bg-white file:text-foreground file:cursor-pointer hover:file:bg-background-soft" />
-                {editService?.contract_path && !contractFile && (
-                  <p className="text-xs text-text-muted mt-1">Contract existent incarcat. Selecteaza un fisier nou pentru a-l inlocui.</p>
-                )}
-              </div>
+
+              {/* Supplier-only: loc la masa, contract */}
+              {form.type === "supplier" && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="loc_la_masa" checked={form.loc_la_masa}
+                      onChange={(e) => setForm({ ...form, loc_la_masa: e.target.checked })}
+                      className="w-4 h-4 accent-accent" />
+                    <label htmlFor="loc_la_masa" className="text-sm text-foreground">Loc la masa</label>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-text-muted mb-1">Contract (PDF)</label>
+                    <input type="file" accept=".pdf"
+                      onChange={(e) => setContractFile(e.target.files?.[0] || null)}
+                      className="w-full text-sm text-text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-gray-300 file:text-sm file:bg-white file:text-foreground file:cursor-pointer hover:file:bg-background-soft" />
+                    {editService?.contract_path && !contractFile && (
+                      <p className="text-xs text-text-muted mt-1">Contract existent incarcat. Selecteaza un fisier nou pentru a-l inlocui.</p>
+                    )}
+                  </div>
+                </>
+              )}
               </div>
               <div className="sticky bottom-0 p-5 pt-3 bg-white border-t border-border-light rounded-b-xl flex gap-3">
                 <button type="submit" disabled={saving}
@@ -395,9 +436,9 @@ export default function ServiciiPage() {
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                 </svg>
               </div>
-              <h3 className="serif-font text-lg text-text-heading mb-2">Sterge serviciul</h3>
+              <h3 className="serif-font text-lg text-text-heading mb-2">Sterge cheltuiala</h3>
               <p className="text-sm text-text-muted mb-1">
-                Esti sigur ca vrei sa stergi serviciul
+                Esti sigur ca vrei sa stergi cheltuiala
               </p>
               <p className="text-sm font-medium text-text-heading">
                 {deleteConfirm.nume}?
@@ -422,7 +463,7 @@ export default function ServiciiPage() {
         {paginated.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <p className="text-sm text-text-muted">
-              {search ? "Niciun rezultat gasit." : "Niciun serviciu adaugat."}
+              {search ? "Niciun rezultat gasit." : "Nicio cheltuiala adaugata."}
             </p>
           </div>
         ) : (
@@ -491,7 +532,7 @@ export default function ServiciiPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border-light bg-background-soft/50">
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Serviciu</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Cheltuiala</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Persoane</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Pret</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Avans</th>
@@ -572,7 +613,7 @@ export default function ServiciiPage() {
       {/* Footer: count + pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
         <p className="text-xs text-text-muted">
-          {filtered.length} din {services.length} servicii
+          {filtered.length} din {services.length} cheltuieli
         </p>
         <Pagination page={safePage} totalPages={totalPages} onPageChange={setPage} />
       </div>

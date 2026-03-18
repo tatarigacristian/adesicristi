@@ -40,11 +40,11 @@ export async function serviceRoutes(fastify: FastifyInstance) {
     }
 
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO services (nume, numar_persoane, pret, avans, pret_per_invitat, has_pret_per_invitat, contract_start, contract_end, loc_la_masa, link, contract_path, telefon)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO services (nume, numar_persoane, pret, avans, pret_per_invitat, has_pret_per_invitat, contract_start, contract_end, loc_la_masa, link, contract_path, telefon, type)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         fields.nume,
-        parseInt(fields.numar_persoane),
+        parseInt(fields.numar_persoane) || 0,
         fields.pret ? parseFloat(fields.pret) : 0,
         fields.avans ? parseFloat(fields.avans) : null,
         fields.pret_per_invitat ? parseFloat(fields.pret_per_invitat) : null,
@@ -55,6 +55,7 @@ export async function serviceRoutes(fastify: FastifyInstance) {
         fields.link || null,
         contractPath,
         fields.telefon || null,
+        fields.type === 'expense' ? 'expense' : 'supplier',
       ]
     );
 
@@ -105,6 +106,7 @@ export async function serviceRoutes(fastify: FastifyInstance) {
     if (fields.link !== undefined) { updateFields.push('link = ?'); updateValues.push(fields.link || null); }
     if (fields.telefon !== undefined) { updateFields.push('telefon = ?'); updateValues.push(fields.telefon || null); }
     if (contractPath !== undefined) { updateFields.push('contract_path = ?'); updateValues.push(contractPath); }
+    if (fields.type !== undefined) { updateFields.push('type = ?'); updateValues.push(fields.type === 'expense' ? 'expense' : 'supplier'); }
 
     if (updateFields.length > 0) {
       updateValues.push(id);

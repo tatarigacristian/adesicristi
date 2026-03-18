@@ -122,7 +122,7 @@ const NAV_ITEMS: { href: string; label: string; icon: React.ReactNode }[] = [
   },
   {
     href: "/admin/servicii",
-    label: "Servicii",
+    label: "Cheltuieli",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
