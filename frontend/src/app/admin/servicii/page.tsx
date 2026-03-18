@@ -523,7 +523,6 @@ export default function ServiciiPage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-                    <span className="text-foreground/60"><span className="text-text-muted">Persoane:</span> {s.numar_persoane}</span>
                     <span className="text-foreground/60"><span className="text-text-muted">Pret:</span> {s.has_pret_per_invitat && s.pret_per_invitat != null && totalInvitati > 0 ? `${formatPrice(Number(s.pret_per_invitat) * totalInvitati)} RON (${formatPrice(s.pret_per_invitat)}/inv)` : `${formatPrice(s.pret)} RON`}</span>
                     {s.avans != null && s.avans > 0 && (
                       <span className="text-foreground/60"><span className="text-text-muted">Avans:</span> {formatPrice(s.avans)} RON</span>
@@ -545,7 +544,6 @@ export default function ServiciiPage() {
                 <thead>
                   <tr className="border-b border-border-light bg-background-soft/50">
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Nume</th>
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Persoane</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Pret</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Avans</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Loc masa</th>
@@ -562,7 +560,6 @@ export default function ServiciiPage() {
                           <p className="text-xs text-foreground/50 mt-0.5">{s.telefon}</p>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-foreground/70">{s.numar_persoane}</td>
                       <td className="px-4 py-3 text-foreground/70">
                         {s.has_pret_per_invitat && s.pret_per_invitat != null && totalInvitati > 0
                           ? <>{formatPrice(Number(s.pret_per_invitat) * totalInvitati)} RON <span className="text-[10px] text-purple-600">({formatPrice(s.pret_per_invitat)}/inv)</span></>
