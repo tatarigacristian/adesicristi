@@ -187,6 +187,7 @@ export default function GuestsPage() {
                 {saveError.message}
               </div>
             )}
+              {/* Din partea */}
               <div>
                 <label className="block text-xs text-text-muted mb-1">Din partea</label>
                 <select value={form.din_partea} onChange={(e) => setForm({ ...form, din_partea: e.target.value as typeof form.din_partea })}
@@ -199,79 +200,90 @@ export default function GuestsPage() {
                   <option value="parintii_mireasa">Parintii miresei</option>
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs text-text-muted mb-1">Nume</label>
-                  <input type="text" value={form.nume} onChange={(e) => setForm({ ...form, nume: e.target.value })}
-                    required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+
+              {/* Checkboxes row: Plus one | Loc pe scaun | Plus copil */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="plus_one" checked={form.plus_one}
+                    onChange={(e) => setForm({ ...form, plus_one: e.target.checked, ...(!e.target.checked ? { partner_nume: "", partner_prenume: "" } : {}) })}
+                    className="w-4 h-4 accent-accent" />
+                  <label htmlFor="plus_one" className="text-sm text-foreground">Plus one</label>
                 </div>
-                <div>
-                  <label className="block text-xs text-text-muted mb-1">Prenume</label>
-                  <input type="text" value={form.prenume} onChange={(e) => setForm({ ...form, prenume: e.target.value })}
-                    required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="loc_pe_scaun" checked={form.loc_pe_scaun}
+                    onChange={(e) => setForm({ ...form, loc_pe_scaun: e.target.checked })}
+                    className="w-4 h-4 accent-accent" />
+                  <label htmlFor="loc_pe_scaun" className="text-sm text-foreground">Loc pe scaun</label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="has_children" checked={form.children.length > 0}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setForm({ ...form, children: [{ nume: "", prenume: "" }] });
+                      } else {
+                        setForm({ ...form, children: [] });
+                      }
+                    }}
+                    className="w-4 h-4 accent-accent" />
+                  <label htmlFor="has_children" className="text-sm text-foreground">Plus copil</label>
                 </div>
               </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Sex</label>
-                <select value={form.sex} onChange={(e) => setForm({ ...form, sex: e.target.value as "" | "M" | "F" })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors appearance-none">
-                  <option value="">Selecteaz&#259;</option>
-                  <option value="M">Masculin</option>
-                  <option value="F">Feminin</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Slug (unic)</label>
-                <input
-                  type="text"
-                  value={form.slug}
-                  onChange={(e) => {
-                    setForm({ ...form, slug: e.target.value });
-                    if (saveError?.field === "slug") setSaveError(null);
-                  }}
-                  placeholder="ex: ion-maria"
-                  className={`w-full rounded-lg px-3 py-2 text-sm bg-white focus:outline-none transition-colors ${
-                    saveError?.field === "slug"
-                      ? "border-2 border-red-500 focus:border-red-600"
-                      : "border border-gray-300 focus:border-accent"
-                  }`}
-                />
-                {saveError?.field === "slug" && (
-                  <p className="text-xs text-red-600 mt-1">Slug-ul trebuie sa fie unic pentru fiecare invitat.</p>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" id="plus_one" checked={form.plus_one}
-                  onChange={(e) => setForm({ ...form, plus_one: e.target.checked, ...(!e.target.checked ? { partner_nume: "", partner_prenume: "" } : {}) })}
-                  className="w-4 h-4 accent-accent" />
-                <label htmlFor="plus_one" className="text-sm text-foreground">Plus one</label>
-              </div>
-              {!!form.plus_one && (
-                <div className="grid grid-cols-2 gap-3 pl-6 border-l-2 border-accent/20">
-                  <div>
-                    <label className="block text-xs text-text-muted mb-1">Nume partener</label>
-                    <input type="text" value={form.partner_nume} onChange={(e) => setForm({ ...form, partner_nume: e.target.value })}
-                      required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+
+              {/* Names: plus_one checked = both partners, unchecked = single + sex */}
+              {form.plus_one ? (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">Nume</label>
+                      <input type="text" value={form.nume} onChange={(e) => setForm({ ...form, nume: e.target.value })}
+                        required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">Prenume</label>
+                      <input type="text" value={form.prenume} onChange={(e) => setForm({ ...form, prenume: e.target.value })}
+                        required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">Nume partener</label>
+                      <input type="text" value={form.partner_nume} onChange={(e) => setForm({ ...form, partner_nume: e.target.value })}
+                        required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">Prenume partener</label>
+                      <input type="text" value={form.partner_prenume} onChange={(e) => setForm({ ...form, partner_prenume: e.target.value })}
+                        required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">Nume</label>
+                      <input type="text" value={form.nume} onChange={(e) => setForm({ ...form, nume: e.target.value })}
+                        required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">Prenume</label>
+                      <input type="text" value={form.prenume} onChange={(e) => setForm({ ...form, prenume: e.target.value })}
+                        required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-xs text-text-muted mb-1">Prenume partener</label>
-                    <input type="text" value={form.partner_prenume} onChange={(e) => setForm({ ...form, partner_prenume: e.target.value })}
-                      required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    <label className="block text-xs text-text-muted mb-1">Sex</label>
+                    <select value={form.sex} onChange={(e) => setForm({ ...form, sex: e.target.value as "" | "M" | "F" })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors appearance-none">
+                      <option value="">Selecteaz&#259;</option>
+                      <option value="M">Masculin</option>
+                      <option value="F">Feminin</option>
+                    </select>
                   </div>
-                </div>
+                </>
               )}
-              <div className="flex items-center gap-2">
-                <input type="checkbox" id="has_children" checked={form.children.length > 0}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setForm({ ...form, children: [{ nume: "", prenume: "" }] });
-                    } else {
-                      setForm({ ...form, children: [] });
-                    }
-                  }}
-                  className="w-4 h-4 accent-accent" />
-                <label htmlFor="has_children" className="text-sm text-foreground">Plus copil</label>
-              </div>
+
+              {/* Children inputs */}
               {form.children.length > 0 && (
                 <div className="pl-6 border-l-2 border-accent/20 space-y-2">
                   {form.children.map((child, idx) => (
@@ -320,6 +332,30 @@ export default function GuestsPage() {
                   </button>
                 </div>
               )}
+
+              {/* Slug */}
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Slug (unic)</label>
+                <input
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => {
+                    setForm({ ...form, slug: e.target.value });
+                    if (saveError?.field === "slug") setSaveError(null);
+                  }}
+                  placeholder="ex: ion-maria"
+                  className={`w-full rounded-lg px-3 py-2 text-sm bg-white focus:outline-none transition-colors ${
+                    saveError?.field === "slug"
+                      ? "border-2 border-red-500 focus:border-red-600"
+                      : "border border-gray-300 focus:border-accent"
+                  }`}
+                />
+                {saveError?.field === "slug" && (
+                  <p className="text-xs text-red-600 mt-1">Slug-ul trebuie sa fie unic pentru fiecare invitat.</p>
+                )}
+              </div>
+
+              {/* Intro */}
               <div>
                 <label className="block text-xs text-text-muted mb-1">Intro scurt (card QR)</label>
                 <textarea value={form.intro_short} onChange={(e) => { if (e.target.value.length <= 200) setForm({ ...form, intro_short: e.target.value }); }}
@@ -334,6 +370,8 @@ export default function GuestsPage() {
                   rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
                 <p className="text-xs text-text-muted text-right mt-1">{form.intro_long.length}/400</p>
               </div>
+
+              {/* Cadou estimat */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs text-text-muted mb-1">Cadou estimat min (RON)</label>
@@ -349,13 +387,6 @@ export default function GuestsPage() {
                     min="0"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" id="loc_pe_scaun" checked={form.loc_pe_scaun}
-                  onChange={(e) => setForm({ ...form, loc_pe_scaun: e.target.checked })}
-                  className="w-4 h-4 accent-accent" />
-                <label htmlFor="loc_pe_scaun" className="text-sm text-foreground">Loc pe scaun</label>
-                <span className="text-xs text-text-muted">(debifat = doar dar, nu vine la nunta)</span>
               </div>
               </div>
               <div className="sticky bottom-0 p-5 pt-3 bg-white border-t border-border-light rounded-b-xl flex gap-3">
