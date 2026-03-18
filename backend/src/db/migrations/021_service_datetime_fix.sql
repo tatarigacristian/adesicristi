@@ -1,0 +1,2 @@
+ALTER TABLE services MODIFY COLUMN contract_start DATETIME NULL;
+ALTER TABLE services MODIFY COLUMN contract_end DATETIME NULL;
