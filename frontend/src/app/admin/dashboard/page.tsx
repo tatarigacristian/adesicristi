@@ -226,11 +226,20 @@ export default function DashboardPage() {
 
     // Quick stats
     const withPlusOne = mainGuests.filter((g) => g.plus_one).length;
+    const withChildren = mainGuests.filter((g) => g.children && g.children.length > 0).length;
+    const totalChildren = mainGuests.reduce((sum, g) => sum + (g.children ? g.children.length : 0), 0);
     const withSlug = mainGuests.filter((g) => g.slug).length;
     const servicesWithContract = services.filter(
       (s) => s.contract_path
     ).length;
     const servicesWithSeat = services.filter((s) => s.loc_la_masa).length;
+
+    // Din partea distribution
+    const dinPartea: Record<string, number> = {};
+    mainGuests.forEach((g) => {
+      const key = g.din_partea || "neatribuit";
+      dinPartea[key] = (dinPartea[key] || 0) + 1;
+    });
 
     // Days until wedding
     let daysUntilWedding: number | null = null;
@@ -268,6 +277,9 @@ export default function DashboardPage() {
       withSlug,
       servicesWithContract,
       servicesWithSeat,
+      withChildren,
+      totalChildren,
+      dinPartea,
       daysUntilWedding,
     };
   }, [
@@ -843,6 +855,7 @@ export default function DashboardPage() {
               const openedCount = invitationLogs.filter((l) => l.open_count > 0).length;
               const bars = [
                 { label: "Invitati cu +1", count: stats.withPlusOne, total: totalMain, color: "bg-blue-500" },
+                { label: "Invitati cu copii", count: stats.withChildren, total: totalMain, color: "bg-amber-500" },
                 { label: "Invitatii deschise", count: openedCount, total: totalWithSlug, color: "bg-purple-500" },
               ];
               return bars.map((b) => {
@@ -860,6 +873,12 @@ export default function DashboardPage() {
                 );
               });
             })()}
+            {stats.totalChildren > 0 && (
+              <div className="flex items-center justify-between pt-2 border-t border-border-light">
+                <span className="text-sm text-text-muted">Total copii</span>
+                <span className="text-sm font-medium text-text-heading">{stats.totalChildren}</span>
+              </div>
+            )}
             {stats.daysUntilWedding != null && (
               <div className="flex items-center justify-between pt-2 border-t border-border-light">
                 <span className="text-sm text-text-muted">Zile pana la nunta</span>
@@ -867,6 +886,48 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
+
+          {/* Din partea chart */}
+          {Object.keys(stats.dinPartea).length > 0 && (() => {
+            const labels: Record<string, string> = {
+              mire: "Mire", mireasa: "Mireasa", nasi: "Nasi",
+              parintii_mire: "Par. mire", parintii_mireasa: "Par. mireasa",
+              neatribuit: "Neatribuit",
+            };
+            const colors: Record<string, string> = {
+              mire: "bg-blue-500", mireasa: "bg-pink-500", nasi: "bg-purple-500",
+              parintii_mire: "bg-cyan-500", parintii_mireasa: "bg-rose-400",
+              neatribuit: "bg-gray-300",
+            };
+            const entries = Object.entries(stats.dinPartea).sort((a, b) => b[1] - a[1]);
+            const total = entries.reduce((sum, [, v]) => sum + v, 0);
+            return (
+              <div className="mt-5 pt-4 border-t border-border-light">
+                <h3 className="text-xs text-text-muted mb-3">Din partea</h3>
+                {/* Stacked bar */}
+                <div className="flex h-3 rounded-full overflow-hidden mb-3">
+                  {entries.map(([key, count]) => (
+                    <div
+                      key={key}
+                      className={`${colors[key] || "bg-gray-300"} transition-all duration-500`}
+                      style={{ width: `${(count / total) * 100}%` }}
+                      title={`${labels[key] || key}: ${count}`}
+                    />
+                  ))}
+                </div>
+                {/* Legend */}
+                <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                  {entries.map(([key, count]) => (
+                    <div key={key} className="flex items-center gap-1.5">
+                      <span className={`w-2.5 h-2.5 rounded-full ${colors[key] || "bg-gray-300"}`} />
+                      <span className="text-xs text-text-muted">{labels[key] || key}</span>
+                      <span className="text-xs font-medium text-text-heading">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
