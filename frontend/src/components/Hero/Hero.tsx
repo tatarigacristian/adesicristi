@@ -88,71 +88,65 @@ export default function Hero({
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Attach end-detection listeners to nested swiper; returns cleanup fn
-  const attachNestedEndListeners = useCallback((nested: SwiperType) => {
-    if (!parentSwiper) return () => {};
-
-    const onSlideChange = () => {
-      if (nested.isEnd) {
-        nested.disable();
-        nested.el.style.pointerEvents = "none";
-        parentSwiper.enable();
-      }
-    };
-    const onReachEnd = () => {
-      nested.disable();
-      nested.el.style.pointerEvents = "none";
-      parentSwiper.enable();
-    };
-
-    nested.on("slideChange", onSlideChange);
-    nested.on("reachEnd", onReachEnd);
-
-    return () => {
-      nested.off("slideChange", onSlideChange);
-      nested.off("reachEnd", onReachEnd);
-    };
-  }, [parentSwiper]);
-
-  // Track cleanup for nested listeners
-  const cleanupNestedRef = useRef<() => void>(() => {});
-
   // Nested Swiper callback — control parent based on nested position
   const onNestedSwiper = useCallback((nested: SwiperType) => {
     nestedRef.current = nested;
     if (!parentSwiper) return;
 
-    // Fully disable parent so it doesn't capture any touch/wheel events
+    // Disable parent while nested is active on Hero slide
     if (parentSwiper.activeIndex === 0) {
       parentSwiper.disable();
     }
 
-    // Ignore reachEnd during init — attach listeners after a delay
-    setTimeout(() => {
-      if (parentSwiper.activeIndex === 0 && nested.activeIndex === 0) {
-        parentSwiper.disable();
-      }
-      cleanupNestedRef.current = attachNestedEndListeners(nested);
-    }, 300);
-  }, [parentSwiper, attachNestedEndListeners]);
+    // Intercept touch/wheel on nested's last slide:
+    // - swipe forward (down) → hand off to parent
+    // - swipe backward (up) → stay in nested (go back to slide 0)
+    let touchStartY = 0;
 
-  // Re-block parent when navigating back to Hero slide
+    nested.el.addEventListener("touchstart", (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    nested.el.addEventListener("touchend", (e: TouchEvent) => {
+      if (!nested.isEnd) return;
+      const deltaY = touchStartY - e.changedTouches[0].clientY;
+      // Swipe forward (finger moves up, deltaY > 0) on last slide → go to parent
+      if (deltaY > 30) {
+        parentSwiper.enable();
+        parentSwiper.slideNext(800);
+      }
+    }, { passive: true });
+
+    // Also handle mousewheel for desktop testing
+    nested.el.addEventListener("wheel", (e: WheelEvent) => {
+      if (!nested.isEnd) return;
+      // Scroll down on last slide → go to parent
+      if (e.deltaY > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        parentSwiper.enable();
+        parentSwiper.slideNext(800);
+      }
+    }, { capture: true, passive: false });
+  }, [parentSwiper]);
+
+  // When parent leaves Hero (goes to slide 1+), reset nested to slide 0.
+  // When parent comes back to Hero, re-disable parent so nested controls scrolling.
   useEffect(() => {
     if (!parentSwiper || !isMobile) return;
 
     const onParentSlideChange = () => {
+      const nested = nestedRef.current;
+      if (!nested) return;
+
       if (parentSwiper.activeIndex === 0) {
-        const nested = nestedRef.current;
-        if (nested) {
-          // Clean up old listeners before re-attaching
-          cleanupNestedRef.current();
-          nested.slideTo(0, 0);
-          nested.enable();
-          nested.el.style.pointerEvents = "";
-          parentSwiper.disable();
-          // Re-attach fresh end-detection listeners
-          cleanupNestedRef.current = attachNestedEndListeners(nested);
-        }
+        // Coming back to Hero — re-enable nested, disable parent
+        nested.enable();
+        nested.el.style.pointerEvents = "";
+        parentSwiper.disable();
+      } else {
+        // Left Hero — reset nested to slide 0 for next visit
+        nested.slideTo(0, 0);
       }
     };
 
@@ -160,7 +154,7 @@ export default function Hero({
     return () => {
       parentSwiper.off("slideChange", onParentSlideChange);
     };
-  }, [parentSwiper, isMobile, attachNestedEndListeners]);
+  }, [parentSwiper, isMobile]);
 
   return (
     <section className="content-section bg-background relative overflow-hidden">
