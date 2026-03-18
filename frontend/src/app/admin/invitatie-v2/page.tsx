@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { toPng } from "html-to-image";
+import { safeToPng } from "@/utils/safari-png";
 import { getInvitationAudience, getInvitationLineUpper, getAlaturiLine, getAsteptamLineShort } from "@/utils/invitation-text";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
@@ -182,7 +182,7 @@ function InvitatieV2Content() {
 
   const generatePngBlob = useCallback(async (): Promise<Blob | null> => {
     if (!cardRef.current) return null;
-    const dataUrl = await toPng(cardRef.current, { pixelRatio: 3 });
+    const dataUrl = await safeToPng(cardRef.current);
     const res = await fetch(dataUrl);
     return res.blob();
   }, []);
@@ -190,7 +190,7 @@ function InvitatieV2Content() {
   const handleSavePng = useCallback(async () => {
     if (!cardRef.current || !guest) return;
     try {
-      const dataUrl = await toPng(cardRef.current, { pixelRatio: 3 });
+      const dataUrl = await safeToPng(cardRef.current);
       const link = document.createElement("a");
       link.download = `invitatie-v2-${guest.prenume}-${guest.nume}.png`;
       link.href = dataUrl;

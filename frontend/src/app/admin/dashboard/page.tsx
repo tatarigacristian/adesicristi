@@ -66,6 +66,7 @@ function DashboardContent() {
   const [subtractAvans, setSubtractAvans] = useState(false);
   const [showEuro, setShowEuro] = useState(false);
   const [subtractExtra, setSubtractExtra] = useState(false);
+  const [costSearch, setCostSearch] = useState("");
   const [logSearchState, setLogSearchState] = useState("");
   const [miniLogSearch, setMiniLogSearch] = useState("");
   const [logPage, setLogPage] = useState(1);
@@ -1107,11 +1108,22 @@ function DashboardContent() {
       {/* ── Cost per invitat ── */}
       {services.length > 0 && stats.totalInvited > 0 && (
         <div className="family-card">
-          <h3 className="text-xs uppercase tracking-wide text-text-muted mb-4">
-            Cost per invitat
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs uppercase tracking-wide text-text-muted">
+              Cost per invitat
+            </h3>
+            <input
+              type="text"
+              value={costSearch}
+              onChange={(e) => setCostSearch(e.target.value)}
+              placeholder="Cauta cost..."
+              className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs bg-white focus:outline-none focus:border-accent transition-colors w-40"
+            />
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-            {(subtractExtra ? services.filter((s) => s.type !== "expense") : services).map((s) => {
+            {(subtractExtra ? services.filter((s) => s.type !== "expense") : services)
+              .filter((s) => !costSearch.trim() || s.nume.toLowerCase().includes(costSearch.toLowerCase()))
+              .map((s) => {
               const hasPPI = Boolean(s.has_pret_per_invitat) && s.pret_per_invitat != null;
               const pret = hasPPI ? Number(s.pret_per_invitat) * stats.totalInvited : Number(s.pret);
               const avans = Number(s.avans || 0);

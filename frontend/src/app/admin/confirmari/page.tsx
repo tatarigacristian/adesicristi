@@ -13,6 +13,7 @@ export default function ConfirmariPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<RsvpFilter>("all");
   const [vegetarianFilter, setVegetarianFilter] = useState<BoolFilter>("all");
+  const [childrenMenuFilter, setChildrenMenuFilter] = useState<BoolFilter>("all");
   const [transportFilter, setTransportFilter] = useState<BoolFilter>("all");
   const [page, setPage] = useState(1);
   const [viewEntry, setViewEntry] = useState<RsvpEntry | null>(null);
@@ -66,22 +67,26 @@ export default function ConfirmariPage() {
     if (vegetarianFilter === "yes") result = result.filter((r) => r.vegetarian_menu);
     if (vegetarianFilter === "no") result = result.filter((r) => !r.vegetarian_menu);
 
+    if (childrenMenuFilter === "yes") result = result.filter((r) => r.children_menu);
+    if (childrenMenuFilter === "no") result = result.filter((r) => !r.children_menu);
+
     if (transportFilter === "yes") result = result.filter((r) => r.needs_transport);
     if (transportFilter === "no") result = result.filter((r) => !r.needs_transport);
 
     return result;
-  }, [rsvps, search, filter, vegetarianFilter, transportFilter]);
+  }, [rsvps, search, filter, vegetarianFilter, childrenMenuFilter, transportFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
-  useEffect(() => { setPage(1); }, [search, filter, vegetarianFilter, transportFilter]);
+  useEffect(() => { setPage(1); }, [search, filter, vegetarianFilter, childrenMenuFilter, transportFilter]);
 
   function resetFilters() {
     setSearch("");
     setFilter("all");
     setVegetarianFilter("all");
+    setChildrenMenuFilter("all");
     setTransportFilter("all");
     setPage(1);
   }
@@ -108,56 +113,72 @@ export default function ConfirmariPage() {
 
       {/* Search & Filters */}
       <div className="flex flex-col gap-3 mb-4">
-        <div className="flex-1">
-          <SearchInput value={search} onChange={setSearch} placeholder="Cauta dupa nume, partener sau mesaj..." />
-        </div>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:items-center">
-          <div className="flex items-center gap-2">
-            <label htmlFor="filter-status" className="text-xs text-text-muted whitespace-nowrap">Status</label>
-            <select
-              id="filter-status"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value as RsvpFilter)}
-              className="border border-border rounded-lg px-3 py-2 text-sm bg-white text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer min-w-[140px]"
-            >
-              <option value="all">Nesetat</option>
-              <option value="attending">Participa</option>
-              <option value="not_attending">Nu participa</option>
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <label htmlFor="filter-vegetarian" className="text-xs text-text-muted whitespace-nowrap">Meniu vegetarian</label>
-            <select
-              id="filter-vegetarian"
-              value={vegetarianFilter}
-              onChange={(e) => setVegetarianFilter(e.target.value as BoolFilter)}
-              className="border border-border rounded-lg px-3 py-2 text-sm bg-white text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer min-w-[120px]"
-            >
-              <option value="all">Nesetat</option>
-              <option value="yes">Da</option>
-              <option value="no">Nu</option>
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <label htmlFor="filter-transport" className="text-xs text-text-muted whitespace-nowrap">Transport</label>
-            <select
-              id="filter-transport"
-              value={transportFilter}
-              onChange={(e) => setTransportFilter(e.target.value as BoolFilter)}
-              className="border border-border rounded-lg px-3 py-2 text-sm bg-white text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer min-w-[120px]"
-            >
-              <option value="all">Nesetat</option>
-              <option value="yes">Da</option>
-              <option value="no">Nu</option>
-            </select>
-          </div>
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="px-3 py-2 text-sm rounded-lg border border-border text-text-muted hover:text-text-heading hover:bg-background-soft/50 hover:border-accent transition-colors cursor-pointer whitespace-nowrap"
-          >
-            Reseteaza filtre
-          </button>
+        <SearchInput value={search} onChange={setSearch} placeholder="Cauta dupa nume, partener sau mesaj..." />
+        <div className="flex flex-wrap items-center gap-1">
+          {/* Status */}
+          {([
+            { value: "all" as const, label: "Toti" },
+            { value: "attending" as const, label: "Da" },
+            { value: "not_attending" as const, label: "Nu" },
+          ]).map((opt) => (
+            <button key={opt.value} type="button" onClick={() => setFilter(opt.value)}
+              className={`px-2 py-1 rounded-full text-[10px] font-medium transition-colors cursor-pointer ${
+                filter === opt.value ? "bg-button text-white" : "bg-background-soft text-text-muted hover:text-text-heading"
+              }`}>
+              {opt.label}
+            </button>
+          ))}
+          <span className="w-px h-4 bg-border-light mx-0.5" />
+          {/* Vegetarian */}
+          {([
+            { value: "all" as const, label: "Veg." },
+            { value: "yes" as const, label: "Da" },
+            { value: "no" as const, label: "Nu" },
+          ]).map((opt) => (
+            <button key={`veg-${opt.value}`} type="button" onClick={() => setVegetarianFilter(opt.value)}
+              className={`px-2 py-1 rounded-full text-[10px] font-medium transition-colors cursor-pointer ${
+                vegetarianFilter === opt.value ? "bg-green-600 text-white" : "bg-background-soft text-text-muted hover:text-text-heading"
+              }`}>
+              {opt.label}
+            </button>
+          ))}
+          <span className="w-px h-4 bg-border-light mx-0.5" />
+          {/* Copil */}
+          {([
+            { value: "all" as const, label: "Copil" },
+            { value: "yes" as const, label: "Da" },
+            { value: "no" as const, label: "Nu" },
+          ]).map((opt) => (
+            <button key={`child-${opt.value}`} type="button" onClick={() => setChildrenMenuFilter(opt.value)}
+              className={`px-2 py-1 rounded-full text-[10px] font-medium transition-colors cursor-pointer ${
+                childrenMenuFilter === opt.value ? "bg-purple-600 text-white" : "bg-background-soft text-text-muted hover:text-text-heading"
+              }`}>
+              {opt.label}
+            </button>
+          ))}
+          <span className="w-px h-4 bg-border-light mx-0.5" />
+          {/* Transport */}
+          {([
+            { value: "all" as const, label: "Transp." },
+            { value: "yes" as const, label: "Da" },
+            { value: "no" as const, label: "Nu" },
+          ]).map((opt) => (
+            <button key={`tr-${opt.value}`} type="button" onClick={() => setTransportFilter(opt.value)}
+              className={`px-2 py-1 rounded-full text-[10px] font-medium transition-colors cursor-pointer ${
+                transportFilter === opt.value ? "bg-blue-600 text-white" : "bg-background-soft text-text-muted hover:text-text-heading"
+              }`}>
+              {opt.label}
+            </button>
+          ))}
+          {(filter !== "all" || vegetarianFilter !== "all" || childrenMenuFilter !== "all" || transportFilter !== "all") && (
+            <>
+              <span className="w-px h-4 bg-border-light mx-0.5" />
+              <button type="button" onClick={resetFilters}
+                className="px-2 py-1 rounded-full text-[10px] text-text-muted hover:text-text-heading bg-background-soft hover:bg-border-light transition-colors cursor-pointer">
+                Reset
+              </button>
+            </>
+          )}
         </div>
       </div>
 

@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import QRCode from "qrcode";
-import { toPng } from "html-to-image";
+import { safeToPng } from "@/utils/safari-png";
 import { getInvitationAudience, getGreetingShort, getDefaultIntroShort } from "@/utils/invitation-text";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
@@ -583,7 +583,7 @@ function CardPageContent() {
 
   const generatePngBlob = useCallback(async (): Promise<Blob | null> => {
     if (!printRef.current) return null;
-    const dataUrl = await toPng(printRef.current, { pixelRatio: 3 });
+    const dataUrl = await safeToPng(printRef.current);
     const res = await fetch(dataUrl);
     return res.blob();
   }, []);
@@ -591,7 +591,7 @@ function CardPageContent() {
   const handleSavePng = useCallback(async () => {
     if (!printRef.current || !guest) return;
     try {
-      const dataUrl = await toPng(printRef.current, { pixelRatio: 3 });
+      const dataUrl = await safeToPng(printRef.current);
       const link = document.createElement("a");
       link.download = `card-${guest.prenume}-${guest.nume}.png`;
       link.href = dataUrl;
