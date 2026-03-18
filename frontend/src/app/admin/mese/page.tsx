@@ -45,6 +45,8 @@ export default function MesePage() {
   const [meseTab, setMeseTab] = useState<"seteaza" | "verifica">("seteaza");
   const [assigning, setAssigning] = useState<number | null>(null);
   const [assigningType, setAssigningType] = useState<"guest" | "service">("guest");
+  const [addToTable, setAddToTable] = useState<number | null>(null);
+  const [addToTableSearch, setAddToTableSearch] = useState("");
 
   const fetchAll = useCallback(async () => {
     const [settingsRes, guestsRes, assignRes, rsvpRes, servicesRes] = await Promise.all([
@@ -339,6 +341,61 @@ export default function MesePage() {
         </div>
       )}
 
+      {/* Add guest to specific table modal */}
+      {addToTable && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl w-full max-w-xs max-h-[70vh] flex flex-col">
+            <div className="p-5 pb-3 text-center">
+              <h3 className="text-sm font-medium text-text-heading mb-1">Adauga invitat la Masa {addToTable}</h3>
+            </div>
+            <div className="px-5 pb-2">
+              <SearchInput value={addToTableSearch} onChange={setAddToTableSearch} placeholder="Cauta invitat..." />
+            </div>
+            <div className="px-5 overflow-y-auto flex-1">
+              {(() => {
+                const q = addToTableSearch.toLowerCase().trim();
+                const filtered = unassigned.filter((g) => {
+                  if (!q) return true;
+                  const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
+                  return g.nume.toLowerCase().includes(q) || g.prenume.toLowerCase().includes(q) ||
+                    (partner && (partner.nume.toLowerCase().includes(q) || partner.prenume.toLowerCase().includes(q)));
+                });
+                return filtered.length === 0 ? (
+                  <p className="text-xs text-text-muted py-4 text-center">
+                    {q ? "Niciun rezultat" : "Toti sunt asezati!"}
+                  </p>
+                ) : (
+                  <div className="space-y-1">
+                    {filtered.map((g) => {
+                      const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
+                      const displayName = partner
+                        ? `${g.prenume} & ${partner.prenume} ${g.nume}${g.nume !== partner.nume ? ` / ${partner.nume}` : ""}`
+                        : `${g.prenume} ${g.nume}`;
+                      return (
+                        <button
+                          key={g.id}
+                          onClick={() => { assignGuest(g.id, addToTable); setAddToTable(null); }}
+                          className="w-full text-left px-3 py-2 rounded-lg hover:bg-background-soft transition-colors cursor-pointer flex items-center justify-between gap-2"
+                        >
+                          <span className="text-sm text-text-heading">{displayName}</span>
+                          <span className="text-xs text-text-muted shrink-0">{g.plus_one ? "2p" : "1p"}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+            <div className="p-5 pt-3 border-t border-border-light rounded-b-xl">
+              <button onClick={() => setAddToTable(null)}
+                className="w-full py-2.5 border border-border rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer">
+                Anuleaza
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Unassigned guests panel */}
       <div className="family-card mb-6">
         <h3 className="text-sm font-medium text-text-heading mb-3">Invitati neasezati ({unassigned.length})</h3>
@@ -487,6 +544,15 @@ export default function MesePage() {
                   <p className="text-[10px] text-text-muted mt-1">{settings.min_persoane_masa}–{settings.max_persoane_masa} persoane</p>
                 </div>
               )}
+              <button
+                onClick={() => { setAddToTable(table.number); setAddToTableSearch(""); }}
+                className="w-full mt-2 py-1.5 rounded-lg border border-dashed border-border-light text-xs text-text-muted hover:text-button hover:border-button/40 transition-colors cursor-pointer flex items-center justify-center gap-1"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Adauga invitat
+              </button>
             </div>
           );
         };
