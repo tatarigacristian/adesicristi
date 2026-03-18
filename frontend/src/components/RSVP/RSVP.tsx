@@ -315,7 +315,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     return (
       <section id="rsvp" className="content-section bg-background">
         <div className="section-header">
-          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">Confirmare</h2>
+          <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">Confirmare</h2>
           <SmallFlourish className="mx-auto" />
         </div>
         <div className="section-content">
@@ -331,7 +331,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     return (
       <section id="rsvp" className="content-section bg-background">
         <div className="section-header">
-          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+          <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">
             Confirmare
           </h2>
           <SmallFlourish className="mx-auto" />
@@ -418,7 +418,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
     >
       {/* Header */}
       <div className="section-header">
-        <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+        <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">
           Confirmare
         </h2>
         <SmallFlourish className="mx-auto mb-2 sm:mb-3" />

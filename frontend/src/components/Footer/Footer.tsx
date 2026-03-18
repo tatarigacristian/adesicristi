@@ -13,7 +13,7 @@ export default function Footer({ settings }: { settings?: WeddingSettings | null
     <section className="content-section bg-background-soft">
       {/* Header */}
       <div className="section-header">
-        <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
+        <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">
           Vă mulțumim din suflet
         </h2>
         <SmallFlourish className="mx-auto" />

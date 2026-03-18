@@ -84,7 +84,7 @@ function getAppleMapsUrl(googleMapsUrl: string) {
   return `https://maps.apple.com/?daddr=${encodeURIComponent(googleMapsUrl)}`;
 }
 
-/* Desktop card with image */
+/* Desktop card — minimalist row, no image */
 function LocationCardDesktop({
   loc,
   onMapClick,
@@ -93,42 +93,33 @@ function LocationCardDesktop({
   onMapClick: (loc: LocationCard) => void;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-accent bg-background">
-      <img
-        src={loc.image}
-        alt={loc.title}
-        className={`w-full h-[298px] md:h-[330px] object-cover ${loc.imagePosition === "top" ? "object-top" : "object-center"}`}
-      />
-      <SectionCorners size="w-[25px] h-[25px]" offset={10} />
-      <div className="p-5 text-center">
-        <h3 className="serif-font text-lg text-text-heading mb-1">
+    <div className="flex items-center gap-8 py-6">
+      <div className="w-[44px] h-[44px] rounded-full border border-button/30 flex items-center justify-center text-button flex-shrink-0">
+        <EventIcon type={loc.title} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="serif-font text-xl text-text-heading leading-tight">
           {loc.title}
         </h3>
-        <p className="text-[0.7rem] text-text-muted flex items-center justify-center gap-1.5 mb-0.5">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button/60">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          {loc.date}{loc.time ? `, ${loc.time}` : ""}
+        <p className="text-[0.65rem] tracking-[0.15em] uppercase text-button mt-1">
+          {loc.date}{loc.time ? ` · ${loc.time}` : ""}
         </p>
-        <p className="text-[0.7rem] text-foreground mb-2 leading-snug">
+        <p className="text-[0.7rem] text-text-muted mt-0.5 leading-snug">
           {loc.address}
         </p>
-        {loc.googleMapsUrl && (
-          <button
-            onClick={() => onMapClick(loc)}
-            className="btn-glass !py-1.5 !px-3 text-xs cursor-pointer"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            Vezi pe hartă
-          </button>
-        )}
       </div>
+      {loc.googleMapsUrl && (
+        <button
+          onClick={() => onMapClick(loc)}
+          className="text-[0.6rem] tracking-[0.15em] uppercase text-button hover:text-button-hover transition-colors cursor-pointer flex items-center gap-1.5 flex-shrink-0"
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          Vezi pe hartă
+        </button>
+      )}
     </div>
   );
 }
@@ -189,8 +180,8 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
       >
         {/* Header */}
         <div className="section-header">
-          <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2">
-            Detaliile evenimentului
+          <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading mb-2 uppercase">
+            Agenda
           </h2>
           <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
           <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
@@ -239,8 +230,8 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
             </div>
           </div>
 
-          {/* Desktop grid */}
-          <div className="hidden md:grid grid-cols-3 gap-5 w-full">
+          {/* Desktop list */}
+          <div className="hidden md:flex flex-col justify-center w-full max-w-2xl mx-auto divide-y divide-border-light">
             {locations.map((loc) => (
               <LocationCardDesktop
                 key={loc.title}

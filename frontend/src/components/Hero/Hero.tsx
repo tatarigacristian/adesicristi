@@ -266,7 +266,7 @@ export default function Hero({
       </div>
 
       {/* Footer — outside the centered content container */}
-      <div className={`hidden sm:block transition-all duration-1000 delay-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+      <div className={`hidden sm:block w-full transition-all duration-1000 delay-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
         <SectionFooterNav settings={settings} />
       </div>
     </section>

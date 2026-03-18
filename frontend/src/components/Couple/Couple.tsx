@@ -108,7 +108,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
     >
       {/* Header */}
       <div className="section-header">
-        <h2 className="serif-font text-2xl md:text-3xl font-bold text-text-heading mb-2 sm:mb-3">Noi doi</h2>
+        <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2 sm:mb-3">Noi doi</h2>
         <SmallFlourish className="mx-auto mb-3" />
       </div>
 
@@ -117,10 +117,10 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
         <div className="flex flex-col lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14 w-full">
 
           {/* Desktop: full vertical timeline (left side) */}
-          <div className="hidden lg:flex w-full lg:w-1/2 justify-center lg:justify-end lg:self-center">
-            <div className="relative pl-8">
+          <div className="hidden lg:flex w-full lg:w-1/2 justify-center lg:justify-end lg:self-stretch">
+            <div className="relative pl-8 flex flex-col h-full">
               <div className="absolute left-[11px] top-2 bottom-2 w-px bg-button/20" />
-              <div className="flex flex-col gap-8">
+              <div className="flex flex-col justify-between h-full">
                 {timeline.map((item, i) => {
                   const isLast = i === timeline.length - 1;
                   return (

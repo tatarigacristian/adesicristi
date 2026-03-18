@@ -30,12 +30,12 @@ export default function SectionFooterNav({
   return (
     <div className={`section-footer pb-2 sm:pb-0 ${className}`}>
       {/* Contact + scroll row */}
-      <div className="flex items-center justify-center mx-auto">
-        {/* Left: Mireasa — mobile only */}
+      <div className="flex items-center justify-center w-full mx-auto">
+        {/* Left: Mireasa */}
         {settings?.telefon_mireasa && (
           <a
             href={`tel:${settings.telefon_mireasa.replace(/\s/g, "")}`}
-            className="w-[150px] sm:w-[120px] flex flex-col items-center gap-0.5 group"
+            className="flex-1 flex flex-col items-center gap-0.5 group"
           >
             <span className="text-[0.55rem] text-text-muted">{couple.mireasa}</span>
             <span className="text-[0.6rem] text-button group-hover:text-button-hover transition-colors">
@@ -45,15 +45,15 @@ export default function SectionFooterNav({
         )}
 
         {/* Center: scroll indicator */}
-        <div className="flex flex-col items-center px-4 sm:px-0">
+        <div className="flex flex-col items-center shrink-0 px-4 sm:px-0">
           <ScrollIndicator />
         </div>
 
-        {/* Right: Mire — mobile only */}
+        {/* Right: Mire */}
         {settings?.telefon_mire && (
           <a
             href={`tel:${settings.telefon_mire.replace(/\s/g, "")}`}
-            className="w-[150px] sm:w-[120px] flex flex-col items-center gap-0.5 group"
+            className="flex-1 flex flex-col items-center gap-0.5 group"
           >
             <span className="text-[0.55rem] text-text-muted">{couple.mire}</span>
             <span className="text-[0.6rem] text-button group-hover:text-button-hover transition-colors">

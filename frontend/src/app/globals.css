@@ -23,6 +23,10 @@
 html {
   font-size: 18px;
   scroll-behavior: auto;
+
+  @media (min-width: 1024px) {
+    font-size: 21px;
+  }
 }
 
 body {
