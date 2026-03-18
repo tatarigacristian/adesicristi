@@ -11,6 +11,7 @@ interface Service {
   pret: number;
   avans: number | null;
   pret_per_invitat: number | null;
+  has_pret_per_invitat: boolean;
   loc_la_masa: boolean;
   contract_path: string | null;
 }
@@ -182,7 +183,7 @@ export default function DashboardPage() {
 
     const totalServiceCost = services.reduce(
       (sum, s) => {
-        if (s.pret_per_invitat != null) {
+        if (s.has_pret_per_invitat && s.pret_per_invitat != null) {
           return sum + Number(s.pret_per_invitat) * totalInvited;
         }
         return sum + Number(s.pret);
@@ -970,7 +971,7 @@ export default function DashboardPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
             {services.map((s) => {
-              const hasPPI = s.pret_per_invitat != null;
+              const hasPPI = Boolean(s.has_pret_per_invitat) && s.pret_per_invitat != null;
               const pret = hasPPI ? Number(s.pret_per_invitat) * stats.totalInvited : Number(s.pret);
               const avans = Number(s.avans || 0);
               const suma = subtractAvans ? pret - avans : pret;

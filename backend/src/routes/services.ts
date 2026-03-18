@@ -40,14 +40,15 @@ export async function serviceRoutes(fastify: FastifyInstance) {
     }
 
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO services (nume, numar_persoane, pret, avans, pret_per_invitat, contract_start, contract_end, loc_la_masa, link, contract_path, telefon)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO services (nume, numar_persoane, pret, avans, pret_per_invitat, has_pret_per_invitat, contract_start, contract_end, loc_la_masa, link, contract_path, telefon)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         fields.nume,
         parseInt(fields.numar_persoane),
-        parseFloat(fields.pret),
+        fields.pret ? parseFloat(fields.pret) : 0,
         fields.avans ? parseFloat(fields.avans) : null,
         fields.pret_per_invitat ? parseFloat(fields.pret_per_invitat) : null,
+        fields.has_pret_per_invitat === 'true' || fields.has_pret_per_invitat === '1' ? 1 : 0,
         fields.contract_start || null,
         fields.contract_end || null,
         fields.loc_la_masa === 'true' || fields.loc_la_masa === '1' ? 1 : 0,
@@ -94,9 +95,10 @@ export async function serviceRoutes(fastify: FastifyInstance) {
 
     if (fields.nume !== undefined) { updateFields.push('nume = ?'); updateValues.push(fields.nume); }
     if (fields.numar_persoane !== undefined) { updateFields.push('numar_persoane = ?'); updateValues.push(parseInt(fields.numar_persoane)); }
-    if (fields.pret !== undefined) { updateFields.push('pret = ?'); updateValues.push(parseFloat(fields.pret)); }
+    if (fields.pret !== undefined) { updateFields.push('pret = ?'); updateValues.push(fields.pret ? parseFloat(fields.pret) : 0); }
     if (fields.avans !== undefined) { updateFields.push('avans = ?'); updateValues.push(fields.avans ? parseFloat(fields.avans) : null); }
     if (fields.pret_per_invitat !== undefined) { updateFields.push('pret_per_invitat = ?'); updateValues.push(fields.pret_per_invitat ? parseFloat(fields.pret_per_invitat) : null); }
+    if (fields.has_pret_per_invitat !== undefined) { updateFields.push('has_pret_per_invitat = ?'); updateValues.push(fields.has_pret_per_invitat === 'true' || fields.has_pret_per_invitat === '1' ? 1 : 0); }
     if (fields.contract_start !== undefined) { updateFields.push('contract_start = ?'); updateValues.push(fields.contract_start || null); }
     if (fields.contract_end !== undefined) { updateFields.push('contract_end = ?'); updateValues.push(fields.contract_end || null); }
     if (fields.loc_la_masa !== undefined) { updateFields.push('loc_la_masa = ?'); updateValues.push(fields.loc_la_masa === 'true' || fields.loc_la_masa === '1' ? 1 : 0); }

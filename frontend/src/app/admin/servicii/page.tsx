@@ -11,6 +11,7 @@ interface Service {
   pret: number;
   avans: number | null;
   pret_per_invitat: number | null;
+  has_pret_per_invitat: boolean;
   contract_start: string | null;
   contract_end: string | null;
   loc_la_masa: boolean;
@@ -56,6 +57,7 @@ function formatHours(start: string | null, end: string | null) {
 export default function ServiciiPage() {
   const { token, onUnauth } = useAdminAuth();
   const [services, setServices] = useState<Service[]>([]);
+  const [totalInvitati, setTotalInvitati] = useState(0);
   const [weddingDate, setWeddingDate] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editService, setEditService] = useState<Service | null>(null);
@@ -82,15 +84,22 @@ export default function ServiciiPage() {
   }
 
   async function fetchServices() {
-    const [servicesRes, settingsRes] = await Promise.all([
+    const [servicesRes, settingsRes, guestsRes] = await Promise.all([
       fetch(`${API_URL}/api/admin/services`, { headers: authHeaders(token) }),
       fetch(`${API_URL}/api/wedding-settings`),
+      fetch(`${API_URL}/api/admin/guests`, { headers: authHeaders(token) }),
     ]);
     if (servicesRes.status === 401) { onUnauth(); return; }
     setServices(await servicesRes.json());
     if (settingsRes.ok) {
       const s = await settingsRes.json();
       setWeddingDate(s.ceremonie_data || null);
+    }
+    if (guestsRes.ok) {
+      const allGuests: { id: number; plus_one: boolean; partner_id: number | null }[] = await guestsRes.json();
+      const partnerIds = new Set(allGuests.filter((g) => g.partner_id && g.plus_one).map((g) => g.partner_id));
+      const mainGuests = allGuests.filter((g) => !partnerIds.has(g.id));
+      setTotalInvitati(mainGuests.reduce((sum, g) => sum + (g.plus_one ? 2 : 1), 0));
     }
   }
 
@@ -111,7 +120,12 @@ export default function ServiciiPage() {
 
   useEffect(() => { setPage(1); }, [search]);
 
-  const totalCost = useMemo(() => services.reduce((sum, s) => sum + Number(s.pret), 0), [services]);
+  const totalCost = useMemo(() => services.reduce((sum, s) => {
+    if (s.has_pret_per_invitat && s.pret_per_invitat != null && totalInvitati > 0) {
+      return sum + Number(s.pret_per_invitat) * totalInvitati;
+    }
+    return sum + Number(s.pret);
+  }, 0), [services, totalInvitati]);
   const totalAvans = useMemo(() => services.reduce((sum, s) => sum + Number(s.avans || 0), 0), [services]);
 
   function openNew() {
@@ -126,10 +140,12 @@ export default function ServiciiPage() {
     setForm({
       nume: s.nume,
       numar_persoane: String(s.numar_persoane),
-      pret: String(s.pret),
-      avans: s.avans != null ? String(s.avans) : "",
-      pret_per_invitat: s.pret_per_invitat != null ? String(s.pret_per_invitat) : "",
-      has_pret_per_invitat: s.pret_per_invitat != null,
+      pret: Boolean(s.has_pret_per_invitat) && s.pret_per_invitat != null && totalInvitati > 0
+        ? String(Math.round(Number(s.pret_per_invitat) * totalInvitati))
+        : String(Math.round(Number(s.pret))),
+      avans: s.avans != null ? String(Math.round(Number(s.avans))) : "",
+      pret_per_invitat: s.pret_per_invitat != null ? String(Math.round(Number(s.pret_per_invitat))) : "",
+      has_pret_per_invitat: Boolean(s.has_pret_per_invitat),
       contract_start: s.contract_start ? s.contract_start.replace(" ", "T").slice(0, 16) : getDefaultStart(),
       contract_end: s.contract_end ? s.contract_end.replace(" ", "T").slice(0, 16) : getDefaultEnd(),
       numar_ore: computeHoursFromDates(
@@ -157,6 +173,7 @@ export default function ServiciiPage() {
     fd.append("pret", form.pret);
     fd.append("avans", form.avans);
     fd.append("pret_per_invitat", form.has_pret_per_invitat ? form.pret_per_invitat : "");
+    fd.append("has_pret_per_invitat", String(form.has_pret_per_invitat));
     fd.append("contract_start", form.contract_start);
     fd.append("contract_end", form.contract_end);
     fd.append("loc_la_masa", String(form.loc_la_masa));
@@ -226,27 +243,46 @@ export default function ServiciiPage() {
                 </div>
                 <div>
                   <label className={`block text-xs mb-1 ${form.has_pret_per_invitat ? "text-text-muted/40" : "text-text-muted"}`}>Pret fix (RON)</label>
-                  <input type="number" value={form.pret} onChange={(e) => setForm({ ...form, pret: e.target.value })}
+                  <input type="number" value={form.pret}
+                    onChange={(e) => setForm({ ...form, pret: e.target.value })}
                     required={!form.has_pret_per_invitat} disabled={form.has_pret_per_invitat}
-                    min="0" className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors ${form.has_pret_per_invitat ? "opacity-40 cursor-not-allowed" : ""}`} />
+                    min="0" step="1" className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors ${form.has_pret_per_invitat ? "opacity-40 cursor-not-allowed" : ""}`} />
+                  {form.has_pret_per_invitat && form.pret && (
+                    <p className="text-[10px] text-text-muted mt-0.5">{totalInvitati} invitati × {form.pret_per_invitat || 0} RON</p>
+                  )}
                 </div>
               </div>
               <div>
                 <label className="block text-xs text-text-muted mb-1">Avans (RON)</label>
                 <input type="number" value={form.avans} onChange={(e) => setForm({ ...form, avans: e.target.value })}
-                  min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  min="0" step="1" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <input type="checkbox" id="has_pret_per_invitat" checked={form.has_pret_per_invitat}
-                    onChange={(e) => setForm({ ...form, has_pret_per_invitat: e.target.checked, ...(!e.target.checked ? { pret_per_invitat: "" } : { pret: "" }) })}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      if (checked) {
+                        setForm({ ...form, has_pret_per_invitat: true, pret: totalInvitati > 0 && form.pret_per_invitat ? String(Math.round(Number(form.pret_per_invitat) * totalInvitati)) : "" });
+                      } else {
+                        setForm({ ...form, has_pret_per_invitat: false, pret_per_invitat: "" });
+                      }
+                    }}
                     className="w-3.5 h-3.5 accent-accent cursor-pointer" />
                   <label htmlFor="has_pret_per_invitat" className="text-xs text-text-muted cursor-pointer">Pret per invitat (RON)</label>
                 </div>
                 {form.has_pret_per_invitat && (
-                  <input type="number" value={form.pret_per_invitat} onChange={(e) => setForm({ ...form, pret_per_invitat: e.target.value })}
-                    required min="0" placeholder="ex: 200"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  <>
+                    <input type="number" value={form.pret_per_invitat}
+                      onChange={(e) => {
+                        const ppi = e.target.value;
+                        const computed = ppi && totalInvitati > 0 ? String(Math.round(Number(ppi) * totalInvitati)) : "";
+                        setForm({ ...form, pret_per_invitat: ppi, pret: computed });
+                      }}
+                      required min="0" step="1" placeholder="ex: 200"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    <p className="text-[10px] text-text-muted mt-0.5">{totalInvitati} invitati din baza de date</p>
+                  </>
                 )}
               </div>
               <div>
@@ -429,7 +465,7 @@ export default function ServiciiPage() {
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
                     <span className="text-foreground/60"><span className="text-text-muted">Persoane:</span> {s.numar_persoane}</span>
-                    <span className="text-foreground/60"><span className="text-text-muted">Pret:</span> {formatPrice(s.pret)} RON</span>
+                    <span className="text-foreground/60"><span className="text-text-muted">Pret:</span> {s.has_pret_per_invitat && s.pret_per_invitat != null && totalInvitati > 0 ? `${formatPrice(Number(s.pret_per_invitat) * totalInvitati)} RON (${formatPrice(s.pret_per_invitat)}/inv)` : `${formatPrice(s.pret)} RON`}</span>
                     {s.avans != null && s.avans > 0 && (
                       <span className="text-foreground/60"><span className="text-text-muted">Avans:</span> {formatPrice(s.avans)} RON</span>
                     )}
@@ -468,7 +504,11 @@ export default function ServiciiPage() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-foreground/70">{s.numar_persoane}</td>
-                      <td className="px-4 py-3 text-foreground/70">{formatPrice(s.pret)} RON</td>
+                      <td className="px-4 py-3 text-foreground/70">
+                        {s.has_pret_per_invitat && s.pret_per_invitat != null && totalInvitati > 0
+                          ? <>{formatPrice(Number(s.pret_per_invitat) * totalInvitati)} RON <span className="text-[10px] text-purple-600">({formatPrice(s.pret_per_invitat)}/inv)</span></>
+                          : <>{formatPrice(s.pret)} RON</>}
+                      </td>
                       <td className="px-4 py-3 text-foreground/70">
                         {s.avans != null && s.avans > 0 ? `${formatPrice(s.avans)} RON` : "\u2014"}
                       </td>
