@@ -34,6 +34,7 @@ export default function DashboardPage() {
   const [settings, setSettings] = useState<Record<string, string | null>>({});
   const [assignments, setAssignments] = useState<TableAssignment[]>([]);
   const [optimismLevel, setOptimismLevel] = useState(50);
+  const [onlyConfirmed, setOnlyConfirmed] = useState(true);
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
@@ -111,12 +112,19 @@ export default function DashboardPage() {
       const rsvpStatus = rsvpMap.get(g.id);
       if (rsvpStatus === true) {
         confirmed += personCount;
-        estimatedGiftMin += Number(g.estimated_gift_min || 0);
-        estimatedGiftMax += Number(g.estimated_gift_max || 0);
       } else if (rsvpStatus === false) {
         declined += personCount;
       } else {
         pending += personCount;
+      }
+
+      // Gift estimation: confirmed only or all non-declined
+      const includeInGift = onlyConfirmed
+        ? rsvpStatus === true
+        : rsvpStatus !== false;
+      if (includeInGift) {
+        estimatedGiftMin += Number(g.estimated_gift_min || 0);
+        estimatedGiftMax += Number(g.estimated_gift_max || 0);
       }
     });
 
@@ -210,6 +218,7 @@ export default function DashboardPage() {
     guests,
     settings,
     optimismLevel,
+    onlyConfirmed,
   ]);
 
   // ── Percentages for RSVP chart ──
@@ -530,13 +539,26 @@ export default function DashboardPage() {
 
           {/* Right: Gift estimation */}
           <div>
-            <h3 className="text-xs uppercase tracking-wide text-text-muted mb-3">
-              Estimare dar
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs uppercase tracking-wide text-text-muted">
+                Estimare dar
+              </h3>
+              <button
+                onClick={() => setOnlyConfirmed(!onlyConfirmed)}
+                className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
+                  onlyConfirmed
+                    ? "bg-green-50 text-green-700 border-green-200"
+                    : "bg-amber-50 text-amber-700 border-amber-200"
+                }`}
+              >
+                {onlyConfirmed ? "Doar confirmati" : "Toti invitatii"}
+              </button>
+            </div>
             {/* Slider */}
             <div className="mb-3">
               <div className="flex justify-between text-xs text-text-muted mb-1.5">
                 <span>Pesimist</span>
+                <span className="font-medium text-text-heading">{optimismLevel}%</span>
                 <span>Optimist</span>
               </div>
               <input

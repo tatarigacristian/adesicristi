@@ -77,4 +77,12 @@ export async function rsvpRoutes(fastify: FastifyInstance) {
     );
     return rows;
   });
+
+  // Admin: delete RSVP
+  fastify.delete<{ Params: { id: string } }>('/api/admin/rsvp/:id', { preHandler: authenticate }, async (request, reply) => {
+    const { id } = request.params;
+    const pool = getPool();
+    await pool.execute('DELETE FROM rsvp_responses WHERE id = ?', [id]);
+    return { success: true };
+  });
 }
