@@ -1,12 +1,14 @@
 "use client";
 
-import { Suspense, useEffect, useState, useRef, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { toPng } from "html-to-image";
-import { getInvitationAudience, getGreeting, getInvitationLineUpper, getAlaturiLine, getAsteptamLineShort, getDefaultInvitationLines } from "@/utils/invitation-text";
+import { use, useEffect, useState } from "react";
+import { getInvitationAudience, getInvitationLineUpper, getAlaturiLine, getAsteptamLineShort } from "@/utils/invitation-text";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://adesicristi.vercel.app";
+
+interface PartnerData {
+  nume: string;
+  prenume: string;
+}
 
 interface GuestData {
   id: number;
@@ -15,9 +17,8 @@ interface GuestData {
   plus_one: boolean;
   intro_short: string | null;
   intro_long: string | null;
-  slug: string | null;
-  partner_id: number | null;
   sex: "M" | "F" | null;
+  partner: PartnerData | null;
 }
 
 interface WeddingSettings {
@@ -48,13 +49,15 @@ interface WeddingSettings {
   petrecere_descriere: string | null;
   confirmare_pana_la: string | null;
   contact_info: string | null;
+  telefon_mireasa: string | null;
+  telefon_mire: string | null;
   color_main: string | null;
   color_second: string | null;
   color_button: string | null;
   color_text: string | null;
 }
 
-/* ─── Color utilities ─── */
+/* --- Color utilities --- */
 function hexToRgb(hex: string) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -88,7 +91,7 @@ function buildPalette(settings: WeddingSettings) {
   };
 }
 
-/* ─── SVG Decorative Elements ─── */
+/* --- SVG Decorative Elements --- */
 function CornerOrnament({ style, color }: { style: React.CSSProperties; color: string }) {
   return (
     <svg style={{ position: "absolute", ...style }} viewBox="0 0 80 80" width="45" height="45" xmlns="http://www.w3.org/2000/svg">
@@ -166,129 +169,48 @@ function VenueIcon({ color }: { color: string }) {
   );
 }
 
-function LocationIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 16 16" style={{ width: 10, height: 10, verticalAlign: "middle", marginRight: 3 }} fill="none" stroke={color} strokeWidth="1.2" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 1.5 C5.5 1.5, 3.5 3.5, 3.5 6 C3.5 9, 8 14.5, 8 14.5 C8 14.5, 12.5 9, 12.5 6 C12.5 3.5, 10.5 1.5, 8 1.5Z" />
-      <circle cx="8" cy="6" r="1.8" />
-    </svg>
-  );
-}
-
-function ClockIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 16 16" style={{ width: 10, height: 10, verticalAlign: "middle", marginRight: 3 }} fill="none" stroke={color} strokeWidth="1.2" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="6" />
-      <path d="M8 4.5 L8 8 L10.5 9.5" />
-    </svg>
-  );
-}
-
-function InvitatieContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const guestId = searchParams.get("guestId");
-  const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+export default function PublicInvitatieV2Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
 
   const [guest, setGuest] = useState<GuestData | null>(null);
-  const [partner, setPartner] = useState<GuestData | null>(null);
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [loading, setLoading] = useState(true);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const generatePngBlob = useCallback(async (): Promise<Blob | null> => {
-    if (!cardRef.current) return null;
-    const dataUrl = await toPng(cardRef.current, { pixelRatio: 3 });
-    const res = await fetch(dataUrl);
-    return res.blob();
-  }, []);
-
-  const handleSavePng = useCallback(async () => {
-    if (!cardRef.current || !guest) return;
-    try {
-      const dataUrl = await toPng(cardRef.current, { pixelRatio: 3 });
-      const link = document.createElement("a");
-      link.download = `invitatie-${guest.prenume}-${guest.nume}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error("Failed to save PNG:", err);
-    }
-  }, [guest]);
-
-  const handleShare = useCallback(async () => {
-    if (!guest) return;
-    const fileName = `invitatie-${guest.prenume}-${guest.nume}.png`;
-    const inviteUrl = guest.slug ? `${SITE_URL}/${guest.slug}` : SITE_URL;
-    const text = `Invitatie pentru ${guest.prenume} ${guest.nume}`;
-
-    try {
-      const blob = await generatePngBlob();
-      if (blob && navigator.share && navigator.canShare) {
-        const file = new File([blob], fileName, { type: "image/png" });
-        const shareData = { files: [file], text };
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData);
-          return;
-        }
-      }
-      if (navigator.share) {
-        await navigator.share({ title: text, text: `${text}\n${inviteUrl}`, url: inviteUrl });
-        return;
-      }
-    } catch (err) {
-      if ((err as DOMException)?.name === "AbortError") return;
-    }
-    try {
-      await navigator.clipboard.writeText(inviteUrl);
-      alert("Link copiat în clipboard.");
-    } catch {
-      window.open(`https://wa.me/?text=${encodeURIComponent(text + "\n" + inviteUrl)}`, "_blank");
-    }
-  }, [guest, generatePngBlob]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!guestId || !token) return;
-
     async function load() {
       try {
-        const [guestsRes, settingsRes] = await Promise.all([
-          fetch(`${API_URL}/api/admin/guests`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+        const [guestRes, settingsRes] = await Promise.all([
+          fetch(`${API_URL}/api/guests/${slug}`),
           fetch(`${API_URL}/api/wedding-settings`),
         ]);
 
-        if (settingsRes.ok) setSettings(await settingsRes.json());
-
-        if (guestsRes.ok) {
-          const guests: GuestData[] = await guestsRes.json();
-          const found = guests.find((g) => g.id === parseInt(guestId!));
-          if (found) {
-            setGuest(found);
-            if (found.partner_id) {
-              setPartner(guests.find((g) => g.id === found.partner_id) || null);
-            }
-          }
+        if (!guestRes.ok) {
+          setError("Invitația nu a fost găsită.");
+          return;
         }
+
+        setGuest(await guestRes.json());
+        if (settingsRes.ok) setSettings(await settingsRes.json());
       } catch {
-        // silently fail
+        setError("A apărut o eroare. Vă rugăm încercați din nou.");
       } finally {
         setLoading(false);
       }
     }
 
     load();
-  }, [guestId, token]);
+  }, [slug]);
 
   if (loading) {
     return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se incarca...</p>;
   }
 
-  if (!guest || !settings) {
-    return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Invitatul nu a fost gasit.</p>;
+  if (error || !guest || !settings) {
+    return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>{error || "Invitația nu a fost găsită."}</p>;
   }
 
+  const partner = guest.partner;
   const mireasa = settings.nume_mireasa || "Ade";
   const mire = settings.nume_mire || "Cristi";
   const initialMireasa = mireasa.charAt(0).toUpperCase();
@@ -307,11 +229,8 @@ function InvitatieContent() {
     ? new Date(settings.confirmare_pana_la).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })
     : "";
 
-  const audience = getInvitationAudience(!!partner, guest.sex ?? null);
-  const introLines = guest.intro_short
-    ? guest.intro_short.split("\n").filter((l) => l.trim())
-    : getDefaultInvitationLines(audience);
   const c = buildPalette(settings);
+  const audience = getInvitationAudience(!!partner, guest.sex ?? null);
 
   const f = {
     mont: "'Montserrat', sans-serif" as const,
@@ -320,65 +239,39 @@ function InvitatieContent() {
     upper: "uppercase" as const,
   };
 
-  // Parents
-  const parintiMireasa = settings.tata_mireasa_prenume
-    ? `${settings.mama_mireasa_prenume} si ${settings.tata_mireasa_prenume} ${settings.tata_mireasa_nume}`
-    : settings.parinti_mireasa;
-  const parintiMire = settings.tata_mire_prenume
-    ? `${settings.mama_mire_prenume} si ${settings.tata_mire_prenume} ${settings.tata_mire_nume}`
-    : settings.parinti_mire;
+  // Parents — split into first names line + family name line
+  const parintiMireasaNames = settings.tata_mireasa_prenume
+    ? `${settings.mama_mireasa_prenume} și ${settings.tata_mireasa_prenume}`
+    : null;
+  const parintiMireasaFamilie = settings.tata_mireasa_nume || null;
+  const parintiMireasaFallback = settings.parinti_mireasa;
+
+  const parintiMireNames = settings.tata_mire_prenume
+    ? `${settings.mama_mire_prenume} și ${settings.tata_mire_prenume}`
+    : null;
+  const parintiMireFamilie = settings.tata_mire_nume || null;
+  const parintiMireFallback = settings.parinti_mire;
+
+  const hasParinti = parintiMireasaNames || parintiMireasaFallback || parintiMireNames || parintiMireFallback;
 
   // Nasi
   const nasiText = settings.nas_prenume && settings.nasa_prenume
     ? settings.nasa_nume === settings.nas_nume
-      ? `${settings.nasa_prenume} si ${settings.nas_prenume} ${settings.nas_nume}`
-      : `${settings.nasa_prenume} ${settings.nasa_nume} si ${settings.nas_prenume} ${settings.nas_nume}`
+      ? `${settings.nasa_prenume} și ${settings.nas_prenume} ${settings.nas_nume}`
+      : `${settings.nasa_prenume} ${settings.nasa_nume} și ${settings.nas_prenume} ${settings.nas_nume}`
     : null;
+  const hasNasi = !!nasiText;
 
   return (
     <div className="inv-root" style={{ fontFamily: "'Montserrat', sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Alex+Brush&family=Montserrat:wght@300;400;500;600&display=swap');
         .inv-root .inv-page { display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; gap: 1.5rem; }
-        .inv-root .inv-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-        .inv-root .inv-btn { padding: 0.45rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-family: 'Montserrat', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; background: ${c.secondary}; color: #fff; }
-        .inv-root .inv-btn:hover { background: ${c.primary}; }
-        .inv-root .inv-btn-secondary { background: ${c.bg}; color: ${c.secondary}; border: 1px solid ${c.ornament}; }
-        .inv-root .inv-btn-secondary:hover { background: #f5f0ea; }
-        @media print {
-          .inv-root .inv-actions { display: none !important; }
-          .inv-root .inv-page { padding: 0; }
-        }
       `}</style>
 
       <div className="inv-page">
-        <div className="inv-actions">
-          <select
-            className="inv-btn inv-btn-secondary"
-            value="invitatie"
-            onChange={(e) => router.push(`/admin/${e.target.value}?guestId=${guestId}`)}
-          >
-            <option value="card">Card</option>
-            <option value="invitatie">Invitatie v1</option>
-            <option value="invitatie-v2">Invitatie v2</option>
-          </select>
-          <button className="inv-btn" onClick={handleSavePng}>Salveaza ca PNG</button>
-          <button className="inv-btn inv-btn-secondary" onClick={handleShare} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            Share
-          </button>
-          {guest?.slug && (
-            <button className="inv-btn inv-btn-secondary" onClick={() => window.open(`/invitatie/${guest.slug}`, '_blank')} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              Pagina publica
-            </button>
-          )}
-          <button className="inv-btn inv-btn-secondary" onClick={() => window.close()}>Inchide</button>
-        </div>
-
-        {/* ─── Outer Card ─── */}
+        {/* --- Outer Card --- */}
         <div
-          ref={cardRef}
           style={{
             width: "15cm",
             minHeight: "21cm",
@@ -388,7 +281,7 @@ function InvitatieContent() {
             position: "relative",
           }}
         >
-          {/* ─── Inner Border ─── */}
+          {/* --- Inner Border --- */}
           <div
             style={{
               border: `0.5px solid ${c.ornament}`,
@@ -410,7 +303,7 @@ function InvitatieContent() {
             <CornerOrnament color={c.ornament} style={{ bottom: -2, left: -2, transform: "scaleY(-1)" }} />
             <CornerOrnament color={c.ornament} style={{ bottom: -2, right: -2, transform: "scale(-1, -1)" }} />
 
-            {/* ─── Monogram (large, central) ─── */}
+            {/* 1. Monogram (large, central) */}
             <div style={{ position: "relative", marginBottom: "0.2cm", marginTop: "0.1cm" }}>
               <svg viewBox="0 0 160 160" style={{ width: 140, height: 140 }} xmlns="http://www.w3.org/2000/svg">
                 <circle cx="80" cy="80" r="72" stroke={c.ornament} strokeWidth="0.5" fill="none" />
@@ -425,7 +318,7 @@ function InvitatieContent() {
               </div>
             </div>
 
-            {/* ─── Heart divider ─── */}
+            {/* 2. Heart divider */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: "0.15cm" }}>
               <span style={{ display: "block", width: 40, height: 0.5, background: c.ornament, opacity: 0.4 }} />
               <svg viewBox="0 0 50 48" style={{ width: 14, height: 14 }} fill="none" stroke={c.ornament} xmlns="http://www.w3.org/2000/svg">
@@ -434,66 +327,11 @@ function InvitatieContent() {
               <span style={{ display: "block", width: 40, height: 0.5, background: c.ornament, opacity: 0.4 }} />
             </div>
 
-            {/* ─── Guest greeting ─── */}
-            <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 400, color: c.primary, letterSpacing: "0.03em" }}>
-              {getGreeting(audience, true)} {partner ? `${guest.prenume} & ${partner.prenume}` : `${guest.prenume} ${guest.nume}`},
-            </p>
-
-            {/* ─── "Cu drag te/vă invităm" ─── */}
-            <p style={{ fontSize: "0.64rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.ornament, marginTop: "0.1cm" }}>
-              {getInvitationLineUpper(audience)}
-            </p>
-
-            {/* ─── Script heading ─── */}
-            <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic" }}>
-              {getAlaturiLine(audience)}
-            </p>
-
-            {/* ─── Flourish ─── */}
-            <div style={{ margin: "0.1cm 0" }}>
-              <Flourish width={180} color={c.ornament} />
-            </div>
-
-            {/* ─── Invitation Text ─── */}
-            <div style={{ lineHeight: 1.8, maxWidth: "10cm" }}>
-              {introLines.map((line, i) => (
-                <p key={i} style={{ fontSize: "0.61rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 300, color: c.secondary }}>
-                  {line}
-                </p>
-              ))}
-            </div>
-
-            {/* ─── Parents (side by side) ─── */}
-            {(parintiMireasa || parintiMire) && (
-              <div style={{ display: "flex", justifyContent: "center", gap: "1.2cm", marginTop: "0.2cm", width: "100%" }}>
-                {parintiMireasa && (
-                  <div style={{ textAlign: "center", flex: 1 }}>
-                    <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
-                      PĂRINȚII MIRESEI
-                    </p>
-                    <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                      {parintiMireasa}
-                    </p>
-                  </div>
-                )}
-                {parintiMire && (
-                  <div style={{ textAlign: "center", flex: 1 }}>
-                    <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
-                      PĂRINȚII MIRELUI
-                    </p>
-                    <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                      {parintiMire}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ─── Nași ─── */}
-            {nasiText && (
-              <div style={{ textAlign: "center", marginTop: "0.15cm" }}>
-                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
-                  ALĂTURI DE NAȘII
+            {/* 3. Nasi first, then Parents */}
+            {hasNasi && (
+              <div style={{ textAlign: "center", marginBottom: "0.1cm" }}>
+                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
+                  ALATURI DE NASII
                 </p>
                 <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
                   {nasiText}
@@ -501,12 +339,84 @@ function InvitatieContent() {
               </div>
             )}
 
-            {/* ─── Flourish ─── */}
-            <div style={{ margin: "0.15cm 0" }}>
+            {hasParinti && (
+              <>
+                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
+                  SI IMPREUNA CU PARINTII NOSTRI
+                </p>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.4cm", width: "100%", marginBottom: "0.1cm" }}>
+                  {(parintiMireasaNames || parintiMireasaFallback) && (
+                    <div style={{ textAlign: "center" }}>
+                      {parintiMireasaNames ? (
+                        <>
+                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                            {parintiMireasaNames}
+                          </p>
+                          {parintiMireasaFamilie && (
+                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                              {parintiMireasaFamilie}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                          {parintiMireasaFallback}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireNames || parintiMireFallback) && (
+                    <div style={{ width: "0.5px", height: "0.8cm", background: c.ornament, opacity: 0.4 }} />
+                  )}
+                  {(parintiMireNames || parintiMireFallback) && (
+                    <div style={{ textAlign: "center" }}>
+                      {parintiMireNames ? (
+                        <>
+                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                            {parintiMireNames}
+                          </p>
+                          {parintiMireFamilie && (
+                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                              {parintiMireFamilie}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                          {parintiMireFallback}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* 4. "Cu drag te/va invitam" */}
+            <p style={{ fontSize: "0.64rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.ornament, marginTop: "0.1cm" }}>
+              {getInvitationLineUpper(audience)}
+            </p>
+
+            {/* "Sa fii/fiti alaturi de noi" */}
+            <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic" }}>
+              {getAlaturiLine(audience)}
+            </p>
+
+            {/* 5. "la celebrarea casatoriei noastre" */}
+            <div style={{ margin: "0.1cm 0" }}>
               <Flourish width={180} color={c.ornament} />
             </div>
 
-            {/* ─── Date row ─── */}
+            <p style={{ fontSize: "0.69rem", fontFamily: f.serif, fontWeight: 400, fontStyle: "italic", color: c.secondary, letterSpacing: "0.05em" }}>
+              la celebrarea casatoriei noastre
+            </p>
+
+            {/* Flourish */}
+            <div style={{ margin: "0.1cm 0" }}>
+              <Flourish width={180} color={c.ornament} />
+            </div>
+
+            {/* 6. Date row */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.4cm" }}>
               <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.3em", fontWeight: 600, color: c.primary }}>{dayOfWeek}</span>
               <svg viewBox="0 0 4 20" style={{ width: 3, height: 16 }} xmlns="http://www.w3.org/2000/svg">
@@ -519,7 +429,7 @@ function InvitatieContent() {
               <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{year}</span>
             </div>
 
-            {/* ─── Events (matching card style: icon → time → address) ─── */}
+            {/* Events */}
             <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm", marginTop: "0.2cm", width: "100%" }}>
               {settings.ceremonie_ora && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
@@ -564,12 +474,12 @@ function InvitatieContent() {
               )}
             </div>
 
-            {/* ─── Script Closing ─── */}
+            {/* Script Closing */}
             <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "0.3cm" }}>
               {getAsteptamLineShort(audience)}
             </p>
 
-            {/* ─── RSVP ─── */}
+            {/* RSVP */}
             {confirmareDate && (
               <div>
                 <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted, lineHeight: 2 }}>
@@ -581,30 +491,29 @@ function InvitatieContent() {
               </div>
             )}
 
-            {/* ─── Contact ─── */}
-            {settings.contact_info && (
+            {/* Contact -- phone numbers */}
+            {(settings.telefon_mireasa || settings.telefon_mire) && (
               <div style={{ marginTop: "0.15cm", width: "80%" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>
                   <SmallFlourish color={c.ornament} />
                 </div>
-                {settings.contact_info.split("\n").map((line, i) => (
-                  <p key={i} style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
-                    {line}
-                  </p>
-                ))}
+                <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm" }}>
+                  {settings.telefon_mireasa && (
+                    <p style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
+                      {mireasa}: {settings.telefon_mireasa}
+                    </p>
+                  )}
+                  {settings.telefon_mire && (
+                    <p style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
+                      {mire}: {settings.telefon_mire}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-export default function InvitatiePage() {
-  return (
-    <Suspense fallback={<div style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se incarca...</div>}>
-      <InvitatieContent />
-    </Suspense>
   );
 }

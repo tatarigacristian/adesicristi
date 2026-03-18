@@ -34,7 +34,8 @@ export default function DashboardPage() {
   const [settings, setSettings] = useState<Record<string, string | null>>({});
   const [assignments, setAssignments] = useState<TableAssignment[]>([]);
   const [optimismLevel, setOptimismLevel] = useState(50);
-  const [onlyConfirmed, setOnlyConfirmed] = useState(true);
+  const [onlyConfirmed, setOnlyConfirmed] = useState(false);
+  const [subtractAvans, setSubtractAvans] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
@@ -63,7 +64,15 @@ export default function DashboardPage() {
         return;
       }
       setGuests(await guestsRes.json());
-      if (rsvpRes.ok) setRsvps(await rsvpRes.json());
+      if (rsvpRes.ok) {
+        const rsvpData = await rsvpRes.json();
+        setRsvps(rsvpData.map((r: Record<string, unknown>) => ({
+          ...r,
+          attending: Boolean(r.attending),
+          needs_transport: Boolean(r.needs_transport),
+          vegetarian_menu: Boolean(r.vegetarian_menu),
+        })));
+      }
       if (servicesRes.ok) setServices(await servicesRes.json());
       setSettings(await settingsRes.json());
       if (assignRes.ok) {
@@ -153,14 +162,20 @@ export default function DashboardPage() {
       (estimatedGiftMax - estimatedGiftMin) * (optimismLevel / 100);
     const giftVsCost = estimatedGift - totalServiceCost;
 
-    // Gender distribution
+    // Gender distribution — plus_one pairs split as 1M + 1F
     let maleCount = 0;
     let femaleCount = 0;
     let unspecifiedCount = 0;
-    guests.forEach((g) => {
-      if (g.sex === "M") maleCount++;
-      else if (g.sex === "F") femaleCount++;
-      else unspecifiedCount++;
+    mainGuests.forEach((g) => {
+      if (g.plus_one) {
+        // Couple: count 1 male + 1 female
+        maleCount++;
+        femaleCount++;
+      } else {
+        if (g.sex === "M") maleCount++;
+        else if (g.sex === "F") femaleCount++;
+        else unspecifiedCount++;
+      }
     });
 
     // Quick stats
@@ -677,6 +692,82 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      {/* ── Row 6: Cost per invitat ── */}
+      {services.length > 0 && stats.totalInvited > 0 && (
+        <div className="family-card">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs uppercase tracking-wide text-text-muted">
+              Cost per invitat
+            </h3>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={subtractAvans}
+                onChange={(e) => setSubtractAvans(e.target.checked)}
+                className="w-3.5 h-3.5 accent-accent cursor-pointer"
+              />
+              <span className="text-[11px] text-text-muted">Scade avansul</span>
+            </label>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+            {services.map((s) => {
+              const pret = Number(s.pret);
+              const avans = Number(s.avans || 0);
+              const suma = subtractAvans ? pret - avans : pret;
+              const perGuest = suma / stats.totalInvited;
+              return (
+                <div key={s.id} className="rounded-lg border border-border-light p-3">
+                  <p className="text-sm font-medium text-text-heading mb-2 truncate">{s.nume}</p>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Pret total</span>
+                      <span className="text-foreground">{formatPrice(pret)} RON</span>
+                    </div>
+                    {subtractAvans && avans > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-text-muted">Avans platit</span>
+                        <span className="text-green-600">-{formatPrice(avans)} RON</span>
+                      </div>
+                    )}
+                    {subtractAvans && (
+                      <div className="flex justify-between border-t border-border-light pt-1">
+                        <span className="text-text-muted">Rest de plata</span>
+                        <span className="font-medium text-foreground">{formatPrice(suma)} RON</span>
+                      </div>
+                    )}
+                    <div className={`flex justify-between bg-background-soft rounded px-2 py-1.5 ${subtractAvans ? "mt-1" : ""}`}>
+                      <span className="text-text-muted">Per invitat</span>
+                      <span className="font-semibold text-text-heading">{formatPrice(Math.ceil(perGuest))} RON</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {/* Total card */}
+          {(() => {
+            const totalSum = subtractAvans ? stats.remainingToPay : stats.totalServiceCost;
+            return (
+              <div className="rounded-xl border-2 border-button/30 bg-button/5 p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-medium text-text-heading">Total servicii</p>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      {subtractAvans ? "Rest de plata" : "Cost total"}: {formatPrice(totalSum)} RON / {stats.totalInvited} invitati
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-semibold text-text-heading">
+                      {formatPrice(Math.ceil(totalSum / stats.totalInvited))} RON
+                    </p>
+                    <p className="text-xs text-text-muted">per invitat</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
     </div>
   );
 }

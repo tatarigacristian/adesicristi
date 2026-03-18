@@ -1,13 +1,16 @@
 "use client";
 
-import { Suspense, useEffect, useState, useRef, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { toPng } from "html-to-image";
 import { getInvitationAudience, getGreetingShort, getDefaultIntroShort } from "@/utils/invitation-text";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://adesicristi.vercel.app";
+
+interface PartnerData {
+  nume: string;
+  prenume: string;
+}
 
 interface GuestData {
   id: number;
@@ -17,8 +20,8 @@ interface GuestData {
   intro_short: string | null;
   intro_long: string | null;
   slug: string | null;
-  partner_id: number | null;
   sex: "M" | "F" | null;
+  partner: PartnerData | null;
 }
 
 interface WeddingSettings {
@@ -70,7 +73,7 @@ function darkenHex(hex: string, amount: number): string {
   return `#${Math.round(r * f).toString(16).padStart(2, "0")}${Math.round(g * f).toString(16).padStart(2, "0")}${Math.round(b * f).toString(16).padStart(2, "0")}`;
 }
 
-/* ─── SVG Corner Ornament (inline in CSS via background) ─── */
+/* --- SVG Corner Ornament (inline in CSS via background) --- */
 function cornerSvg(color: string) {
   const encoded = encodeURIComponent(
     `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="${color}" stroke-width="0.8"/><path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="${color}" stroke-width="0.6"/><path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="${color}" stroke-width="0.5" opacity="0.6"/><circle cx="8" cy="8" r="1.5" fill="${color}" opacity="0.5"/></svg>`
@@ -85,7 +88,7 @@ function CardFront({
   qrDataUrl,
 }: {
   guest: GuestData;
-  partner: GuestData | null;
+  partner: PartnerData | null;
   settings: WeddingSettings;
   qrDataUrl: string;
 }) {
@@ -139,7 +142,7 @@ function CardFront({
               <img src={qrDataUrl} alt="QR Code" style={{ width: "2cm", height: "2cm" }} />
             </div>
             <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.08cm" }}>
-              Scanați codul
+              Scanati codul
             </p>
           </div>
 
@@ -167,14 +170,13 @@ function CardBack({
   settings,
 }: {
   guest: GuestData;
-  partner: GuestData | null;
+  partner: PartnerData | null;
   settings: WeddingSettings;
 }) {
   const mireasa = settings.nume_mireasa || "Ade";
   const mire = settings.nume_mire || "Cristi";
   const text = settings.color_text || "#344b30";
   const accent = settings.color_button || "#7f9f84";
-  const muted = lightenHex(text, 45);
 
   const guestNames = partner
     ? `${guest.prenume} & ${partner.prenume}`
@@ -291,17 +293,11 @@ function CardEventIcon({ icon, color }: { icon: "church" | "transport" | "party"
     case "party":
       return (
         <svg {...props}>
-          {/* Bowl - wide at top, narrow at bottom */}
           <path d="M7 2 L7 4 C7 8, 9 10, 12 10 C15 10, 17 8, 17 4 L17 2" />
-          {/* Stem */}
           <line x1="12" y1="10" x2="12" y2="18" />
-          {/* Base */}
           <line x1="8" y1="18" x2="16" y2="18" />
-          {/* Rim */}
           <line x1="7" y1="2" x2="17" y2="2" />
-          {/* Liquid level */}
           <path d="M8 5 C9 4.5, 11 4.5, 12 5 C13 5.5, 15 5.5, 16 5" opacity="0.4" />
-          {/* Bubbles */}
           <circle cx="10" cy="7" r="0.5" opacity="0.3" />
           <circle cx="13" cy="6" r="0.4" opacity="0.3" />
           <circle cx="11" cy="4" r="0.3" opacity="0.3" />
@@ -335,38 +331,6 @@ function buildStyles(s: WeddingSettings | null) {
       padding: 2rem 1rem;
       gap: 2rem;
     }
-
-    .card-page-root .print-actions {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .card-page-root .print-btn {
-      padding: 0.45rem 1rem;
-      border-radius: 0.5rem;
-      font-size: 0.8rem;
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-    }
-
-    .card-page-root .print-btn-primary {
-      background: ${text};
-      color: ${main};
-    }
-    .card-page-root .print-btn-primary:hover { filter: brightness(1.2); }
-
-    .card-page-root .print-btn-secondary {
-      background: ${bgCard};
-      color: ${text};
-      border: 1px solid ${button};
-    }
-    .card-page-root .print-btn-secondary:hover { filter: brightness(0.97); }
 
     .card-page-root .cards-container {
       display: flex;
@@ -533,106 +497,33 @@ function buildStyles(s: WeddingSettings | null) {
       font-size: 0.85rem;
       color: ${text};
     }
-
-    /* Print styles */
-    @media print {
-      .card-page-root .print-actions { display: none !important; }
-      .card-page-root .print-page { padding: 0; gap: 0; }
-
-      .card-page-root .cards-container {
-        gap: 0;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .card-page-root .card-face {
-        box-shadow: none;
-        border-radius: 0;
-        page-break-inside: avoid;
-      }
-
-      .card-page-root .card-front {
-        margin-bottom: 0.5cm;
-      }
-    }
   `;
 }
 
-function CardPageContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const guestId = searchParams.get("guestId");
-  const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+export default function PublicCardPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
 
   const [guest, setGuest] = useState<GuestData | null>(null);
-  const [allGuests, setAllGuests] = useState<GuestData[]>([]);
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [loading, setLoading] = useState(true);
-  const printRef = useRef<HTMLDivElement>(null);
-
-  const generatePngBlob = useCallback(async (): Promise<Blob | null> => {
-    if (!printRef.current) return null;
-    const dataUrl = await toPng(printRef.current, { pixelRatio: 3 });
-    const res = await fetch(dataUrl);
-    return res.blob();
-  }, []);
-
-  const handleSavePng = useCallback(async () => {
-    if (!printRef.current || !guest) return;
-    try {
-      const dataUrl = await toPng(printRef.current, { pixelRatio: 3 });
-      const link = document.createElement("a");
-      link.download = `card-${guest.prenume}-${guest.nume}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error("Failed to save PNG:", err);
-    }
-  }, [guest]);
-
-  const handleShare = useCallback(async () => {
-    if (!guest) return;
-    const fileName = `card-${guest.prenume}-${guest.nume}.png`;
-    const inviteUrl = guest.slug ? `${SITE_URL}/${guest.slug}` : SITE_URL;
-    const text = `Invitatie pentru ${guest.prenume} ${guest.nume}`;
-
-    try {
-      const blob = await generatePngBlob();
-      if (blob && navigator.share && navigator.canShare) {
-        const file = new File([blob], fileName, { type: "image/png" });
-        const shareData = { files: [file], text };
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData);
-          return;
-        }
-      }
-      if (navigator.share) {
-        await navigator.share({ title: text, text: `${text}\n${inviteUrl}`, url: inviteUrl });
-        return;
-      }
-    } catch (err) {
-      if ((err as DOMException)?.name === "AbortError") return;
-    }
-    try {
-      await navigator.clipboard.writeText(inviteUrl);
-      alert("Link copiat în clipboard.");
-    } catch {
-      window.open(`https://wa.me/?text=${encodeURIComponent(text + "\n" + inviteUrl)}`, "_blank");
-    }
-  }, [guest, generatePngBlob]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!guestId || !token) return;
-
     async function load() {
       try {
-        const [guestsRes, settingsRes] = await Promise.all([
-          fetch(`${API_URL}/api/admin/guests`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+        const [guestRes, settingsRes] = await Promise.all([
+          fetch(`${API_URL}/api/guests/${slug}`),
           fetch(`${API_URL}/api/wedding-settings`),
         ]);
+
+        if (!guestRes.ok) {
+          setError("Invitația nu a fost găsită.");
+          return;
+        }
+
+        const guestData: GuestData = await guestRes.json();
+        setGuest(guestData);
 
         let settingsData: WeddingSettings | null = null;
         if (settingsRes.ok) {
@@ -640,105 +531,55 @@ function CardPageContent() {
           setSettings(settingsData);
         }
 
-        if (guestsRes.ok) {
-          const guests: GuestData[] = await guestsRes.json();
-          setAllGuests(guests);
-          const found = guests.find((g) => g.id === parseInt(guestId!));
-          if (found) {
-            setGuest(found);
-
-            if (found.slug) {
-              const qrColor = settingsData?.color_text || "#2c2c2c";
-              const url = `${SITE_URL}/${found.slug}`;
-              const dataUrl = await QRCode.toDataURL(url, {
-                width: 512,
-                margin: 2,
-                color: { dark: qrColor, light: "#ffffff" },
-              });
-              setQrDataUrl(dataUrl);
-            }
-          }
+        // Generate QR code pointing to the guest's public page
+        if (guestData.slug) {
+          const qrColor = settingsData?.color_text || "#2c2c2c";
+          const url = `${SITE_URL}/${guestData.slug}`;
+          const dataUrl = await QRCode.toDataURL(url, {
+            width: 512,
+            margin: 2,
+            color: { dark: qrColor, light: "#ffffff" },
+          });
+          setQrDataUrl(dataUrl);
         }
       } catch {
-        // silently fail
+        setError("A apărut o eroare. Vă rugăm încercați din nou.");
       } finally {
         setLoading(false);
       }
     }
 
     load();
-  }, [guestId, token]);
-
-  const partner = guest?.partner_id
-    ? allGuests.find((g) => g.id === guest.partner_id) || null
-    : null;
+  }, [slug]);
 
   if (loading) {
     return (
-      <div className="print-page">
-        <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>
-          Se incarca...
-        </p>
+      <div style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>
+        Se incarca...
       </div>
     );
   }
 
-  if (!guest || !settings) {
+  if (error || !guest || !settings) {
     return (
-      <div className="print-page">
-        <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>
-          Invitatul nu a fost gasit.
-        </p>
+      <div style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>
+        {error || "Invitația nu a fost găsită."}
       </div>
     );
   }
+
+  const partner = guest.partner;
 
   return (
     <div className="card-page-root">
       <style>{buildStyles(settings)}</style>
 
       <div className="print-page">
-        <div className="print-actions">
-          <select
-            className="print-btn print-btn-secondary"
-            value="card"
-            onChange={(e) => router.push(`/admin/${e.target.value}?guestId=${guestId}`)}
-          >
-            <option value="card">Card</option>
-            <option value="invitatie">Invitatie v1</option>
-            <option value="invitatie-v2">Invitatie v2</option>
-          </select>
-          <button className="print-btn print-btn-primary" onClick={handleSavePng}>
-            Salveaza ca PNG
-          </button>
-          <button className="print-btn print-btn-secondary" onClick={handleShare} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            Share
-          </button>
-          {guest?.slug && (
-            <button className="print-btn print-btn-secondary" onClick={() => window.open(`/card/${guest.slug}`, '_blank')} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              Pagina publica
-            </button>
-          )}
-          <button className="print-btn print-btn-secondary" onClick={() => window.close()}>
-            Inchide
-          </button>
-        </div>
-
-        <div className="cards-container" ref={printRef}>
+        <div className="cards-container">
           <CardFront guest={guest} partner={partner} settings={settings} qrDataUrl={qrDataUrl} />
           <CardBack guest={guest} partner={partner} settings={settings} />
         </div>
       </div>
     </div>
-  );
-}
-
-export default function CardPage() {
-  return (
-    <Suspense fallback={<div className="print-page"><p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se incarca...</p></div>}>
-      <CardPageContent />
-    </Suspense>
   );
 }
