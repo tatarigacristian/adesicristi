@@ -19,6 +19,7 @@ interface GuestData {
   slug: string | null;
   partner_id: number | null;
   sex: "M" | "F" | null;
+  children?: { id: number; nume: string; prenume: string }[];
 }
 
 interface WeddingSettings {
@@ -176,9 +177,18 @@ function CardBack({
   const accent = settings.color_button || "#7f9f84";
   const muted = lightenHex(text, 45);
 
-  const guestNames = partner
-    ? `${guest.prenume} & ${partner.prenume}`
-    : guest.prenume;
+  const guestNames = (() => {
+    const childNames = guest.children && guest.children.length > 0 ? guest.children.map((c) => c.prenume) : [];
+    if (partner) {
+      const same = guest.nume === partner.nume;
+      const allNames = [guest.prenume, partner.prenume, ...childNames];
+      const last = allNames.pop()!;
+      return same
+        ? `${allNames.join(", ")} și ${last} ${guest.nume}`
+        : `${allNames.join(", ")} și ${last}`;
+    }
+    return guest.prenume;
+  })();
 
   const audience = getInvitationAudience(!!partner, guest.sex ?? null);
   const introText = guest.intro_short

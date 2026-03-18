@@ -12,12 +12,13 @@ interface RsvpBody {
   guest_id?: number;
   needs_transport?: boolean;
   vegetarian_menu?: boolean;
+  children_menu?: boolean;
 }
 
 export async function rsvpRoutes(fastify: FastifyInstance) {
   // Public: submit RSVP
   fastify.post<{ Body: RsvpBody }>('/api/rsvp', async (request, reply) => {
-    const { person_count, name, partner_name, message, attending, guest_id, needs_transport, vegetarian_menu } = request.body;
+    const { person_count, name, partner_name, message, attending, guest_id, needs_transport, vegetarian_menu, children_menu } = request.body;
 
     if (!name || !person_count) {
       return reply.status(400).send({ error: 'Name and person count are required' });
@@ -33,8 +34,8 @@ export async function rsvpRoutes(fastify: FastifyInstance) {
 
     const pool = getPool();
     const [result] = await pool.execute<ResultSetHeader>(
-      'INSERT INTO rsvp_responses (person_count, name, partner_name, message, attending, guest_id, needs_transport, vegetarian_menu) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [person_count, name, partner_name || null, message || null, attending, guest_id || null, needs_transport ?? false, vegetarian_menu ?? false]
+      'INSERT INTO rsvp_responses (person_count, name, partner_name, message, attending, guest_id, needs_transport, vegetarian_menu, children_menu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [person_count, name, partner_name || null, message || null, attending, guest_id || null, needs_transport ?? false, vegetarian_menu ?? false, children_menu ?? false]
     );
 
     return reply.status(201).send({

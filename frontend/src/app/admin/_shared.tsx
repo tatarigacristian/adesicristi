@@ -13,6 +13,7 @@ export interface RsvpEntry {
   guest_id: number | null;
   needs_transport: boolean;
   vegetarian_menu: boolean;
+  children_menu: boolean;
   created_at: string;
 }
 

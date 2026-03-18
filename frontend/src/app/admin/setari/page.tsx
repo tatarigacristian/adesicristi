@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import { Suspense, useState, useEffect, FormEvent } from "react";
 import { applyThemeColors } from "@/utils/settings";
 import { useAdminAuth } from "../_context";
 import { API_URL, authHeaders, forceAdminTextColors } from "../_shared";
+import { useTabParam } from "@/hooks/useTabParam";
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -130,9 +131,9 @@ const TABS: { id: TabId; label: string }[] = [
 
 // ─── Settings Page ───────────────────────────────────────
 
-export default function SetariPage() {
+function SetariContent() {
   const { token, onUnauth } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState<TabId>("cuplu");
+  const [activeTab, setActiveTab] = useTabParam<TabId>("tab", "cuplu", ["cuplu", "program", "familie", "confirmare", "aspect", "logistica"] as const);
   const [settings, setSettings] = useState<WeddingSettingsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -491,5 +492,13 @@ export default function SetariPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function SetariPage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: "center", padding: "2rem", color: "#999" }}>Se incarca...</div>}>
+      <SetariContent />
+    </Suspense>
   );
 }

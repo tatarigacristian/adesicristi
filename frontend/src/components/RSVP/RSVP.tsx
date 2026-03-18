@@ -13,6 +13,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
 type FormState = "loading" | "idle" | "submitting" | "confirmed" | "declined" | "cancelled" | "error";
 
+interface GuestChild {
+  id: number;
+  nume: string;
+  prenume: string;
+}
+
 interface GuestData {
   id: number;
   nume: string;
@@ -22,6 +28,7 @@ interface GuestData {
   intro_long: string | null;
   sex: "M" | "F" | null;
   partner: { nume: string; prenume: string } | null;
+  children?: GuestChild[];
 }
 
 function formatICSDate(dateStr: string, timeStr: string): string {
@@ -163,6 +170,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const [message, setMessage] = useState("");
   const [needsTransport, setNeedsTransport] = useState(false);
   const [vegetarianMenu, setVegetarianMenu] = useState(false);
+  const [childrenMenu, setChildrenMenu] = useState(false);
   const showContent = useSlideActive("rsvp");
   const [formState, setFormState] = useState<FormState>(guest ? "loading" : "idle");
   const [rsvpId, setRsvpId] = useState<number | null>(null);
@@ -194,6 +202,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const initialCheckDone = useRef(false);
 
+  const hasChildren = Boolean(guest?.children && guest.children.length > 0);
+
   // Auto-fill from guest data
   useEffect(() => {
     if (!guest) return;
@@ -203,6 +213,9 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       setPartnerName(`${guest.partner.prenume} ${guest.partner.nume}`);
     } else {
       setPersonCount(1);
+    }
+    if (guest.children && guest.children.length > 0) {
+      setChildrenMenu(true);
     }
   }, [guest]);
 
@@ -275,6 +288,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           guest_id: guest?.id || undefined,
           needs_transport: needsTransport,
           vegetarian_menu: vegetarianMenu,
+          children_menu: childrenMenu,
         }),
       });
 
@@ -613,6 +627,31 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     ${vegetarianMenu ? "translate-x-[18px] bg-white" : "translate-x-0 bg-white/80"}`} />
                 </div>
               </button>
+
+              {/* Children menu - shown when guest has children */}
+              {hasChildren && (
+                <button type="button" onClick={() => setChildrenMenu(!childrenMenu)} disabled={isDisabled}
+                  className={`w-full max-w-xs flex items-center justify-between py-3 px-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
+                    ${childrenMenu ? "border-button bg-button/5" : "border-border-light bg-background-soft"}`}>
+                  <div className="flex items-center gap-2.5">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    </svg>
+                    <div className="flex flex-col items-start">
+                      <span className="text-xs text-text-heading">Meniu copil</span>
+                      <span className="text-[0.6rem] text-text-muted">
+                        {guest!.children!.map((c) => c.prenume).join(", ")}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={`relative w-10 h-5 rounded-full transition-colors duration-200
+                    ${childrenMenu ? "bg-button" : "bg-text-muted/20"}`}>
+                    <span className={`absolute top-[3px] left-[3px] w-3.5 h-3.5 rounded-full shadow-sm transition-transform duration-200
+                      ${childrenMenu ? "translate-x-[18px] bg-white" : "translate-x-0 bg-white/80"}`} />
+                  </div>
+                </button>
+              )}
 
               <div className="flex gap-3 w-full max-w-xs mt-2">
                 <button type="button" onClick={() => goToStep(2)}

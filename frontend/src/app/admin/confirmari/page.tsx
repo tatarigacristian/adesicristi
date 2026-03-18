@@ -37,6 +37,7 @@ export default function ConfirmariPage() {
       ...r,
       needs_transport: Boolean(r.needs_transport),
       vegetarian_menu: Boolean(r.vegetarian_menu),
+      children_menu: Boolean(r.children_menu),
     })));
   }
 
@@ -241,6 +242,7 @@ export default function ConfirmariPage() {
                     <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Pers.</th>
                     <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Status</th>
                     <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Meniu veg.</th>
+                    <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Meniu copil</th>
                     <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Transport</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Mesaj</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Data</th>
@@ -263,6 +265,11 @@ export default function ConfirmariPage() {
                       <td className="px-4 py-3 text-center">
                         <span className={`inline-block px-2 py-0.5 rounded text-xs ${r.vegetarian_menu ? "bg-green-50 text-green-700" : "text-foreground/40"}`}>
                           {r.vegetarian_menu ? "Da" : "—"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`inline-block px-2 py-0.5 rounded text-xs ${r.children_menu ? "bg-purple-50 text-purple-700" : "text-foreground/40"}`}>
+                          {r.children_menu ? "Da" : "—"}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -385,6 +392,10 @@ export default function ConfirmariPage() {
                 <div>
                   <dt className="text-xs text-text-muted tracking-wide mb-0.5">Meniu vegetarian</dt>
                   <dd className="text-foreground">{viewEntry.vegetarian_menu ? "Da" : "Nu"}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Meniu copil</dt>
+                  <dd className="text-foreground">{viewEntry.children_menu ? "Da" : "Nu"}</dd>
                 </div>
                 <div>
                   <dt className="text-xs text-text-muted tracking-wide mb-0.5">Necesita transport</dt>

@@ -20,6 +20,35 @@ interface GuestData {
   intro_long: string | null;
   sex: "M" | "F" | null;
   partner: { nume: string; prenume: string } | null;
+  children?: { id: number; nume: string; prenume: string }[];
+}
+
+function formatGuestNames(guest: GuestData): string {
+  const childNames = guest.children && guest.children.length > 0
+    ? guest.children.map((c) => c.prenume)
+    : [];
+
+  if (guest.partner) {
+    const sameNume = guest.nume === guest.partner.nume;
+    if (sameNume) {
+      // Maria, Ionut si Darius Ionescu OR Testan și Testica Testulescu
+      const allNames = [guest.prenume, guest.partner.prenume, ...childNames];
+      const last = allNames.pop()!;
+      return allNames.length > 0
+        ? `${allNames.join(", ")} și ${last} ${guest.nume}`
+        : `${last} ${guest.nume}`;
+    } else {
+      // Ion, Maria si Darius OR Ion și Maria
+      const allNames = [guest.prenume, guest.partner.prenume, ...childNames];
+      const last = allNames.pop()!;
+      return allNames.length > 0
+        ? `${allNames.join(", ")} și ${last}`
+        : last;
+    }
+  }
+
+  // Fara partener: Prenume Nume
+  return `${guest.prenume} ${guest.nume}`;
 }
 
 export default function Hero({
@@ -193,11 +222,7 @@ export default function Hero({
                           {getGreeting(audience)}
                         </p>
                         <p className={`serif-font text-xl text-text-heading font-light mb-3 transition-all duration-700 ease-out delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
-                          {guest.partner
-                            ? guest.nume === guest.partner.nume
-                              ? `${guest.prenume} și ${guest.partner.prenume} ${guest.nume}`
-                              : `${guest.prenume} ${guest.nume} și ${guest.partner.prenume} ${guest.partner.nume}`
-                            : `${guest.prenume} ${guest.nume}`}
+                          {formatGuestNames(guest)}
                         </p>
                       </>
                     )}
@@ -256,11 +281,7 @@ export default function Hero({
               {getGreeting(audience)}
             </p>
             <p className="serif-font text-2xl text-text-heading font-light">
-              {guest.partner
-                ? guest.nume === guest.partner.nume
-                  ? `${guest.prenume} și ${guest.partner.prenume} ${guest.nume}`
-                  : `${guest.prenume} ${guest.nume} și ${guest.partner.prenume} ${guest.partner.nume}`
-                : `${guest.prenume} ${guest.nume}`}
+              {formatGuestNames(guest)}
             </p>
           </div>
         )}

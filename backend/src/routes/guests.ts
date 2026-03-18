@@ -49,6 +49,12 @@ export async function guestRoutes(fastify: FastifyInstance) {
       }
     }
 
+    // Fetch children
+    const [childrenRows] = await pool.execute<RowDataPacket[]>(
+      'SELECT id, nume, prenume FROM guest_children WHERE guest_id = ? ORDER BY id ASC',
+      [guest.id]
+    );
+
     return {
       id: guest.id,
       nume: guest.nume,
@@ -58,6 +64,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
       intro_long: guest.intro_long,
       sex: guest.sex || null,
       partner: partner ? { nume: partner.nume, prenume: partner.prenume } : null,
+      children: childrenRows.map((c) => ({ id: c.id, nume: c.nume, prenume: c.prenume })),
     };
   });
 

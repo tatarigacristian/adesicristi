@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { Suspense, useState, useEffect, useMemo, useCallback } from "react";
 import { useAdminAuth } from "../_context";
 import { API_URL, Guest, RsvpEntry, authHeaders, SearchInput } from "../_shared";
+import { useTabParam } from "@/hooks/useTabParam";
 
 interface TableAssignment {
   guest_id: number;
@@ -32,7 +33,7 @@ interface TableSettings {
   nasa_prenume: string | null;
 }
 
-export default function MesePage() {
+function MeseContent() {
   const { token, onUnauth } = useAdminAuth();
   const [guests, setGuests] = useState<Guest[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -42,7 +43,7 @@ export default function MesePage() {
   const [settings, setSettings] = useState<TableSettings | null>(null);
   const [search, setSearch] = useState("");
   const [verifySearch, setVerifySearch] = useState("");
-  const [meseTab, setMeseTab] = useState<"seteaza" | "verifica">("seteaza");
+  const [meseTab, setMeseTab] = useTabParam("tab", "seteaza", ["seteaza", "verifica"] as const);
   const [assigning, setAssigning] = useState<number | null>(null);
   const [assigningType, setAssigningType] = useState<"guest" | "service">("guest");
   const [addToTable, setAddToTable] = useState<number | null>(null);
@@ -636,5 +637,13 @@ export default function MesePage() {
         );
       })()}
     </div>
+  );
+}
+
+export default function MesePage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: "center", padding: "2rem", color: "#999" }}>Se incarca...</div>}>
+      <MeseContent />
+    </Suspense>
   );
 }

@@ -18,6 +18,7 @@ interface GuestData {
   slug: string | null;
   partner_id: number | null;
   sex: "M" | "F" | null;
+  children?: { id: number; nume: string; prenume: string }[];
 }
 
 interface WeddingSettings {
@@ -436,7 +437,18 @@ function InvitatieContent() {
 
             {/* ─── Guest greeting ─── */}
             <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 400, color: c.primary, letterSpacing: "0.03em" }}>
-              {getGreeting(audience, true)} {partner ? `${guest.prenume} & ${partner.prenume}` : `${guest.prenume} ${guest.nume}`},
+              {getGreeting(audience, true)} {(() => {
+                const childNames = guest.children && guest.children.length > 0 ? guest.children.map((c) => c.prenume) : [];
+                if (partner) {
+                  const same = guest.nume === partner.nume;
+                  const allNames = [guest.prenume, partner.prenume, ...childNames];
+                  const last = allNames.pop()!;
+                  return same
+                    ? `${allNames.join(", ")} și ${last} ${guest.nume}`
+                    : `${allNames.join(", ")} și ${last}`;
+                }
+                return `${guest.prenume} ${guest.nume}`;
+              })()},
             </p>
 
             {/* ─── "Cu drag te/vă invităm" ─── */}

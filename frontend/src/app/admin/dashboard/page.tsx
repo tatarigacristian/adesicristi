@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { Suspense, useState, useEffect, useMemo, useCallback } from "react";
 import { useAdminAuth } from "../_context";
 import { API_URL, Guest, RsvpEntry, authHeaders } from "../_shared";
+import { useTabParam } from "@/hooks/useTabParam";
 
 interface Service {
   id: number;
@@ -51,7 +52,7 @@ function formatPriceRaw(v: number) {
   });
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const { token, onUnauth } = useAdminAuth();
   const [guests, setGuests] = useState<Guest[]>([]);
   const [rsvps, setRsvps] = useState<RsvpEntry[]>([]);
@@ -63,9 +64,11 @@ export default function DashboardPage() {
   const [onlyConfirmed, setOnlyConfirmed] = useState(false);
   const [subtractAvans, setSubtractAvans] = useState(false);
   const [showEuro, setShowEuro] = useState(false);
+  const [extraCosts, setExtraCosts] = useState(0);
   const [logSearchState, setLogSearchState] = useState("");
+  const [miniLogSearch, setMiniLogSearch] = useState("");
   const [logPage, setLogPage] = useState(1);
-  const [dashTab, setDashTab] = useState<"sumar" | "financiar" | "invitati">("sumar");
+  const [dashTab, setDashTab] = useTabParam("tab", "sumar", ["sumar", "financiar", "invitati"] as const);
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
@@ -181,7 +184,7 @@ export default function DashboardPage() {
     const seatedGuests = assignments.length;
     const unseatedGuests = totalInvited - seatedGuests;
 
-    const totalServiceCost = services.reduce(
+    const serviceCost = services.reduce(
       (sum, s) => {
         if (s.has_pret_per_invitat && s.pret_per_invitat != null) {
           return sum + Number(s.pret_per_invitat) * totalInvited;
@@ -190,6 +193,7 @@ export default function DashboardPage() {
       },
       0
     );
+    const totalServiceCost = serviceCost + extraCosts;
     const totalAvans = services.reduce(
       (sum, s) => sum + Number(s.avans || 0),
       0
@@ -202,6 +206,9 @@ export default function DashboardPage() {
     const vegetarianMenu = rsvps
       .filter((r) => r.attending && r.vegetarian_menu)
       .reduce((sum, r) => sum + r.person_count, 0);
+    const childrenMenu = rsvps
+      .filter((r) => r.attending && r.children_menu)
+      .length;
 
     const estimatedGift =
       estimatedGiftMin +
@@ -266,6 +273,7 @@ export default function DashboardPage() {
       remainingToPay,
       needTransport,
       vegetarianMenu,
+      childrenMenu,
       estimatedGiftMin,
       estimatedGiftMax,
       estimatedGift,
@@ -292,6 +300,7 @@ export default function DashboardPage() {
     settings,
     optimismLevel,
     onlyConfirmed,
+    extraCosts,
   ]);
 
   // ── Percentages for RSVP chart ──
@@ -596,6 +605,33 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
+            <div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#8b5cf6"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-2xl font-semibold text-text-heading">
+                    {stats.childrenMenu}
+                  </p>
+                  <p className="text-xs text-text-muted">
+                    Meniu copii (confirmari)
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -624,6 +660,20 @@ export default function DashboardPage() {
                 <span className="text-[11px] text-text-muted">Scade avansul</span>
               </label>
             </div>
+            {/* Extra costs input */}
+            <div className="flex items-center gap-2 mb-3 p-2.5 rounded-lg bg-background-soft/50 border border-border-light">
+              <label className="text-xs text-text-muted whitespace-nowrap">Costuri extra (RON)</label>
+              <input
+                type="number"
+                min="0"
+                step="100"
+                value={extraCosts || ""}
+                onChange={(e) => setExtraCosts(Number(e.target.value) || 0)}
+                placeholder="0"
+                className="w-full border border-border-light rounded-lg px-3 py-1.5 text-sm bg-white text-right focus:outline-none focus:border-accent transition-colors"
+              />
+            </div>
+
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-text-muted">Cost total</span>
@@ -877,12 +927,14 @@ export default function DashboardPage() {
             const labels: Record<string, string> = {
               mire: "Mire", mireasa: "Mireasa", nasi: "Nasi",
               parintii_mire: "Par. mire", parintii_mireasa: "Par. mireasa",
+              neatribuit: "Neatribuit",
             };
             const colors: Record<string, string> = {
               mire: "bg-blue-500", mireasa: "bg-pink-500", nasi: "bg-purple-500",
               parintii_mire: "bg-cyan-500", parintii_mireasa: "bg-rose-400",
+              neatribuit: "bg-gray-300",
             };
-            const entries = Object.entries(stats.dinPartea).filter(([key]) => key !== "neatribuit").sort((a, b) => b[1] - a[1]);
+            const entries = Object.entries(stats.dinPartea).sort((a, b) => b[1] - a[1]);
             const total = entries.reduce((sum, [, v]) => sum + v, 0);
             if (entries.length === 0) return null;
             return (
@@ -936,6 +988,42 @@ export default function DashboardPage() {
               });
             })()}
           </div>
+
+          {/* Mini invitation logs table */}
+          {(() => {
+            const q = miniLogSearch.toLowerCase().trim();
+            const sorted = [...invitationLogs]
+              .filter((l) => l.open_count > 0)
+              .filter((l) => !q || l.prenume.toLowerCase().includes(q) || l.nume.toLowerCase().includes(q))
+              .sort((a, b) => new Date(b.last_open_at || 0).getTime() - new Date(a.last_open_at || 0).getTime())
+              .slice(0, 3);
+            return (
+              <div className="mt-4 pt-4 border-t border-border-light">
+                <input
+                  type="text"
+                  value={miniLogSearch}
+                  onChange={(e) => setMiniLogSearch(e.target.value)}
+                  placeholder="Cauta invitat..."
+                  className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs bg-white focus:outline-none focus:border-accent transition-colors mb-3"
+                />
+                {sorted.length === 0 ? (
+                  <p className="text-xs text-text-muted text-center py-2">{q ? "Niciun rezultat" : "Nicio invitatie deschisa"}</p>
+                ) : (
+                  <div className="space-y-2">
+                    {sorted.map((l) => (
+                      <div key={l.guest_id} className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-medium text-text-heading">{l.prenume} {l.nume}</p>
+                          <p className="text-[10px] text-text-muted">{l.last_open_at ? relativeTime(l.last_open_at) : "\u2014"}</p>
+                        </div>
+                        <span className="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">{l.open_count}x</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -1109,5 +1197,13 @@ export default function DashboardPage() {
       )}
       </>)}
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: "center", padding: "2rem", color: "#999" }}>Se incarca...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }

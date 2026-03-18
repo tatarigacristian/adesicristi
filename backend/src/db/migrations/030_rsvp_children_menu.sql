@@ -1,0 +1,1 @@
+ALTER TABLE rsvp_responses ADD COLUMN children_menu BOOLEAN NOT NULL DEFAULT FALSE;
