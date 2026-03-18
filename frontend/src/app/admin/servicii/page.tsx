@@ -208,7 +208,7 @@ export default function ServiciiPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="serif-font text-2xl text-text-heading">Cheltuieli</h2>
+        <h2 className="serif-font text-2xl text-text-heading">Costuri</h2>
         <button onClick={openNew}
           className="bg-button text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
           + Adauga cost
@@ -625,7 +625,7 @@ export default function ServiciiPage() {
       {/* Footer: count + pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
         <p className="text-xs text-text-muted">
-          {filtered.length} din {services.length} cheltuieli
+          {filtered.length} din {services.length} costuri
         </p>
         <Pagination page={safePage} totalPages={totalPages} onPageChange={setPage} />
       </div>
