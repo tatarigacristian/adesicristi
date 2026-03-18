@@ -112,7 +112,7 @@ function LocationCardDesktop({
       {loc.googleMapsUrl && (
         <button
           onClick={() => onMapClick(loc)}
-          className="text-[0.6rem] tracking-[0.15em] uppercase text-button hover:text-button-hover transition-colors cursor-pointer flex items-center gap-1.5 flex-shrink-0"
+          className="body-font text-[0.6rem] tracking-[0.15em] uppercase text-button hover:text-button-hover transition-colors cursor-pointer flex items-center gap-1.5 flex-shrink-0"
         >
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -186,7 +186,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
             Agenda
           </h2>
           <SectionDots />
-          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
             Când și unde
           </p>
         </div>
@@ -218,7 +218,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                         {loc.address}
                       </p>
                       {loc.googleMapsUrl && (
-                        <p className="mt-1.5 text-[0.6rem] tracking-[0.1em] uppercase text-button flex items-center gap-1">
+                        <p className="body-font mt-1.5 text-[0.6rem] tracking-[0.1em] uppercase text-button flex items-center gap-1">
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                             <circle cx="12" cy="10" r="3" />

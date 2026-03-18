@@ -112,7 +112,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       <div className="section-header">
         <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2 sm:mb-3">Noi doi</h2>
         <SectionDots />
-          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
             Povestea noastră
           </p>
       </div>

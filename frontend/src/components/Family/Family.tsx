@@ -43,7 +43,7 @@ export default function Family({
           Familie
         </h2>
         <SectionDots />
-          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
             Cei dragi nouă
           </p>
       </div>
@@ -55,7 +55,7 @@ export default function Family({
           {/* Nasi */}
           {hasNasi && (
             <div className="text-center">
-              <p className="text-[0.55rem] tracking-[0.2em] uppercase text-text-muted mb-2">
+              <p className="body-font text-[0.55rem] tracking-[0.2em] uppercase text-text-muted mb-2">
                 Împreună cu nașii
               </p>
               <p className="script-font text-2xl sm:text-3xl text-text-heading">
@@ -78,7 +78,7 @@ export default function Family({
           {/* Parinti */}
           {hasParinti && (
             <div className="text-center">
-              <p className="text-[0.55rem] tracking-[0.2em] uppercase text-text-muted mb-2">
+              <p className="body-font text-[0.55rem] tracking-[0.2em] uppercase text-text-muted mb-2">
                 Dragii noștri părinți
               </p>
               {parintiMireasa && (

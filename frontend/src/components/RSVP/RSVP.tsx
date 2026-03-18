@@ -344,7 +344,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         <div className="section-header">
           <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">Confirmare</h2>
           <SectionDots />
-          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
             Prezența ta contează
           </p>
         </div>
@@ -365,7 +365,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             Confirmare
           </h2>
           <SectionDots />
-          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
             Prezența ta contează
           </p>
         </div>
@@ -389,7 +389,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </div>
 
             {/* Title */}
-            <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-2">
+            <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-2">
               {isPositive
                 ? (isPlural ? "Mulțumim pentru confirmare" : "Mulțumim pentru confirmare")
                 : formState === "declined"
@@ -455,7 +455,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           Confirmare
         </h2>
         <SectionDots />
-        <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+        <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
           Prezența ta contează
         </p>
       </div>
@@ -482,7 +482,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 1: Câte persoane ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center ${stepClass(1)}`}>
-              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-4">
+              <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-4">
                 Câte persoane participă?
               </p>
               <div className="flex gap-3 w-full max-w-xs">
@@ -500,7 +500,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                   </svg>
-                  <span className="text-xs font-medium text-text-heading">O persoană</span>
+                  <span className="body-font text-xs font-medium text-text-heading">O persoană</span>
                 </button>
                 <button
                   type="button"
@@ -518,7 +518,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
-                  <span className="text-xs font-medium text-text-heading">Două persoane</span>
+                  <span className="body-font text-xs font-medium text-text-heading">Două persoane</span>
                 </button>
               </div>
               {errors.personCount && (
@@ -529,7 +529,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 2: Nume ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(2)}`}>
-              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
+              <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 {personCount === 2 ? "Numele vostru" : "Numele tău"}
               </p>
               <input
@@ -587,7 +587,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 3: Preferințe ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(3)}`}>
-              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
+              <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 Preferințe
               </p>
 
@@ -600,7 +600,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     <path d="M3 7 Q3 5, 5 5 L19 5 Q21 5, 21 7 L21 15 Q21 17, 19 17 L5 17 Q3 17, 3 15Z" />
                     <circle cx="7" cy="19" r="1.5" /><circle cx="17" cy="19" r="1.5" />
                   </svg>
-                  <span className="text-xs text-text-heading">Transport</span>
+                  <span className="body-font text-xs text-text-heading">Transport</span>
                 </div>
                 <div className={`relative w-10 h-5 rounded-full transition-colors duration-200
                   ${needsTransport ? "bg-button" : "bg-text-muted/20"}`}>
@@ -619,7 +619,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     <path d="M15 3c-1 4-4 7-8 8" />
                     <path d="M22 2c-4 1-7 4-8 8" />
                   </svg>
-                  <span className="text-xs text-text-heading">Meniu vegetarian</span>
+                  <span className="body-font text-xs text-text-heading">Meniu vegetarian</span>
                 </div>
                 <div className={`relative w-10 h-5 rounded-full transition-colors duration-200
                   ${vegetarianMenu ? "bg-button" : "bg-text-muted/20"}`}>
@@ -639,7 +639,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     </svg>
                     <div className="flex flex-col items-start">
-                      <span className="text-xs text-text-heading">Meniu copil</span>
+                      <span className="body-font text-xs text-text-heading">Meniu copil</span>
                       <span className="text-[0.6rem] text-text-muted">
                         {guest!.children!.map((c) => c.prenume).join(", ")}
                       </span>
@@ -668,7 +668,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 4: Mesaj + Confirmare ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(4)}`}>
-              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
+              <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 Un mesaj pentru noi?
               </p>
               <textarea

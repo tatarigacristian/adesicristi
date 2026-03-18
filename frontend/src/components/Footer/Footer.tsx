@@ -19,7 +19,7 @@ export default function Footer({ settings }: { settings?: WeddingSettings | null
           Vă mulțumim
         </h2>
         <SectionDots />
-          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
             Cu drag
           </p>
       </div>
