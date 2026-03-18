@@ -10,6 +10,7 @@ interface Service {
   numar_persoane: number;
   pret: number;
   avans: number | null;
+  pret_per_invitat: number | null;
   loc_la_masa: boolean;
   contract_path: string | null;
 }
@@ -42,7 +43,7 @@ function relativeTime(dateStr: string) {
   return `acum ${days}z`;
 }
 
-function formatPrice(v: number) {
+function formatPriceRaw(v: number) {
   return Number(v).toLocaleString("ro-RO", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -60,6 +61,10 @@ export default function DashboardPage() {
   const [optimismLevel, setOptimismLevel] = useState(50);
   const [onlyConfirmed, setOnlyConfirmed] = useState(false);
   const [subtractAvans, setSubtractAvans] = useState(false);
+  const [showEuro, setShowEuro] = useState(false);
+  const [logSearchState, setLogSearchState] = useState("");
+  const [logPage, setLogPage] = useState(1);
+  const [dashTab, setDashTab] = useState<"sumar" | "financiar" | "invitati">("sumar");
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
@@ -118,6 +123,11 @@ export default function DashboardPage() {
     fetchAll();
   }, [fetchAll]);
 
+  const cursEuro = settings.curs_euro ? Number(settings.curs_euro) : null;
+  const currency = showEuro && cursEuro ? "EUR" : "RON";
+  const conv = (v: number) => showEuro && cursEuro ? v / cursEuro : v;
+  const formatPrice = (v: number) => formatPriceRaw(conv(v));
+
   // ── Main guests (exclude auto-created partners) ──
   const mainGuests = useMemo(() => {
     const partnerIds = new Set(
@@ -171,7 +181,12 @@ export default function DashboardPage() {
     const unseatedGuests = totalInvited - seatedGuests;
 
     const totalServiceCost = services.reduce(
-      (sum, s) => sum + Number(s.pret),
+      (sum, s) => {
+        if (s.pret_per_invitat != null) {
+          return sum + Number(s.pret_per_invitat) * totalInvited;
+        }
+        return sum + Number(s.pret);
+      },
       0
     );
     const totalAvans = services.reduce(
@@ -313,11 +328,46 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Page title */}
-      <h1 className="serif-font text-2xl text-text-heading">
-        Panou de comanda
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="serif-font text-2xl text-text-heading">
+          Panou de comanda
+        </h1>
+        {cursEuro && (
+          <button
+            onClick={() => setShowEuro(!showEuro)}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-colors cursor-pointer font-medium ${
+              showEuro
+                ? "bg-blue-50 text-blue-700 border-blue-200"
+                : "bg-gray-50 text-text-muted border-gray-200"
+            }`}
+          >
+            {showEuro ? `EUR (1€ = ${cursEuro} RON)` : "RON"}
+          </button>
+        )}
+      </div>
 
-      {/* Row 1 - Key metrics */}
+      {/* Tab bar */}
+      <div className="flex gap-1 border-b border-border-light">
+        {([
+          { id: "sumar" as const, label: "Sumar" },
+          { id: "financiar" as const, label: "Financiar" },
+          { id: "invitati" as const, label: "Invitati" },
+        ]).map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setDashTab(tab.id)}
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors cursor-pointer ${
+              dashTab === tab.id
+                ? "border-button text-text-heading"
+                : "border-transparent text-text-muted hover:text-text-heading"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Row 1 - Key metrics (always visible) */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="family-card text-center">
           <p className="text-3xl font-semibold text-text-heading">
@@ -357,6 +407,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {dashTab === "sumar" && (<>
       {/* Row 2 - RSVP Chart */}
       <div className="family-card">
         <h2 className="text-sm font-medium text-text-heading mb-4">
@@ -535,7 +586,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      </>)}
 
+      {dashTab === "financiar" && (<>
       {/* Row 4 - Financial overview */}
       <div className="family-card">
         <h2 className="text-sm font-medium text-text-heading mb-5">
@@ -562,19 +615,19 @@ export default function DashboardPage() {
               <div className="flex justify-between">
                 <span className="text-sm text-text-muted">Cost total</span>
                 <span className="text-sm font-medium text-text-heading">
-                  {formatPrice(stats.totalServiceCost)} RON
+                  {formatPrice(stats.totalServiceCost)} {currency}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-text-muted">Total avans</span>
                 <span className="text-sm font-medium text-green-600">
-                  {formatPrice(stats.totalAvans)} RON
+                  {formatPrice(stats.totalAvans)} {currency}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-text-muted">{subtractAvans ? "Rest de plata" : "De achitat"}</span>
                 <span className="text-sm font-medium text-red-600">
-                  {formatPrice(subtractAvans ? stats.remainingToPay : stats.totalServiceCost)} RON
+                  {formatPrice(subtractAvans ? stats.remainingToPay : stats.totalServiceCost)} {currency}
                 </span>
               </div>
             </div>
@@ -693,6 +746,7 @@ export default function DashboardPage() {
                 type="range"
                 min="0"
                 max="100"
+                step="5"
                 value={optimismLevel}
                 onChange={(e) => setOptimismLevel(Number(e.target.value))}
                 className="w-full accent-accent h-2 cursor-pointer"
@@ -700,11 +754,11 @@ export default function DashboardPage() {
             </div>
             {/* Current value */}
             <p className="text-3xl font-semibold text-text-heading text-center my-2">
-              {formatPrice(Math.round(stats.estimatedGift))} RON
+              {formatPrice(Math.round(stats.estimatedGift))} {currency}
             </p>
             <div className="flex justify-between text-xs text-text-muted">
-              <span>Min: {formatPrice(stats.estimatedGiftMin)} RON</span>
-              <span>Max: {formatPrice(stats.estimatedGiftMax)} RON</span>
+              <span>Min: {formatPrice(stats.estimatedGiftMin)} {currency}</span>
+              <span>Max: {formatPrice(stats.estimatedGiftMax)} {currency}</span>
             </div>
             {/* Comparison with cost */}
             {(() => {
@@ -720,7 +774,7 @@ export default function DashboardPage() {
                 >
                   <span className="text-sm font-medium">
                     {diff >= 0 ? "+" : ""}
-                    {formatPrice(Math.round(diff))} RON
+                    {formatPrice(Math.round(diff))} {currency}
                   </span>
                   <span className="text-xs ml-1.5">vs. {subtractAvans ? "rest plata" : "cost servicii"}</span>
                 </div>
@@ -730,6 +784,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      </>)}
+
+      {dashTab === "invitati" && (<>
       {/* Row 5 - Two columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Gender distribution */}
@@ -802,46 +859,6 @@ export default function DashboardPage() {
                 );
               });
             })()}
-            {/* Bar chart: opens per guest */}
-            {invitationLogs.length > 0 && (() => {
-              const sorted = [...invitationLogs].sort((a, b) => b.open_count - a.open_count).slice(0, 10);
-              const maxCount = sorted[0]?.open_count || 1;
-              return (
-                <div className="pt-3 border-t border-border-light">
-                  <p className="text-xs uppercase tracking-wide text-text-muted mb-2">Vizualizari per invitat</p>
-                  <div className="space-y-1.5">
-                    {sorted.map((l) => (
-                      <div key={l.guest_id} className="flex items-center gap-2">
-                        <span className="text-xs text-text-muted w-20 truncate flex-shrink-0">{l.prenume}</span>
-                        <div className="flex-1 h-4 bg-gray-100 rounded overflow-hidden">
-                          <div className="h-full bg-blue-500 rounded transition-all duration-500" style={{ width: `${(l.open_count / maxCount) * 100}%` }} />
-                        </div>
-                        <span className="text-xs font-medium text-text-heading w-6 text-right flex-shrink-0">{l.open_count}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
-            {/* Timeline: last opens */}
-            {invitationLogs.filter((l) => l.last_open_at).length > 0 && (() => {
-              const withDate = invitationLogs.filter((l) => l.last_open_at).sort((a, b) => new Date(b.last_open_at!).getTime() - new Date(a.last_open_at!).getTime()).slice(0, 8);
-              return (
-                <div className="pt-3 border-t border-border-light">
-                  <p className="text-xs uppercase tracking-wide text-text-muted mb-2">Ultima deschidere</p>
-                  <div className="space-y-2">
-                    {withDate.map((l) => (
-                      <div key={l.guest_id} className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0" />
-                        <span className="text-xs text-text-heading flex-1 truncate">{l.prenume} {l.nume}</span>
-                        <span className="text-[10px] text-text-muted flex-shrink-0">{relativeTime(l.last_open_at!)}</span>
-                        {l.device && <span className="text-[9px] bg-gray-100 text-text-muted px-1.5 py-0.5 rounded flex-shrink-0">{l.device}</span>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
             {stats.daysUntilWedding != null && (
               <div className="flex items-center justify-between pt-2 border-t border-border-light">
                 <span className="text-sm text-text-muted">Zile pana la nunta</span>
@@ -851,7 +868,90 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-      {/* ── Row 6: Cost per invitat ── */}
+
+      {/* ── Row: Invitation analytics table ── */}
+      {invitationLogs.length > 0 && (() => {
+        const LOG_PAGE_SIZE = 5;
+        const logSearch = logSearchState;
+        const filtered = invitationLogs.filter((l) => {
+          if (!logSearch.trim()) return true;
+          const q = logSearch.toLowerCase();
+          return l.prenume.toLowerCase().includes(q) || l.nume.toLowerCase().includes(q) || (l.slug && l.slug.toLowerCase().includes(q));
+        }).sort((a, b) => b.open_count - a.open_count);
+        const totalLogPages = Math.max(1, Math.ceil(filtered.length / LOG_PAGE_SIZE));
+        const safeLogPage = Math.min(logPage, totalLogPages);
+        const paginated = filtered.slice((safeLogPage - 1) * LOG_PAGE_SIZE, safeLogPage * LOG_PAGE_SIZE);
+        const maxCount = Math.max(...invitationLogs.map((l) => l.open_count), 1);
+        return (
+          <div className="family-card">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-medium text-text-heading">Vizualizari invitatii</h2>
+              <span className="text-xs text-text-muted">{invitationLogs.length} invitatii deschise</span>
+            </div>
+            <div className="mb-3">
+              <input
+                type="text"
+                value={logSearchState}
+                onChange={(e) => { setLogSearchState(e.target.value); setLogPage(1); }}
+                placeholder="Cauta dupa nume..."
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors"
+              />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border-light">
+                    <th className="text-left px-3 py-2 text-xs text-text-muted font-medium">Invitat</th>
+                    <th className="text-center px-3 py-2 text-xs text-text-muted font-medium">Vizualizari</th>
+                    <th className="text-left px-3 py-2 text-xs text-text-muted font-medium">Ultima deschidere</th>
+                    <th className="text-left px-3 py-2 text-xs text-text-muted font-medium">Device</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginated.map((l) => (
+                    <tr key={l.guest_id} className="border-b border-border-light/50">
+                      <td className="px-3 py-2.5">
+                        <span className="text-text-heading font-medium">{l.prenume} {l.nume}</span>
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-500 rounded-full transition-all duration-500" style={{ width: `${(l.open_count / maxCount) * 100}%` }} />
+                          </div>
+                          <span className="text-xs font-medium text-text-heading w-6 text-right">{l.open_count}</span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2.5 text-xs text-text-muted">
+                        {l.last_open_at ? relativeTime(l.last_open_at) : "\u2014"}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {l.device ? <span className="text-[10px] bg-gray-100 text-text-muted px-1.5 py-0.5 rounded">{l.device}</span> : "\u2014"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {totalLogPages > 1 && (
+              <div className="flex items-center justify-center gap-1 mt-3">
+                <button onClick={() => setLogPage(Math.max(1, safeLogPage - 1))} disabled={safeLogPage === 1}
+                  className="px-2 py-1 text-xs rounded border border-border-light text-text-muted hover:bg-background-soft disabled:opacity-30 transition-colors cursor-pointer disabled:cursor-default">&lsaquo;</button>
+                {Array.from({ length: totalLogPages }, (_, i) => i + 1).map((p) => (
+                  <button key={p} onClick={() => setLogPage(p)}
+                    className={`px-2 py-1 text-xs rounded border transition-colors cursor-pointer ${p === safeLogPage ? "bg-button text-white border-button" : "border-border-light text-text-muted hover:bg-background-soft"}`}>{p}</button>
+                ))}
+                <button onClick={() => setLogPage(Math.min(totalLogPages, safeLogPage + 1))} disabled={safeLogPage === totalLogPages}
+                  className="px-2 py-1 text-xs rounded border border-border-light text-text-muted hover:bg-background-soft disabled:opacity-30 transition-colors cursor-pointer disabled:cursor-default">&rsaquo;</button>
+              </div>
+            )}
+          </div>
+        );
+      })()}
+      </>)}
+
+      {/* ── Row 6: Cost per invitat (financiar tab) ── */}
+      {dashTab === "financiar" && (<>
+      {/* ── Cost per invitat ── */}
       {services.length > 0 && stats.totalInvited > 0 && (
         <div className="family-card">
           <div className="flex items-center justify-between mb-4">
@@ -870,33 +970,43 @@ export default function DashboardPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
             {services.map((s) => {
-              const pret = Number(s.pret);
+              const hasPPI = s.pret_per_invitat != null;
+              const pret = hasPPI ? Number(s.pret_per_invitat) * stats.totalInvited : Number(s.pret);
               const avans = Number(s.avans || 0);
               const suma = subtractAvans ? pret - avans : pret;
               const perGuest = suma / stats.totalInvited;
               return (
                 <div key={s.id} className="rounded-lg border border-border-light p-3">
-                  <p className="text-sm font-medium text-text-heading mb-2 truncate">{s.nume}</p>
+                  <p className="text-sm font-medium text-text-heading mb-2 truncate">
+                    {s.nume}
+                    {hasPPI && <span className="text-[10px] text-purple-600 ml-1.5 font-normal">per invitat</span>}
+                  </p>
                   <div className="space-y-1 text-xs">
+                    {hasPPI && (
+                      <div className="flex justify-between">
+                        <span className="text-text-muted">Pret/invitat</span>
+                        <span className="text-purple-600">{formatPrice(Number(s.pret_per_invitat))} {currency} × {stats.totalInvited}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
-                      <span className="text-text-muted">Pret total</span>
-                      <span className="text-foreground">{formatPrice(pret)} RON</span>
+                      <span className="text-text-muted">{hasPPI ? "Pret calculat" : "Pret total"}</span>
+                      <span className="text-foreground">{formatPrice(pret)} {currency}</span>
                     </div>
                     {subtractAvans && avans > 0 && (
                       <div className="flex justify-between">
                         <span className="text-text-muted">Avans platit</span>
-                        <span className="text-green-600">-{formatPrice(avans)} RON</span>
+                        <span className="text-green-600">-{formatPrice(avans)} {currency}</span>
                       </div>
                     )}
                     {subtractAvans && (
                       <div className="flex justify-between border-t border-border-light pt-1">
                         <span className="text-text-muted">Rest de plata</span>
-                        <span className="font-medium text-foreground">{formatPrice(suma)} RON</span>
+                        <span className="font-medium text-foreground">{formatPrice(suma)} {currency}</span>
                       </div>
                     )}
                     <div className={`flex justify-between bg-background-soft rounded px-2 py-1.5 ${subtractAvans ? "mt-1" : ""}`}>
                       <span className="text-text-muted">Per invitat</span>
-                      <span className="font-semibold text-text-heading">{formatPrice(Math.ceil(perGuest))} RON</span>
+                      <span className="font-semibold text-text-heading">{formatPrice(Math.ceil(perGuest))} {currency}</span>
                     </div>
                   </div>
                 </div>
@@ -912,12 +1022,12 @@ export default function DashboardPage() {
                   <div>
                     <p className="text-sm font-medium text-text-heading">Total servicii</p>
                     <p className="text-xs text-text-muted mt-0.5">
-                      {subtractAvans ? "Rest de plata" : "Cost total"}: {formatPrice(totalSum)} RON / {stats.totalInvited} invitati
+                      {subtractAvans ? "Rest de plata" : "Cost total"}: {formatPrice(totalSum)} {currency} / {stats.totalInvited} invitati
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-semibold text-text-heading">
-                      {formatPrice(Math.ceil(totalSum / stats.totalInvited))} RON
+                      {formatPrice(Math.ceil(totalSum / stats.totalInvited))} {currency}
                     </p>
                     <p className="text-xs text-text-muted">per invitat</p>
                   </div>
@@ -927,6 +1037,7 @@ export default function DashboardPage() {
           })()}
         </div>
       )}
+      </>)}
     </div>
   );
 }

@@ -38,6 +38,7 @@ export async function weddingSettingsRoutes(fastify: FastifyInstance) {
       'color_main', 'color_second', 'color_button', 'color_text',
       'numar_mese', 'min_persoane_masa', 'max_persoane_masa',
       'numar_estimativ_invitati', 'numar_estimativ_staff',
+      'curs_euro',
     ];
 
     const setClauses: string[] = [];

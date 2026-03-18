@@ -54,6 +54,7 @@ interface WeddingSettingsData {
   max_persoane_masa: number | null;
   numar_estimativ_invitati: number | null;
   numar_estimativ_staff: number | null;
+  curs_euro: number | null;
   updated_at: string;
 }
 
@@ -182,6 +183,7 @@ export default function SetariPage() {
     max_persoane_masa: "",
     numar_estimativ_invitati: "",
     numar_estimativ_staff: "",
+    curs_euro: "",
   });
 
   async function fetchSettings() {
@@ -237,6 +239,7 @@ export default function SetariPage() {
           max_persoane_masa: data.max_persoane_masa != null ? String(data.max_persoane_masa) : "",
           numar_estimativ_invitati: data.numar_estimativ_invitati != null ? String(data.numar_estimativ_invitati) : "",
           numar_estimativ_staff: data.numar_estimativ_staff != null ? String(data.numar_estimativ_staff) : "",
+          curs_euro: data.curs_euro != null ? String(data.curs_euro) : "",
         });
       }
     } catch {
@@ -466,6 +469,9 @@ export default function SetariPage() {
                 <SettingsInput label="Numar estimativ invitati" value={form.numar_estimativ_invitati} onChange={updateForm("numar_estimativ_invitati")} type="number" placeholder="200" />
                 <SettingsInput label="Numar estimativ staff" value={form.numar_estimativ_staff} onChange={updateForm("numar_estimativ_staff")} type="number" placeholder="15" />
               </div>
+            </SettingsSection>
+            <SettingsSection title="Moneda">
+              <SettingsInput label="Curs EUR/RON" value={form.curs_euro} onChange={updateForm("curs_euro")} type="number" placeholder="4.97" />
             </SettingsSection>
           </div>
         )}

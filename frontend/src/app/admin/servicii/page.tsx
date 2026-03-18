@@ -10,6 +10,7 @@ interface Service {
   numar_persoane: number;
   pret: number;
   avans: number | null;
+  pret_per_invitat: number | null;
   contract_start: string | null;
   contract_end: string | null;
   loc_la_masa: boolean;
@@ -17,6 +18,28 @@ interface Service {
   contract_path: string | null;
   telefon: string | null;
   created_at: string;
+}
+
+function computeEndFromHours(start: string, hours: number): string {
+  if (!start || !hours) return "";
+  const [date, time] = start.split("T");
+  if (!date || !time) return "";
+  const [h, m] = time.split(":").map(Number);
+  const startMs = new Date(`${date}T${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:00`).getTime();
+  const endMs = startMs + hours * 60 * 60 * 1000;
+  const endDate = new Date(endMs);
+  const ed = endDate.toISOString().split("T")[0];
+  const eh = String(endDate.getHours()).padStart(2, "0");
+  const em = endDate.getMinutes() < 30 ? "00" : "30";
+  return `${ed}T${eh}:${em}`;
+}
+
+function computeHoursFromDates(start: string, end: string): string {
+  if (!start || !end) return "";
+  const s = new Date(start.replace("T", " ")).getTime();
+  const e = new Date(end.replace("T", " ")).getTime();
+  if (isNaN(s) || isNaN(e) || e <= s) return "";
+  return String(Math.round((e - s) / (60 * 60 * 1000)));
 }
 
 function formatPrice(val: number | string) {
@@ -36,7 +59,7 @@ export default function ServiciiPage() {
   const [weddingDate, setWeddingDate] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editService, setEditService] = useState<Service | null>(null);
-  const [form, setForm] = useState({ nume: "", numar_persoane: "", pret: "", avans: "", contract_start: "", contract_end: "", loc_la_masa: false, link: "", telefon: "" });
+  const [form, setForm] = useState({ nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: "", contract_end: "", numar_ore: "", loc_la_masa: false, link: "", telefon: "" });
   const [contractFile, setContractFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<Service | null>(null);
@@ -93,7 +116,7 @@ export default function ServiciiPage() {
 
   function openNew() {
     setEditService(null);
-    setForm({ nume: "", numar_persoane: "", pret: "", avans: "", contract_start: getDefaultStart(), contract_end: getDefaultEnd(), loc_la_masa: false, link: "", telefon: "" });
+    setForm({ nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: getDefaultStart(), contract_end: getDefaultEnd(), numar_ore: computeHoursFromDates(getDefaultStart(), getDefaultEnd()), loc_la_masa: false, link: "", telefon: "" });
     setContractFile(null);
     setShowForm(true);
   }
@@ -105,8 +128,14 @@ export default function ServiciiPage() {
       numar_persoane: String(s.numar_persoane),
       pret: String(s.pret),
       avans: s.avans != null ? String(s.avans) : "",
+      pret_per_invitat: s.pret_per_invitat != null ? String(s.pret_per_invitat) : "",
+      has_pret_per_invitat: s.pret_per_invitat != null,
       contract_start: s.contract_start ? s.contract_start.replace(" ", "T").slice(0, 16) : getDefaultStart(),
       contract_end: s.contract_end ? s.contract_end.replace(" ", "T").slice(0, 16) : getDefaultEnd(),
+      numar_ore: computeHoursFromDates(
+        s.contract_start ? s.contract_start.replace(" ", "T").slice(0, 16) : getDefaultStart(),
+        s.contract_end ? s.contract_end.replace(" ", "T").slice(0, 16) : getDefaultEnd()
+      ),
       loc_la_masa: s.loc_la_masa,
       link: s.link || "",
       telefon: s.telefon || "",
@@ -127,6 +156,7 @@ export default function ServiciiPage() {
     fd.append("numar_persoane", form.numar_persoane);
     fd.append("pret", form.pret);
     fd.append("avans", form.avans);
+    fd.append("pret_per_invitat", form.has_pret_per_invitat ? form.pret_per_invitat : "");
     fd.append("contract_start", form.contract_start);
     fd.append("contract_end", form.contract_end);
     fd.append("loc_la_masa", String(form.loc_la_masa));
@@ -177,9 +207,8 @@ export default function ServiciiPage() {
 
       {/* Form modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-          onClick={() => setShowForm(false)}>
-          <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 className="serif-font text-lg text-text-heading mb-4">
               {editService ? "Editeaza serviciu" : "Serviciu nou"}
             </h3>
@@ -196,9 +225,10 @@ export default function ServiciiPage() {
                     required min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-xs text-text-muted mb-1">Pret (RON)</label>
+                  <label className={`block text-xs mb-1 ${form.has_pret_per_invitat ? "text-text-muted/40" : "text-text-muted"}`}>Pret fix (RON)</label>
                   <input type="number" value={form.pret} onChange={(e) => setForm({ ...form, pret: e.target.value })}
-                    required min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    required={!form.has_pret_per_invitat} disabled={form.has_pret_per_invitat}
+                    min="0" className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors ${form.has_pret_per_invitat ? "opacity-40 cursor-not-allowed" : ""}`} />
                 </div>
               </div>
               <div>
@@ -207,13 +237,36 @@ export default function ServiciiPage() {
                   min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
               </div>
               <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <input type="checkbox" id="has_pret_per_invitat" checked={form.has_pret_per_invitat}
+                    onChange={(e) => setForm({ ...form, has_pret_per_invitat: e.target.checked, ...(!e.target.checked ? { pret_per_invitat: "" } : { pret: "" }) })}
+                    className="w-3.5 h-3.5 accent-accent cursor-pointer" />
+                  <label htmlFor="has_pret_per_invitat" className="text-xs text-text-muted cursor-pointer">Pret per invitat (RON)</label>
+                </div>
+                {form.has_pret_per_invitat && (
+                  <input type="number" value={form.pret_per_invitat} onChange={(e) => setForm({ ...form, pret_per_invitat: e.target.value })}
+                    required min="0" placeholder="ex: 200"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                )}
+              </div>
+              <div>
                 <label className="block text-xs text-text-muted mb-1">Inceput contract</label>
                 <div className="grid grid-cols-[1fr_100px] gap-2">
                   <input type="date" value={form.contract_start.split("T")[0] || ""}
-                    onChange={(e) => { const time = form.contract_start.split("T")[1] || "15:00"; setForm({ ...form, contract_start: `${e.target.value}T${time}` }); }}
+                    onChange={(e) => {
+                      const time = form.contract_start.split("T")[1] || "15:00";
+                      const newStart = `${e.target.value}T${time}`;
+                      const newEnd = form.numar_ore && Number(form.numar_ore) > 0 ? computeEndFromHours(newStart, Number(form.numar_ore)) : form.contract_end;
+                      setForm({ ...form, contract_start: newStart, contract_end: newEnd });
+                    }}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                   <select value={form.contract_start.split("T")[1] || "15:00"}
-                    onChange={(e) => { const date = form.contract_start.split("T")[0] || ""; setForm({ ...form, contract_start: `${date}T${e.target.value}` }); }}
+                    onChange={(e) => {
+                      const date = form.contract_start.split("T")[0] || "";
+                      const newStart = `${date}T${e.target.value}`;
+                      const newEnd = form.numar_ore && Number(form.numar_ore) > 0 ? computeEndFromHours(newStart, Number(form.numar_ore)) : form.contract_end;
+                      setForm({ ...form, contract_start: newStart, contract_end: newEnd });
+                    }}
                     className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors">
                     {Array.from({ length: 48 }, (_, i) => { const h = String(Math.floor(i / 2)).padStart(2, "0"); const m = i % 2 === 0 ? "00" : "30"; return `${h}:${m}`; }).map((t) => (
                       <option key={t} value={t}>{t}</option>
@@ -222,13 +275,26 @@ export default function ServiciiPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-text-muted mb-1">Sfarsit contract</label>
-                <div className="grid grid-cols-[1fr_100px] gap-2">
+                <label className="block text-xs text-text-muted mb-1">Numar ore</label>
+                <input type="number" value={form.numar_ore}
+                  onChange={(e) => {
+                    const ore = e.target.value;
+                    const newEnd = ore && Number(ore) > 0 ? computeEndFromHours(form.contract_start, Number(ore)) : form.contract_end;
+                    setForm({ ...form, numar_ore: ore, contract_end: newEnd });
+                  }}
+                  min="1" placeholder="ex: 8"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+              </div>
+              <div>
+                <label className={`block text-xs mb-1 ${form.numar_ore ? "text-text-muted/40" : "text-text-muted"}`}>Sfarsit contract</label>
+                <div className={`grid grid-cols-[1fr_100px] gap-2 ${form.numar_ore ? "opacity-40 pointer-events-none" : ""}`}>
                   <input type="date" value={form.contract_end.split("T")[0] || ""}
                     onChange={(e) => { const time = form.contract_end.split("T")[1] || "06:00"; setForm({ ...form, contract_end: `${e.target.value}T${time}` }); }}
+                    disabled={!!form.numar_ore}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                   <select value={form.contract_end.split("T")[1] || "06:00"}
                     onChange={(e) => { const date = form.contract_end.split("T")[0] || ""; setForm({ ...form, contract_end: `${date}T${e.target.value}` }); }}
+                    disabled={!!form.numar_ore}
                     className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors">
                     {Array.from({ length: 48 }, (_, i) => { const h = String(Math.floor(i / 2)).padStart(2, "0"); const m = i % 2 === 0 ? "00" : "30"; return `${h}:${m}`; }).map((t) => (
                       <option key={t} value={t}>{t}</option>
@@ -280,9 +346,8 @@ export default function ServiciiPage() {
 
       {/* Delete confirmation modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-          onClick={() => setDeleteConfirm(null)}>
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center">
             <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3 6 5 6 21 6" />

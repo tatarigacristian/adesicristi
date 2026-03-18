@@ -1,0 +1,1 @@
+ALTER TABLE wedding_settings ADD COLUMN curs_euro DECIMAL(6,2) DEFAULT NULL;

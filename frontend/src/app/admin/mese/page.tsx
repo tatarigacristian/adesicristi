@@ -267,9 +267,8 @@ export default function MesePage() {
 
       {/* Table picker modal */}
       {assigning && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-          onClick={() => setAssigning(null)}>
-          <div className="bg-white rounded-xl p-5 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl p-5 w-full max-w-sm">
             <h3 className="text-sm font-medium text-text-heading mb-1 text-center">Alege masa</h3>
             <p className="text-xs text-text-muted text-center mb-4">
               {(() => {

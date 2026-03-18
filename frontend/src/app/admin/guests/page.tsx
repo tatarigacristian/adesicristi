@@ -165,9 +165,8 @@ export default function GuestsPage() {
 
       {/* Form modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-          onClick={() => setShowForm(false)}>
-          <div className="bg-white rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
             <h3 className="serif-font text-lg text-text-heading mb-4">
               {editGuest ? "Editeaza invitat" : "Invitat nou"}
             </h3>
@@ -285,9 +284,8 @@ export default function GuestsPage() {
 
       {/* Delete confirmation modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-          onClick={() => setDeleteConfirm(null)}>
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center">
             <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3 6 5 6 21 6" />
@@ -317,9 +315,8 @@ export default function GuestsPage() {
 
       {/* Invitation type picker modal */}
       {invitatiePicker && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-          onClick={() => setInvitatiePicker(null)}>
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm">
             <h3 className="serif-font text-lg text-text-heading mb-1 text-center">Alege tipul invitatiei</h3>
             <p className="text-xs text-text-muted text-center mb-5">
               {invitatiePicker.prenume} {invitatiePicker.nume}
