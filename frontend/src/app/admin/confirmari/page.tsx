@@ -323,23 +323,25 @@ export default function ConfirmariPage() {
       {/* Delete confirmation modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center">
-            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
+          <div className="bg-white rounded-xl w-full max-w-xs flex flex-col">
+            <div className="p-5 text-center">
+              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+              </div>
+              <h3 className="serif-font text-lg text-text-heading mb-2">Sterge confirmarea</h3>
+              <p className="text-sm text-text-muted mb-1">Esti sigur ca vrei sa stergi confirmarea de la</p>
+              <p className="text-sm font-medium text-text-heading">{deleteConfirm.name}?</p>
             </div>
-            <h3 className="serif-font text-lg text-text-heading mb-2">Sterge confirmarea</h3>
-            <p className="text-sm text-text-muted mb-1">Esti sigur ca vrei sa stergi confirmarea de la</p>
-            <p className="text-sm font-medium text-text-heading mb-5">{deleteConfirm.name}?</p>
-            <div className="flex gap-3">
+            <div className="p-5 pt-0 flex gap-3 border-t border-border-light">
               <button onClick={() => setDeleteConfirm(null)}
-                className="flex-1 border border-border py-2.5 rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer">
+                className="flex-1 border border-border py-2.5 rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer mt-3">
                 Anuleaza
               </button>
               <button onClick={handleDelete} disabled={deleting}
-                className="flex-1 bg-red-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 cursor-pointer">
+                className="flex-1 bg-red-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 cursor-pointer mt-3">
                 {deleting ? "Se sterge..." : "Sterge"}
               </button>
             </div>
@@ -350,70 +352,69 @@ export default function ConfirmariPage() {
       {/* Modal detalii RSVP */}
       {viewEntry && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div
-            className="family-card w-full max-w-md max-h-[90vh] overflow-y-auto"
-          >
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white rounded-xl w-full max-w-sm max-h-[70vh] flex flex-col">
+            <div className="p-5 pb-3">
               <h3 className="serif-font text-lg text-text-heading">Detalii confirmare</h3>
+            </div>
+            <div className="px-5 overflow-y-auto flex-1">
+              <dl className="space-y-3 text-sm">
+                <div>
+                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Nume</dt>
+                  <dd className="text-text-heading font-medium">{viewEntry.name}</dd>
+                </div>
+                {viewEntry.partner_name && (
+                  <div>
+                    <dt className="text-xs text-text-muted tracking-wide mb-0.5">Partener</dt>
+                    <dd className="text-foreground">{viewEntry.partner_name}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Numar persoane</dt>
+                  <dd className="text-foreground">{viewEntry.person_count}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Participa</dt>
+                  <dd>
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                      viewEntry.attending ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
+                    }`}>
+                      {viewEntry.attending ? "Da" : "Nu"}
+                    </span>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Meniu vegetarian</dt>
+                  <dd className="text-foreground">{viewEntry.vegetarian_menu ? "Da" : "Nu"}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Necesita transport</dt>
+                  <dd className="text-foreground">{viewEntry.needs_transport ? "Da" : "Nu"}</dd>
+                </div>
+                {viewEntry.message && (
+                  <div>
+                    <dt className="text-xs text-text-muted tracking-wide mb-0.5">Mesaj</dt>
+                    <dd className="text-foreground whitespace-pre-wrap">{viewEntry.message}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Data confirmare</dt>
+                  <dd className="text-foreground">
+                    {new Date(viewEntry.created_at).toLocaleDateString("ro-RO", {
+                      day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+                    })}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            <div className="p-5 pt-3 border-t border-border-light rounded-b-xl">
               <button
                 type="button"
                 onClick={() => setViewEntry(null)}
-                className="p-2 rounded-lg text-text-muted hover:text-text-heading hover:bg-background-soft/50 transition-colors cursor-pointer"
-                aria-label="Inchide"
+                className="w-full py-2.5 border border-border rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                Inchide
               </button>
             </div>
-            <dl className="space-y-3 text-sm">
-              <div>
-                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Nume</dt>
-                <dd className="text-text-heading font-medium">{viewEntry.name}</dd>
-              </div>
-              {viewEntry.partner_name && (
-                <div>
-                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Partener</dt>
-                  <dd className="text-foreground">{viewEntry.partner_name}</dd>
-                </div>
-              )}
-              <div>
-                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Numar persoane</dt>
-                <dd className="text-foreground">{viewEntry.person_count}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Participa</dt>
-                <dd>
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                    viewEntry.attending ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
-                  }`}>
-                    {viewEntry.attending ? "Da" : "Nu"}
-                  </span>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Meniu vegetarian</dt>
-                <dd className="text-foreground">{viewEntry.vegetarian_menu ? "Da" : "Nu"}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Necesita transport</dt>
-                <dd className="text-foreground">{viewEntry.needs_transport ? "Da" : "Nu"}</dd>
-              </div>
-              {viewEntry.message && (
-                <div>
-                  <dt className="text-xs text-text-muted tracking-wide mb-0.5">Mesaj</dt>
-                  <dd className="text-foreground whitespace-pre-wrap">{viewEntry.message}</dd>
-                </div>
-              )}
-              <div>
-                <dt className="text-xs text-text-muted tracking-wide mb-0.5">Data confirmare</dt>
-                <dd className="text-foreground">
-                  {new Date(viewEntry.created_at).toLocaleDateString("ro-RO", {
-                    day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
-                  })}
-                </dd>
-              </div>
-            </dl>
           </div>
         </div>
       )}

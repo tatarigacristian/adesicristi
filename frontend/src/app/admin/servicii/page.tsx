@@ -225,11 +225,14 @@ export default function ServiciiPage() {
       {/* Form modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h3 className="serif-font text-lg text-text-heading mb-4">
-              {editService ? "Editeaza serviciu" : "Serviciu nou"}
-            </h3>
-            <form onSubmit={handleSave} className="space-y-3">
+          <div className="bg-white rounded-xl w-full max-w-sm max-h-[70vh] flex flex-col">
+            <div className="p-5 pb-3">
+              <h3 className="serif-font text-lg text-text-heading">
+                {editService ? "Editeaza serviciu" : "Serviciu nou"}
+              </h3>
+            </div>
+            <form onSubmit={handleSave} className="flex flex-col flex-1 min-h-0">
+            <div className="px-5 overflow-y-auto flex-1 space-y-3">
               <div>
                 <label className="block text-xs text-text-muted mb-1">Nume serviciu</label>
                 <input type="text" value={form.nume} onChange={(e) => setForm({ ...form, nume: e.target.value })}
@@ -365,7 +368,8 @@ export default function ServiciiPage() {
                   <p className="text-xs text-text-muted mt-1">Contract existent incarcat. Selecteaza un fisier nou pentru a-l inlocui.</p>
                 )}
               </div>
-              <div className="flex gap-3 pt-2">
+              </div>
+              <div className="sticky bottom-0 p-5 pt-3 bg-white border-t border-border-light rounded-b-xl flex gap-3">
                 <button type="submit" disabled={saving}
                   className="flex-1 bg-button text-white py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer">
                   {saving ? "Se salveaza..." : "Salveaza"}
@@ -383,27 +387,29 @@ export default function ServiciiPage() {
       {/* Delete confirmation modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center">
-            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
+          <div className="bg-white rounded-xl w-full max-w-xs flex flex-col">
+            <div className="p-5 text-center">
+              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+              </div>
+              <h3 className="serif-font text-lg text-text-heading mb-2">Sterge serviciul</h3>
+              <p className="text-sm text-text-muted mb-1">
+                Esti sigur ca vrei sa stergi serviciul
+              </p>
+              <p className="text-sm font-medium text-text-heading">
+                {deleteConfirm.nume}?
+              </p>
             </div>
-            <h3 className="serif-font text-lg text-text-heading mb-2">Sterge serviciul</h3>
-            <p className="text-sm text-text-muted mb-1">
-              Esti sigur ca vrei sa stergi serviciul
-            </p>
-            <p className="text-sm font-medium text-text-heading mb-5">
-              {deleteConfirm.nume}?
-            </p>
-            <div className="flex gap-3">
+            <div className="p-5 pt-0 flex gap-3 border-t border-border-light">
               <button onClick={() => setDeleteConfirm(null)}
-                className="flex-1 border border-border py-2.5 rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer">
+                className="flex-1 border border-border py-2.5 rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer mt-3">
                 Anuleaza
               </button>
               <button onClick={handleDelete} disabled={deleting}
-                className="flex-1 bg-red-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 cursor-pointer">
+                className="flex-1 bg-red-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 cursor-pointer mt-3">
                 {deleting ? "Se sterge..." : "Sterge"}
               </button>
             </div>

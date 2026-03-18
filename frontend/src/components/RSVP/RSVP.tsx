@@ -450,8 +450,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       <div className="section-content max-w-md px-6" style={{ opacity: showContent ? 1 : 0, transform: showContent ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.7s ease-out, transform 0.7s ease-out" }}>
         <form onSubmit={(e: FormEvent) => e.preventDefault()} className="w-full">
 
-          {/* ── Step dots (mobile only) ── */}
-          <div className="flex justify-center gap-2 mb-6 sm:hidden">
+          {/* ── Step dots ── */}
+          <div className="flex justify-center gap-2 mb-6">
             {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map((s) => (
               <div
                 key={s}
@@ -462,11 +462,11 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             ))}
           </div>
 
-          {/* ── Step container (mobile: relative with fixed height; desktop: normal flow) ── */}
-          <div className="relative sm:space-y-5" style={{ minHeight: "160px" }}>
+          {/* ── Step container ── */}
+          <div className="relative" style={{ minHeight: "160px" }}>
 
             {/* ═══ STEP 1: Câte persoane ═══ */}
-            <div className={`sm:!opacity-100 sm:!translate-x-0 sm:!pointer-events-auto sm:!relative sm:!inset-auto
+            <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center ${stepClass(1)}`}>
               <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-4">
                 Câte persoane participă?
@@ -513,16 +513,11 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </div>
 
             {/* ═══ STEP 2: Nume ═══ */}
-            <div className={`sm:!opacity-100 sm:!translate-x-0 sm:!pointer-events-auto sm:!relative sm:!inset-auto
+            <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(2)}`}>
-              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1 sm:hidden">
+              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 {personCount === 2 ? "Numele vostru" : "Numele tău"}
               </p>
-
-              {/* Desktop: side by side labels visible */}
-              <div className="hidden sm:block text-center">
-                <label className="block text-[0.55rem] text-text-muted mb-1 tracking-[0.15em] uppercase">Numele tău</label>
-              </div>
               <input
                 ref={nameRef}
                 type="text"
@@ -540,9 +535,6 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
 
               {personCount === 2 && (
                 <>
-                  <div className="hidden sm:block text-center">
-                    <label className="block text-[0.55rem] text-text-muted mb-1 tracking-[0.15em] uppercase">Nume partener</label>
-                  </div>
                   <input
                     ref={partnerRef}
                     type="text"
@@ -560,8 +552,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 </>
               )}
 
-              {/* Mobile nav */}
-              <div className="flex gap-3 w-full max-w-xs mt-2 sm:hidden">
+              <div className="flex gap-3 w-full max-w-xs mt-2">
                 <button type="button" onClick={() => goToStep(1)}
                   className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
                   Înapoi
@@ -580,9 +571,9 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </div>
 
             {/* ═══ STEP 3: Preferințe ═══ */}
-            <div className={`sm:!opacity-100 sm:!translate-x-0 sm:!pointer-events-auto sm:!relative sm:!inset-auto
+            <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(3)}`}>
-              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1 sm:hidden">
+              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 Preferințe
               </p>
 
@@ -623,8 +614,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 </div>
               </button>
 
-              {/* Mobile nav */}
-              <div className="flex gap-3 w-full max-w-xs mt-2 sm:hidden">
+              <div className="flex gap-3 w-full max-w-xs mt-2">
                 <button type="button" onClick={() => goToStep(2)}
                   className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
                   Înapoi
@@ -637,14 +627,11 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </div>
 
             {/* ═══ STEP 4: Mesaj + Confirmare ═══ */}
-            <div className={`sm:!opacity-100 sm:!translate-x-0 sm:!pointer-events-auto sm:!relative sm:!inset-auto
+            <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(4)}`}>
-              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1 sm:hidden">
+              <p className="text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 Un mesaj pentru noi?
               </p>
-              <div className="hidden sm:block text-center">
-                <label className="block text-[0.55rem] text-text-muted mb-1 tracking-[0.15em] uppercase">Vrei să ne transmiți ceva?</label>
-              </div>
               <textarea
                 ref={messageRef}
                 value={message}
@@ -660,7 +647,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 <p className="text-[0.6rem] text-button">A apărut o eroare. Încearcă din nou.</p>
               )}
 
-              <div className="flex gap-3 w-full max-w-xs sm:max-w-none pt-1 sm:hidden">
+              <div className="flex gap-3 w-full max-w-xs pt-1">
                 <button type="button" onClick={() => goToStep(3)}
                   className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
                   Înapoi
@@ -671,15 +658,9 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 </button>
               </div>
               <button type="button" onClick={() => handleSubmit(true)} disabled={isDisabled}
-                className="w-full max-w-xs sm:max-w-none bg-button text-white py-2.5 rounded-xl text-xs sm:text-sm font-medium
+                className="w-full max-w-xs bg-button text-white py-2.5 rounded-xl text-xs font-medium
                            hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer">
                 {formState === "submitting" ? "Se trimite..." : "Da, confirm prezența"}
-              </button>
-              {/* Desktop: decline button */}
-              <button type="button" onClick={() => handleSubmit(false)} disabled={isDisabled}
-                className="hidden sm:block w-full border border-button py-2.5 rounded-xl text-sm
-                           text-text-muted hover:bg-background-soft transition-colors disabled:opacity-50 cursor-pointer">
-                Nu pot să particip
               </button>
             </div>
 

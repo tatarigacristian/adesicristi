@@ -291,44 +291,50 @@ export default function MesePage() {
       {/* Table picker modal */}
       {assigning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="bg-white rounded-xl p-5 w-full max-w-sm">
-            <h3 className="text-sm font-medium text-text-heading mb-1 text-center">Alege masa</h3>
-            <p className="text-xs text-text-muted text-center mb-4">
-              {(() => {
-                if (assigningType === "service") {
-                  const s = services.find((s) => s.id === assigning);
-                  return s ? `${s.nume} (${s.numar_persoane}p)` : "";
-                }
-                const g = mainGuests.find((g) => g.id === assigning);
-                if (!g) return "";
-                const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
-                return partner ? `${g.prenume} & ${partner.prenume} ${g.nume}` : `${g.prenume} ${g.nume}`;
-              })()}
-            </p>
-            <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
-              {Array.from({ length: settings.numar_mese! }, (_, i) => i + 1).map((n) => {
-                const table = tables.find((t) => t.number === n);
-                const count = table ? countPeople(table.guests, table?.services) : 0;
-                const st = getStatus(count);
-                return (
-                  <button
-                    key={n}
-                    onClick={() => assigningType === "service" ? assignService(assigning!, n) : assignGuest(assigning!, n)}
-                    className={`py-2 rounded-lg text-xs font-medium cursor-pointer transition-colors
-                      ${st === "ok" ? "bg-green-50 text-green-700 hover:bg-green-100 border border-green-200" :
-                        st === "high" ? "bg-red-50 text-red-700 hover:bg-red-100 border border-red-200" :
-                        st === "low" ? "bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200" :
-                        "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200"}`}
-                  >
-                    {n}
-                  </button>
-                );
-              })}
+          <div className="bg-white rounded-xl w-full max-w-xs max-h-[70vh] flex flex-col">
+            <div className="p-5 pb-3 text-center">
+              <h3 className="text-sm font-medium text-text-heading mb-1">Alege masa</h3>
+              <p className="text-xs text-text-muted">
+                {(() => {
+                  if (assigningType === "service") {
+                    const s = services.find((s) => s.id === assigning);
+                    return s ? `${s.nume} (${s.numar_persoane}p)` : "";
+                  }
+                  const g = mainGuests.find((g) => g.id === assigning);
+                  if (!g) return "";
+                  const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
+                  return partner ? `${g.prenume} & ${partner.prenume} ${g.nume}` : `${g.prenume} ${g.nume}`;
+                })()}
+              </p>
             </div>
-            <button onClick={() => setAssigning(null)}
-              className="w-full mt-4 py-2 text-xs text-text-muted hover:text-text-heading transition-colors cursor-pointer">
-              Anuleaza
-            </button>
+            <div className="px-5 overflow-y-auto flex-1">
+              <div className="grid grid-cols-5 sm:grid-cols-6 gap-2">
+                {Array.from({ length: settings.numar_mese! }, (_, i) => i + 1).map((n) => {
+                  const table = tables.find((t) => t.number === n);
+                  const count = table ? countPeople(table.guests, table?.services) : 0;
+                  const st = getStatus(count);
+                  return (
+                    <button
+                      key={n}
+                      onClick={() => assigningType === "service" ? assignService(assigning!, n) : assignGuest(assigning!, n)}
+                      className={`py-2 rounded-lg text-xs font-medium cursor-pointer transition-colors
+                        ${st === "ok" ? "bg-green-50 text-green-700 hover:bg-green-100 border border-green-200" :
+                          st === "high" ? "bg-red-50 text-red-700 hover:bg-red-100 border border-red-200" :
+                          st === "low" ? "bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200" :
+                          "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200"}`}
+                    >
+                      {n}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="p-5 pt-3 border-t border-border-light rounded-b-xl">
+              <button onClick={() => setAssigning(null)}
+                className="w-full py-2.5 border border-border rounded-lg text-sm text-foreground hover:bg-background-soft transition-colors cursor-pointer">
+                Anuleaza
+              </button>
+            </div>
           </div>
         </div>
       )}
