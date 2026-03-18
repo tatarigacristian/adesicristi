@@ -23,10 +23,11 @@ function formatPrice(val: number | string) {
   return Number(val).toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
-function formatDateTime(d: string | null) {
-  if (!d) return null;
-  const date = new Date(d);
-  return date.toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+function formatHours(start: string | null, end: string | null) {
+  if (!start || !end) return null;
+  const ms = new Date(end).getTime() - new Date(start).getTime();
+  const hours = Math.round(ms / (1000 * 60 * 60));
+  return `${hours}h`;
 }
 
 export default function ServiciiPage() {
@@ -104,8 +105,8 @@ export default function ServiciiPage() {
       numar_persoane: String(s.numar_persoane),
       pret: String(s.pret),
       avans: s.avans != null ? String(s.avans) : "",
-      contract_start: s.contract_start ? s.contract_start.slice(0, 16) : getDefaultStart(),
-      contract_end: s.contract_end ? s.contract_end.slice(0, 16) : getDefaultEnd(),
+      contract_start: s.contract_start ? s.contract_start.replace(" ", "T").slice(0, 16) : getDefaultStart(),
+      contract_end: s.contract_end ? s.contract_end.replace(" ", "T").slice(0, 16) : getDefaultEnd(),
       loc_la_masa: s.loc_la_masa,
       link: s.link || "",
       telefon: s.telefon || "",
@@ -205,16 +206,34 @@ export default function ServiciiPage() {
                 <input type="number" value={form.avans} onChange={(e) => setForm({ ...form, avans: e.target.value })}
                   min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs text-text-muted mb-1">Inceput contract</label>
-                  <input type="datetime-local" value={form.contract_start} onChange={(e) => setForm({ ...form, contract_start: e.target.value })}
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Inceput contract</label>
+                <div className="grid grid-cols-[1fr_100px] gap-2">
+                  <input type="date" value={form.contract_start.split("T")[0] || ""}
+                    onChange={(e) => { const time = form.contract_start.split("T")[1] || "15:00"; setForm({ ...form, contract_start: `${e.target.value}T${time}` }); }}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  <select value={form.contract_start.split("T")[1] || "15:00"}
+                    onChange={(e) => { const date = form.contract_start.split("T")[0] || ""; setForm({ ...form, contract_start: `${date}T${e.target.value}` }); }}
+                    className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors">
+                    {Array.from({ length: 48 }, (_, i) => { const h = String(Math.floor(i / 2)).padStart(2, "0"); const m = i % 2 === 0 ? "00" : "30"; return `${h}:${m}`; }).map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
                 </div>
-                <div>
-                  <label className="block text-xs text-text-muted mb-1">Sfarsit contract</label>
-                  <input type="datetime-local" value={form.contract_end} onChange={(e) => setForm({ ...form, contract_end: e.target.value })}
+              </div>
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Sfarsit contract</label>
+                <div className="grid grid-cols-[1fr_100px] gap-2">
+                  <input type="date" value={form.contract_end.split("T")[0] || ""}
+                    onChange={(e) => { const time = form.contract_end.split("T")[1] || "06:00"; setForm({ ...form, contract_end: `${e.target.value}T${time}` }); }}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                  <select value={form.contract_end.split("T")[1] || "06:00"}
+                    onChange={(e) => { const date = form.contract_end.split("T")[0] || ""; setForm({ ...form, contract_end: `${date}T${e.target.value}` }); }}
+                    className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors">
+                    {Array.from({ length: 48 }, (_, i) => { const h = String(Math.floor(i / 2)).padStart(2, "0"); const m = i % 2 === 0 ? "00" : "30"; return `${h}:${m}`; }).map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div>
@@ -351,9 +370,9 @@ export default function ServiciiPage() {
                     )}
                     <span className="text-foreground/60"><span className="text-text-muted">Loc masa:</span> {s.loc_la_masa ? "Da" : "Nu"}</span>
                   </div>
-                  {(s.contract_start || s.contract_end) && (
+                  {formatHours(s.contract_start, s.contract_end) && (
                     <p className="text-xs text-foreground/50">
-                      {formatDateTime(s.contract_start)} — {formatDateTime(s.contract_end)}
+                      {formatHours(s.contract_start, s.contract_end)}
                     </p>
                   )}
                 </div>
@@ -370,7 +389,7 @@ export default function ServiciiPage() {
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Pret</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Avans</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Loc masa</th>
-                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Perioada</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Ore</th>
                     <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Actiuni</th>
                   </tr>
                 </thead>
@@ -395,10 +414,8 @@ export default function ServiciiPage() {
                           <span className="inline-flex items-center gap-1 text-xs text-foreground/40">Nu</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-xs text-foreground/70">
-                        {s.contract_start || s.contract_end
-                          ? <>{formatDateTime(s.contract_start) || "\u2014"} — {formatDateTime(s.contract_end) || "\u2014"}</>
-                          : "\u2014"}
+                      <td className="px-4 py-3 text-foreground/70">
+                        {formatHours(s.contract_start, s.contract_end) || "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-0.5">
