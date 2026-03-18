@@ -622,7 +622,7 @@ export default function GuestsPage() {
       {/* Footer: count + pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
         <p className="text-xs text-text-muted">
-          {filtered.length} din {mainGuests.length} invitati
+          {filtered.length} din {mainGuests.length} invitati ({mainGuests.reduce((sum, g) => sum + (g.plus_one ? 2 : 1), 0)} persoane)
         </p>
         <Pagination page={safePage} totalPages={totalPages} onPageChange={setPage} />
       </div>
