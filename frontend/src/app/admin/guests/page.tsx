@@ -297,47 +297,66 @@ export default function GuestsPage() {
                 <label htmlFor="loc_pe_scaun" className="text-sm text-foreground">Loc pe scaun</label>
                 <span className="text-xs text-text-muted">(debifat = doar dar, nu vine la nunta)</span>
               </div>
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs text-text-muted">Copii</label>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="has_children" checked={form.children.length > 0}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setForm({ ...form, children: [{ nume: "", prenume: "" }] });
+                    } else {
+                      setForm({ ...form, children: [] });
+                    }
+                  }}
+                  className="w-4 h-4 accent-accent" />
+                <label htmlFor="has_children" className="text-sm text-foreground">Plus copil</label>
+              </div>
+              {form.children.length > 0 && (
+                <div className="pl-6 border-l-2 border-accent/20 space-y-2">
+                  {form.children.map((child, idx) => (
+                    <div key={idx} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+                      <div>
+                        {idx === 0 && <label className="block text-xs text-text-muted mb-1">Nume copil</label>}
+                        <input type="text" value={child.nume} placeholder="Nume"
+                          onChange={(e) => {
+                            const updated = [...form.children];
+                            updated[idx] = { ...updated[idx], nume: e.target.value };
+                            setForm({ ...form, children: updated });
+                          }}
+                          required
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                      </div>
+                      <div>
+                        {idx === 0 && <label className="block text-xs text-text-muted mb-1">Prenume copil</label>}
+                        <input type="text" value={child.prenume} placeholder="Prenume"
+                          onChange={(e) => {
+                            const updated = [...form.children];
+                            updated[idx] = { ...updated[idx], prenume: e.target.value };
+                            setForm({ ...form, children: updated });
+                          }}
+                          required
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                      </div>
+                      <div className={idx === 0 ? "mt-5" : ""}>
+                        <button type="button" onClick={() => {
+                          const updated = form.children.filter((_, i) => i !== idx);
+                          setForm({ ...form, children: updated.length === 0 ? [] : updated });
+                        }}
+                          className="p-2 text-foreground/40 hover:text-red-500 transition-colors cursor-pointer">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                   <button type="button" onClick={() => setForm({ ...form, children: [...form.children, { nume: "", prenume: "" }] })}
-                    className="text-xs text-button hover:text-button-hover transition-colors cursor-pointer">
-                    + Adauga copil
+                    className="flex items-center gap-1 text-xs text-button hover:text-button-hover transition-colors cursor-pointer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Adauga inca un copil
                   </button>
                 </div>
-                {form.children.length === 0 && (
-                  <p className="text-xs text-text-muted/60 italic">Niciun copil adaugat</p>
-                )}
-                {form.children.map((child, idx) => (
-                  <div key={idx} className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-2">
-                    <input type="text" value={child.nume} placeholder="Nume"
-                      onChange={(e) => {
-                        const updated = [...form.children];
-                        updated[idx] = { ...updated[idx], nume: e.target.value };
-                        setForm({ ...form, children: updated });
-                      }}
-                      required
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-                    <input type="text" value={child.prenume} placeholder="Prenume"
-                      onChange={(e) => {
-                        const updated = [...form.children];
-                        updated[idx] = { ...updated[idx], prenume: e.target.value };
-                        setForm({ ...form, children: updated });
-                      }}
-                      required
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-                    <button type="button" onClick={() => {
-                      const updated = form.children.filter((_, i) => i !== idx);
-                      setForm({ ...form, children: updated });
-                    }}
-                      className="p-2 text-foreground/40 hover:text-red-500 transition-colors cursor-pointer">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
+              )}
               </div>
               <div className="sticky bottom-0 p-5 pt-3 bg-white border-t border-border-light rounded-b-xl flex gap-3">
                 <button type="submit" disabled={saving}
