@@ -16,6 +16,12 @@ export interface RsvpEntry {
   created_at: string;
 }
 
+export interface GuestChild {
+  id?: number;
+  nume: string;
+  prenume: string;
+}
+
 export interface Guest {
   id: number;
   nume: string;
@@ -28,6 +34,9 @@ export interface Guest {
   estimated_gift_min: number | null;
   estimated_gift_max: number | null;
   partner_id: number | null;
+  din_partea: "mire" | "mireasa" | "nasi" | "parintii_mire" | "parintii_mireasa" | null;
+  loc_pe_scaun: boolean;
+  children: GuestChild[];
   created_at: string;
 }
 

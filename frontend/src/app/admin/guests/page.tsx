@@ -6,12 +6,17 @@ import { API_URL, PAGE_SIZE, Guest, authHeaders, Pagination, SearchInput, Filter
 
 type GuestFilter = "all" | "plus_one" | "no_plus_one";
 
+const DIN_PARTEA_LABELS: Record<string, string> = {
+  mire: "Mire", mireasa: "Mireasa", nasi: "Nasi",
+  parintii_mire: "Par. mire", parintii_mireasa: "Par. mireasa",
+};
+
 export default function GuestsPage() {
   const { token, onUnauth } = useAdminAuth();
   const [guests, setGuests] = useState<Guest[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editGuest, setEditGuest] = useState<Guest | null>(null);
-  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "" as "" | "M" | "F", estimated_gift_min: "", estimated_gift_max: "" });
+  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "" as "" | "M" | "F", estimated_gift_min: "", estimated_gift_max: "", din_partea: "" as "" | "mire" | "mireasa" | "nasi" | "parintii_mire" | "parintii_mireasa", loc_pe_scaun: true, children: [] as { nume: string; prenume: string }[] });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<{ message: string; field?: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Guest | null>(null);
@@ -75,7 +80,7 @@ export default function GuestsPage() {
   function openNew() {
     setEditGuest(null);
     setSaveError(null);
-    setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "", estimated_gift_min: "", estimated_gift_max: "" });
+    setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "", estimated_gift_min: "", estimated_gift_max: "", din_partea: "", loc_pe_scaun: true, children: [] });
     setShowForm(true);
   }
 
@@ -95,6 +100,9 @@ export default function GuestsPage() {
       sex: g.sex || "",
       estimated_gift_min: g.estimated_gift_min != null ? String(g.estimated_gift_min) : "",
       estimated_gift_max: g.estimated_gift_max != null ? String(g.estimated_gift_max) : "",
+      din_partea: g.din_partea || "",
+      loc_pe_scaun: g.loc_pe_scaun !== false,
+      children: (g.children || []).map((c) => ({ nume: c.nume, prenume: c.prenume })),
     });
     setSaveError(null);
     setShowForm(true);
@@ -106,7 +114,7 @@ export default function GuestsPage() {
     setSaveError(null);
     const method = editGuest ? "PUT" : "POST";
     const url = editGuest ? `${API_URL}/api/admin/guests/${editGuest.id}` : `${API_URL}/api/admin/guests`;
-    const payload = { ...form, sex: form.sex || null, estimated_gift_min: form.estimated_gift_min ? Number(form.estimated_gift_min) : null, estimated_gift_max: form.estimated_gift_max ? Number(form.estimated_gift_max) : null };
+    const payload = { ...form, sex: form.sex || null, estimated_gift_min: form.estimated_gift_min ? Number(form.estimated_gift_min) : null, estimated_gift_max: form.estimated_gift_max ? Number(form.estimated_gift_max) : null, din_partea: form.din_partea || null, children: form.children.filter((c) => c.nume && c.prenume) };
     const res = await fetch(url, { method, headers: authHeaders(token), body: JSON.stringify(payload) });
     let data: { error?: string; field?: string } = {};
     try {
@@ -269,6 +277,66 @@ export default function GuestsPage() {
                     min="0"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Din partea</label>
+                <select value={form.din_partea} onChange={(e) => setForm({ ...form, din_partea: e.target.value as typeof form.din_partea })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors appearance-none">
+                  <option value="">Neselectat</option>
+                  <option value="mire">Mirele</option>
+                  <option value="mireasa">Mireasa</option>
+                  <option value="nasi">Nasii</option>
+                  <option value="parintii_mire">Parintii mirelui</option>
+                  <option value="parintii_mireasa">Parintii miresei</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="loc_pe_scaun" checked={form.loc_pe_scaun}
+                  onChange={(e) => setForm({ ...form, loc_pe_scaun: e.target.checked })}
+                  className="w-4 h-4 accent-accent" />
+                <label htmlFor="loc_pe_scaun" className="text-sm text-foreground">Loc pe scaun</label>
+                <span className="text-xs text-text-muted">(debifat = doar dar, nu vine la nunta)</span>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs text-text-muted">Copii</label>
+                  <button type="button" onClick={() => setForm({ ...form, children: [...form.children, { nume: "", prenume: "" }] })}
+                    className="text-xs text-button hover:text-button-hover transition-colors cursor-pointer">
+                    + Adauga copil
+                  </button>
+                </div>
+                {form.children.length === 0 && (
+                  <p className="text-xs text-text-muted/60 italic">Niciun copil adaugat</p>
+                )}
+                {form.children.map((child, idx) => (
+                  <div key={idx} className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-2">
+                    <input type="text" value={child.nume} placeholder="Nume"
+                      onChange={(e) => {
+                        const updated = [...form.children];
+                        updated[idx] = { ...updated[idx], nume: e.target.value };
+                        setForm({ ...form, children: updated });
+                      }}
+                      required
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    <input type="text" value={child.prenume} placeholder="Prenume"
+                      onChange={(e) => {
+                        const updated = [...form.children];
+                        updated[idx] = { ...updated[idx], prenume: e.target.value };
+                        setForm({ ...form, children: updated });
+                      }}
+                      required
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                    <button type="button" onClick={() => {
+                      const updated = form.children.filter((_, i) => i !== idx);
+                      setForm({ ...form, children: updated });
+                    }}
+                      className="p-2 text-foreground/40 hover:text-red-500 transition-colors cursor-pointer">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
               </div>
               </div>
               <div className="sticky bottom-0 p-5 pt-3 bg-white border-t border-border-light rounded-b-xl flex gap-3">
@@ -529,6 +597,17 @@ export default function GuestsPage() {
                         <span className="text-text-muted">+1:</span> {partner.nume} {partner.prenume}
                       </p>
                     )}
+                    <div className="flex flex-wrap gap-1.5">
+                      {g.din_partea && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">{DIN_PARTEA_LABELS[g.din_partea]}</span>
+                      )}
+                      {!g.loc_pe_scaun && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">Doar dar</span>
+                      )}
+                      {g.children && g.children.length > 0 && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">{g.children.length} {g.children.length === 1 ? "copil" : "copii"}</span>
+                      )}
+                    </div>
                     {(g.intro_short || g.intro_long) && (
                       <p className="text-xs text-foreground/50 line-clamp-2">{g.intro_short || g.intro_long}</p>
                     )}
@@ -545,6 +624,9 @@ export default function GuestsPage() {
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Invitat</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Slug</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Partener (+1)</th>
+                    <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Din partea</th>
+                    <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Copii</th>
+                    <th className="text-center px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Scaun</th>
                     <th className="text-left px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Notite</th>
                     <th className="text-right px-4 py-3 text-xs text-text-muted font-medium tracking-wide">Actiuni</th>
                   </tr>
@@ -564,6 +646,27 @@ export default function GuestsPage() {
                             <span className="text-foreground/70">{partner.nume} {partner.prenume}</span>
                           ) : (
                             <span className="text-foreground/30">\u2014</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {g.din_partea ? (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">{DIN_PARTEA_LABELS[g.din_partea]}</span>
+                          ) : (
+                            <span className="text-foreground/30">\u2014</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {g.children && g.children.length > 0 ? (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700" title={g.children.map((c) => `${c.prenume} ${c.nume}`).join(", ")}>{g.children.length}</span>
+                          ) : (
+                            <span className="text-foreground/30">\u2014</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {g.loc_pe_scaun ? (
+                            <span className="inline-flex items-center text-xs text-green-700">Da</span>
+                          ) : (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">Doar dar</span>
                           )}
                         </td>
                         <td className="px-4 py-3 text-foreground/60 max-w-[200px] truncate">{g.intro_short || g.intro_long || "\u2014"}</td>

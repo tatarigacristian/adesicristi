@@ -15,6 +15,9 @@ interface GuestBody {
   sex?: 'M' | 'F' | null;
   estimated_gift_min?: number | null;
   estimated_gift_max?: number | null;
+  din_partea?: 'mire' | 'mireasa' | 'nasi' | 'parintii_mire' | 'parintii_mireasa' | null;
+  loc_pe_scaun?: boolean;
+  children?: { nume: string; prenume: string }[];
 }
 
 export async function guestRoutes(fastify: FastifyInstance) {
@@ -64,12 +67,20 @@ export async function guestRoutes(fastify: FastifyInstance) {
     const [rows] = await pool.execute<RowDataPacket[]>(
       'SELECT * FROM guests ORDER BY created_at DESC'
     );
-    return rows;
+    const [children] = await pool.execute<RowDataPacket[]>(
+      'SELECT * FROM guest_children ORDER BY id ASC'
+    );
+    const childrenMap = new Map<number, RowDataPacket[]>();
+    for (const c of children) {
+      if (!childrenMap.has(c.guest_id)) childrenMap.set(c.guest_id, []);
+      childrenMap.get(c.guest_id)!.push(c);
+    }
+    return rows.map((g) => ({ ...g, children: childrenMap.get(g.id) || [] }));
   });
 
   // Create guest
   fastify.post<{ Body: GuestBody }>('/api/admin/guests', { preHandler: authenticate }, async (request, reply) => {
-    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume, sex, estimated_gift_min, estimated_gift_max } = request.body;
+    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume, sex, estimated_gift_min, estimated_gift_max, din_partea, loc_pe_scaun, children } = request.body;
 
     if (!nume || !prenume) {
       return reply.status(400).send({ error: 'Nume si prenume sunt obligatorii' });
@@ -109,8 +120,8 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
       // Create main guest
       const [result] = await conn.execute<ResultSetHeader>(
-        'INSERT INTO guests (nume, prenume, plus_one, intro_short, intro_long, slug, sex, estimated_gift_min, estimated_gift_max) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNorm, sex || null, estimated_gift_min ?? null, estimated_gift_max ?? null]
+        'INSERT INTO guests (nume, prenume, plus_one, intro_short, intro_long, slug, sex, estimated_gift_min, estimated_gift_max, din_partea, loc_pe_scaun) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNorm, sex || null, estimated_gift_min ?? null, estimated_gift_max ?? null, din_partea || null, loc_pe_scaun !== false]
       );
       const mainId = result.insertId;
 
@@ -127,6 +138,18 @@ export async function guestRoutes(fastify: FastifyInstance) {
           'UPDATE guests SET partner_id = ? WHERE id = ?',
           [partnerId, mainId]
         );
+      }
+
+      // Insert children
+      if (children && children.length > 0) {
+        for (const child of children) {
+          if (child.nume && child.prenume) {
+            await conn.execute(
+              'INSERT INTO guest_children (guest_id, nume, prenume) VALUES (?, ?, ?)',
+              [mainId, child.nume, child.prenume]
+            );
+          }
+        }
       }
 
       await conn.commit();
@@ -146,7 +169,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
   // Update guest
   fastify.put<{ Params: { id: string }; Body: GuestBody }>('/api/admin/guests/:id', { preHandler: authenticate }, async (request, reply) => {
     const { id } = request.params;
-    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume, sex, estimated_gift_min, estimated_gift_max } = request.body;
+    const { nume, prenume, plus_one, intro_short, intro_long, slug, partner_nume, partner_prenume, sex, estimated_gift_min, estimated_gift_max, din_partea, loc_pe_scaun, children } = request.body;
 
     if (!nume || !prenume) {
       return reply.status(400).send({ error: 'Nume si prenume sunt obligatorii' });
@@ -193,9 +216,22 @@ export async function guestRoutes(fastify: FastifyInstance) {
 
       // Update main guest
       await conn.execute(
-        'UPDATE guests SET nume = ?, prenume = ?, plus_one = ?, intro_short = ?, intro_long = ?, slug = ?, sex = ?, estimated_gift_min = ?, estimated_gift_max = ? WHERE id = ?',
-        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNormPut, sex || null, estimated_gift_min ?? null, estimated_gift_max ?? null, id]
+        'UPDATE guests SET nume = ?, prenume = ?, plus_one = ?, intro_short = ?, intro_long = ?, slug = ?, sex = ?, estimated_gift_min = ?, estimated_gift_max = ?, din_partea = ?, loc_pe_scaun = ? WHERE id = ?',
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNormPut, sex || null, estimated_gift_min ?? null, estimated_gift_max ?? null, din_partea || null, loc_pe_scaun !== false, id]
       );
+
+      // Sync children: delete all and re-insert
+      await conn.execute('DELETE FROM guest_children WHERE guest_id = ?', [id]);
+      if (children && children.length > 0) {
+        for (const child of children) {
+          if (child.nume && child.prenume) {
+            await conn.execute(
+              'INSERT INTO guest_children (guest_id, nume, prenume) VALUES (?, ?, ?)',
+              [id, child.nume, child.prenume]
+            );
+          }
+        }
+      }
 
       if (plus_one && partner_nume && partner_prenume) {
         if (current.partner_id) {

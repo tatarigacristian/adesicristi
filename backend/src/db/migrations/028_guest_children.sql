@@ -1,0 +1,9 @@
+-- Children table for guests
+CREATE TABLE IF NOT EXISTS guest_children (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  guest_id INT NOT NULL,
+  nume VARCHAR(200) NOT NULL,
+  prenume VARCHAR(200) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (guest_id) REFERENCES guests(id) ON DELETE CASCADE
+);
