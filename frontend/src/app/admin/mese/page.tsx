@@ -41,7 +41,9 @@ export default function MesePage() {
   const [serviceAssignments, setServiceAssignments] = useState<{ service_id: number; table_number: number; nume: string; numar_persoane: number }[]>([]);
   const [settings, setSettings] = useState<TableSettings | null>(null);
   const [search, setSearch] = useState("");
-  const [assigning, setAssigning] = useState<number | null>(null); // guest_id or service pseudo-id
+  const [verifySearch, setVerifySearch] = useState("");
+  const [meseTab, setMeseTab] = useState<"seteaza" | "verifica">("seteaza");
+  const [assigning, setAssigning] = useState<number | null>(null);
   const [assigningType, setAssigningType] = useState<"guest" | "service">("guest");
 
   const fetchAll = useCallback(async () => {
@@ -249,6 +251,27 @@ export default function MesePage() {
         <h2 className="serif-font text-2xl text-text-heading">Aranjament mese</h2>
       </div>
 
+      {/* Tab bar */}
+      <div className="flex gap-1 border-b border-border-light mb-6">
+        {([
+          { id: "seteaza" as const, label: "Seteaza" },
+          { id: "verifica" as const, label: "Verifica" },
+        ]).map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setMeseTab(tab.id)}
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors cursor-pointer ${
+              meseTab === tab.id
+                ? "border-button text-text-heading"
+                : "border-transparent text-text-muted hover:text-text-heading"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {meseTab === "seteaza" && (<>
       {/* Summary */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div className="family-card text-center py-3">
@@ -470,6 +493,72 @@ export default function MesePage() {
             <div className="space-y-4">
               {rightTables.map(renderTable)}
             </div>
+          </div>
+        );
+      })()}
+      </>)}
+
+      {meseTab === "verifica" && (() => {
+        const q = verifySearch.toLowerCase().trim();
+        const matchingGuestIds = new Set<number>();
+        if (q) {
+          mainGuests.forEach((g) => {
+            const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;
+            if (
+              g.nume.toLowerCase().includes(q) ||
+              g.prenume.toLowerCase().includes(q) ||
+              (partner && (partner.nume.toLowerCase().includes(q) || partner.prenume.toLowerCase().includes(q)))
+            ) {
+              matchingGuestIds.add(g.id);
+            }
+          });
+        }
+        const matchingTables = q
+          ? tables.filter((t) => t.guests.some((g) => matchingGuestIds.has(g.id)))
+          : [];
+
+        return (
+          <div>
+            <div className="mb-4">
+              <SearchInput value={verifySearch} onChange={setVerifySearch} placeholder="Cauta invitat dupa nume..." />
+            </div>
+            {!q ? (
+              <p className="text-sm text-text-muted text-center py-8">Scrie un nume pentru a gasi masa invitatului.</p>
+            ) : matchingTables.length === 0 ? (
+              <p className="text-sm text-text-muted text-center py-8">
+                {matchingGuestIds.size > 0 ? "Invitatul nu este asezat la nicio masa." : "Niciun invitat gasit."}
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {matchingTables.map((table) => {
+                  const count = countPeople(table.guests, table.services);
+                  const status = getStatus(count);
+                  return (
+                    <div key={table.number} className={`rounded-xl border-2 p-4 transition-colors ${statusColors[status]}`}>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-medium text-text-heading">Masa {table.number}</h4>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${statusBadgeColors[status]}`}>
+                          {count}p
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        {table.services.map((s) => (
+                          <div key={`svc-${s.id}`} className="flex items-center gap-1">
+                            <span className="text-xs text-foreground">{s.name}</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 shrink-0">{s.people}p</span>
+                          </div>
+                        ))}
+                        {table.guests.map((g) => (
+                          <div key={g.id} className={`px-2 py-1 rounded ${matchingGuestIds.has(g.id) ? "bg-button/10 border border-button/30" : ""}`}>
+                            <span className={`text-sm ${matchingGuestIds.has(g.id) ? "text-text-heading font-semibold" : "text-foreground"}`}>{g.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         );
       })()}
