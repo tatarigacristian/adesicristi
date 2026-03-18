@@ -187,6 +187,18 @@ export default function GuestsPage() {
                 {saveError.message}
               </div>
             )}
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Din partea</label>
+                <select value={form.din_partea} onChange={(e) => setForm({ ...form, din_partea: e.target.value as typeof form.din_partea })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors appearance-none">
+                  <option value="">Neselectat</option>
+                  <option value="mire">Mirele</option>
+                  <option value="mireasa">Mireasa</option>
+                  <option value="nasi">Nasii</option>
+                  <option value="parintii_mire">Parintii mirelui</option>
+                  <option value="parintii_mireasa">Parintii miresei</option>
+                </select>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs text-text-muted mb-1">Nume</label>
@@ -248,55 +260,6 @@ export default function GuestsPage() {
                   </div>
                 </div>
               )}
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Intro scurt (card QR)</label>
-                <textarea value={form.intro_short} onChange={(e) => { if (e.target.value.length <= 200) setForm({ ...form, intro_short: e.target.value }); }}
-                  maxLength={200}
-                  rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
-                <p className="text-xs text-text-muted text-right mt-1">{form.intro_short.length}/200</p>
-              </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Intro lung (pagina invitatie)</label>
-                <textarea value={form.intro_long} onChange={(e) => { if (e.target.value.length <= 400) setForm({ ...form, intro_long: e.target.value }); }}
-                  maxLength={400}
-                  rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
-                <p className="text-xs text-text-muted text-right mt-1">{form.intro_long.length}/400</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs text-text-muted mb-1">Cadou estimat min (RON)</label>
-                  <input type="number" value={form.estimated_gift_min} onChange={(e) => setForm({ ...form, estimated_gift_min: e.target.value })}
-                    placeholder="ex: 300"
-                    min="0"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-xs text-text-muted mb-1">Cadou estimat max (RON)</label>
-                  <input type="number" value={form.estimated_gift_max} onChange={(e) => setForm({ ...form, estimated_gift_max: e.target.value })}
-                    placeholder="ex: 500"
-                    min="0"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs text-text-muted mb-1">Din partea</label>
-                <select value={form.din_partea} onChange={(e) => setForm({ ...form, din_partea: e.target.value as typeof form.din_partea })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors appearance-none">
-                  <option value="">Neselectat</option>
-                  <option value="mire">Mirele</option>
-                  <option value="mireasa">Mireasa</option>
-                  <option value="nasi">Nasii</option>
-                  <option value="parintii_mire">Parintii mirelui</option>
-                  <option value="parintii_mireasa">Parintii miresei</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" id="loc_pe_scaun" checked={form.loc_pe_scaun}
-                  onChange={(e) => setForm({ ...form, loc_pe_scaun: e.target.checked })}
-                  className="w-4 h-4 accent-accent" />
-                <label htmlFor="loc_pe_scaun" className="text-sm text-foreground">Loc pe scaun</label>
-                <span className="text-xs text-text-muted">(debifat = doar dar, nu vine la nunta)</span>
-              </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="has_children" checked={form.children.length > 0}
                   onChange={(e) => {
@@ -357,6 +320,43 @@ export default function GuestsPage() {
                   </button>
                 </div>
               )}
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Intro scurt (card QR)</label>
+                <textarea value={form.intro_short} onChange={(e) => { if (e.target.value.length <= 200) setForm({ ...form, intro_short: e.target.value }); }}
+                  maxLength={200}
+                  rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
+                <p className="text-xs text-text-muted text-right mt-1">{form.intro_short.length}/200</p>
+              </div>
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Intro lung (pagina invitatie)</label>
+                <textarea value={form.intro_long} onChange={(e) => { if (e.target.value.length <= 400) setForm({ ...form, intro_long: e.target.value }); }}
+                  maxLength={400}
+                  rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors resize-none" />
+                <p className="text-xs text-text-muted text-right mt-1">{form.intro_long.length}/400</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-text-muted mb-1">Cadou estimat min (RON)</label>
+                  <input type="number" value={form.estimated_gift_min} onChange={(e) => setForm({ ...form, estimated_gift_min: e.target.value })}
+                    placeholder="ex: 300"
+                    min="0"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-xs text-text-muted mb-1">Cadou estimat max (RON)</label>
+                  <input type="number" value={form.estimated_gift_max} onChange={(e) => setForm({ ...form, estimated_gift_max: e.target.value })}
+                    placeholder="ex: 500"
+                    min="0"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="loc_pe_scaun" checked={form.loc_pe_scaun}
+                  onChange={(e) => setForm({ ...form, loc_pe_scaun: e.target.checked })}
+                  className="w-4 h-4 accent-accent" />
+                <label htmlFor="loc_pe_scaun" className="text-sm text-foreground">Loc pe scaun</label>
+                <span className="text-xs text-text-muted">(debifat = doar dar, nu vine la nunta)</span>
+              </div>
               </div>
               <div className="sticky bottom-0 p-5 pt-3 bg-white border-t border-border-light rounded-b-xl flex gap-3">
                 <button type="submit" disabled={saving}
