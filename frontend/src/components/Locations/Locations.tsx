@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { WeddingSettings, formatDate } from "@/utils/settings";
-import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
+import SectionDots from "@/components/Ornaments/SectionDots";
 
 interface LocationCard {
   title: string;
@@ -183,7 +183,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
           <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading mb-2 uppercase">
             Agenda
           </h2>
-          <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
+          <SectionDots />
           <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
             Când și unde
           </p>

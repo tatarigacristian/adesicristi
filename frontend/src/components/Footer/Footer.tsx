@@ -1,8 +1,8 @@
 "use client";
 
-import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import { WeddingSettings, getCoupleNames } from "@/utils/settings";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
+import SectionDots from "@/components/Ornaments/SectionDots";
 
 export default function Footer({ settings }: { settings?: WeddingSettings | null }) {
   const couple = getCoupleNames(settings ?? null);
@@ -14,9 +14,12 @@ export default function Footer({ settings }: { settings?: WeddingSettings | null
       {/* Header */}
       <div className="section-header">
         <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">
-          Vă mulțumim din suflet
+          Vă mulțumim
         </h2>
-        <SmallFlourish className="mx-auto" />
+        <SectionDots />
+          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+            Cu drag
+          </p>
       </div>
 
       {/* Content — Monogram */}

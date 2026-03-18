@@ -1,8 +1,8 @@
 "use client";
 
 import { WeddingSettings } from "@/utils/settings";
-import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
+import SectionDots from "@/components/Ornaments/SectionDots";
 
 export default function Family({
   settings,
@@ -40,7 +40,10 @@ export default function Family({
         <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">
           Familie
         </h2>
-        <SmallFlourish className="mx-auto" />
+        <SectionDots />
+          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+            Cei dragi nouă
+          </p>
       </div>
 
       {/* Content */}

@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import { WeddingSettings, getCoupleNames } from "@/utils/settings";
-import { useSwiper, SLIDE_IDS } from "@/context/SwiperContext";
 import ScrollIndicator from "./ScrollIndicator";
 
 export default function SectionFooterNav({
@@ -13,22 +11,9 @@ export default function SectionFooterNav({
   className?: string;
 }) {
   const couple = getCoupleNames(settings ?? null);
-  const swiper = useSwiper();
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const handleSlideChange = useCallback(() => {
-    if (swiper) setActiveIndex(swiper.activeIndex);
-  }, [swiper]);
-
-  useEffect(() => {
-    if (!swiper) return;
-    swiper.on("slideChange", handleSlideChange);
-    handleSlideChange();
-    return () => { swiper.off("slideChange", handleSlideChange); };
-  }, [swiper, handleSlideChange]);
 
   return (
-    <div className={`section-footer pb-2 sm:pb-0 ${className}`}>
+    <div className={`section-footer ${className}`}>
       {/* Contact + scroll row */}
       <div className="flex items-center justify-center w-full mx-auto">
         {/* Left: Mireasa */}
@@ -63,20 +48,6 @@ export default function SectionFooterNav({
         )}
       </div>
 
-      {/* Section dots — full width, mobile only */}
-      <div className="flex justify-between px-8 mt-2 sm:hidden">
-        {SLIDE_IDS.map((_, i) => (
-          <div key={i} className="flex items-center justify-center w-3 h-3">
-            <div
-              className={`rounded-full transition-all duration-300 ${
-                i === activeIndex
-                  ? "w-2 h-2 bg-button"
-                  : "w-1 h-1 bg-button/20"
-              }`}
-            />
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

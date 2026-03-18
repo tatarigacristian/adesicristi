@@ -3,10 +3,10 @@
 import { useState, useEffect, useRef, useCallback, FormEvent, KeyboardEvent } from "react";
 import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import { getInvitationAudience, getAsteptamLine } from "@/utils/invitation-text";
-import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import Flourish from "@/components/Ornaments/Flourish";
 import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
+import SectionDots from "@/components/Ornaments/SectionDots";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -117,7 +117,7 @@ function AddToCalendar({ settings }: { settings: WeddingSettings }) {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-white rounded-xl shadow-lg border border-border-light p-2 min-w-[200px]">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-background-soft rounded-xl shadow-lg border border-border-light p-2 min-w-[200px]">
             <a
               href={googleUrl}
               target="_blank"
@@ -165,10 +165,17 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const [formState, setFormState] = useState<FormState>(guest ? "loading" : "idle");
   const [rsvpId, setRsvpId] = useState<number | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [shakeErrors, setShakeErrors] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [step, setStep] = useState(1);
   const [slideDir, setSlideDir] = useState<"left" | "right">("left");
   const [animating, setAnimating] = useState(false);
+
+  const triggerErrors = (e: Record<string, string>) => {
+    setErrors(e);
+    setShakeErrors(true);
+    setTimeout(() => setShakeErrors(false), 600);
+  };
 
   const goToStep = (target: number) => {
     if (animating) return;
@@ -241,8 +248,12 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       }
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (Object.keys(newErrors).length) {
+      triggerErrors(newErrors);
+      return false;
+    }
+    setErrors({});
+    return true;
   }
 
   async function handleSubmit(attending: boolean) {
@@ -316,7 +327,10 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       <section id="rsvp" className="content-section bg-background">
         <div className="section-header">
           <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">Confirmare</h2>
-          <SmallFlourish className="mx-auto" />
+          <SectionDots />
+          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+            Prezența ta contează
+          </p>
         </div>
         <div className="section-content">
           <p className="text-sm text-text-muted">Se încarcă...</p>
@@ -334,7 +348,10 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">
             Confirmare
           </h2>
-          <SmallFlourish className="mx-auto" />
+          <SectionDots />
+          <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+            Prezența ta contează
+          </p>
         </div>
 
         <div className="section-content max-w-md px-6">
@@ -421,9 +438,9 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">
           Confirmare
         </h2>
-        <SmallFlourish className="mx-auto mb-2 sm:mb-3" />
-        <p className="text-xs text-text-muted leading-snug">
-          {audience ? getAsteptamLine(audience) : "Vă așteptăm cu drag!"}
+        <SectionDots />
+        <p className="text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          Prezența ta contează
         </p>
       </div>
 
@@ -461,7 +478,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     goToStep(2);
                   }}
                   className={`flex-1 py-4 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center gap-2
-                    ${personCount === 1 ? "border-button bg-button/5" : "border-border-light bg-white hover:border-button/40"}`}
+                    ${personCount === 1 ? "border-button bg-button/5" : "border-border-light bg-background-soft hover:border-button/40"}`}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -477,7 +494,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     goToStep(2);
                   }}
                   className={`flex-1 py-4 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center gap-2
-                    ${personCount === 2 ? "border-button bg-button/5" : "border-border-light bg-white hover:border-button/40"}`}
+                    ${personCount === 2 ? "border-button bg-button/5" : "border-border-light bg-background-soft hover:border-button/40"}`}
                 >
                   <svg width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -511,12 +528,13 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 onChange={(e) => { setName(e.target.value); setErrors((prev) => ({ ...prev, name: "" })); }}
                 onKeyDown={handleKeyDown}
                 disabled={isDisabled}
-                placeholder="Numele tău"
+                placeholder={errors.name || "Numele tău"}
                 enterKeyHint="next"
-                className="w-full max-w-xs border border-border-light rounded-xl px-4 py-2.5 text-sm bg-white text-center
-                           focus:outline-none focus:border-button transition-colors disabled:opacity-50"
+                className={`w-full max-w-xs border rounded-xl px-4 py-2.5 text-sm bg-background-soft text-center
+                           focus:outline-none focus:border-button transition-colors disabled:opacity-50
+                           ${errors.name ? "border-button placeholder:text-button" : "border-border-light"}
+                           ${errors.name && shakeErrors ? "animate-shake" : ""}`}
               />
-              {errors.name && <p className="text-[0.6rem] text-button">{errors.name}</p>}
 
               {personCount === 2 && (
                 <>
@@ -530,12 +548,13 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     onChange={(e) => { setPartnerName(e.target.value); setErrors((prev) => ({ ...prev, partnerName: "" })); }}
                     onKeyDown={handleKeyDown}
                     disabled={isDisabled}
-                    placeholder="Numele partenerului"
+                    placeholder={errors.partnerName || "Numele partenerului"}
                     enterKeyHint="next"
-                    className="w-full max-w-xs border border-border-light rounded-xl px-4 py-2.5 text-sm bg-white text-center
-                               focus:outline-none focus:border-button transition-colors disabled:opacity-50"
+                    className={`w-full max-w-xs border rounded-xl px-4 py-2.5 text-sm bg-background-soft text-center
+                               focus:outline-none focus:border-button transition-colors disabled:opacity-50
+                               ${errors.partnerName ? "border-button placeholder:text-button" : "border-border-light"}
+                               ${errors.partnerName && shakeErrors ? "animate-shake" : ""}`}
                   />
-                  {errors.partnerName && <p className="text-[0.6rem] text-button">{errors.partnerName}</p>}
                 </>
               )}
 
@@ -549,8 +568,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                   const e: Record<string, string> = {};
                   if (!name.trim()) e.name = "Introdu numele";
                   if (personCount === 2 && !partnerName.trim()) e.partnerName = "Introdu numele partenerului";
-                  setErrors(e);
-                  if (!Object.keys(e).length) goToStep(3);
+                  if (Object.keys(e).length) { triggerErrors(e); return; }
+                  goToStep(3);
                 }}
                   className="flex-1 bg-button text-white py-2 rounded-xl text-xs font-medium hover:bg-button-hover transition-colors cursor-pointer">
                   Continuă
@@ -568,7 +587,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               {/* Transport */}
               <button type="button" onClick={() => setNeedsTransport(!needsTransport)} disabled={isDisabled}
                 className={`w-full max-w-xs flex items-center justify-between py-3 px-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
-                  ${needsTransport ? "border-button bg-button/5" : "border-border-light bg-white"}`}>
+                  ${needsTransport ? "border-button bg-button/5" : "border-border-light bg-background-soft"}`}>
                 <div className="flex items-center gap-2.5">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
                     <path d="M3 7 Q3 5, 5 5 L19 5 Q21 5, 21 7 L21 15 Q21 17, 19 17 L5 17 Q3 17, 3 15Z" />
@@ -586,7 +605,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               {/* Vegetarian */}
               <button type="button" onClick={() => setVegetarianMenu(!vegetarianMenu)} disabled={isDisabled}
                 className={`w-full max-w-xs flex items-center justify-between py-3 px-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
-                  ${vegetarianMenu ? "border-button bg-button/5" : "border-border-light bg-white"}`}>
+                  ${vegetarianMenu ? "border-button bg-button/5" : "border-border-light bg-background-soft"}`}>
                 <div className="flex items-center gap-2.5">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
                     <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10" />
@@ -631,7 +650,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 disabled={isDisabled}
                 rows={2}
                 placeholder="Opțional"
-                className="w-full max-w-xs border border-border-light rounded-xl px-4 py-2.5 text-sm bg-white text-center
+                className="w-full max-w-xs border border-border-light rounded-xl px-4 py-2.5 text-sm bg-background-soft text-center
                            focus:outline-none focus:border-button transition-colors resize-none disabled:opacity-50"
               />
 
