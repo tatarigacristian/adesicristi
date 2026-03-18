@@ -57,6 +57,11 @@ html.swiper-lock body {
   font-family: var(--font-cormorant), Georgia, serif;
 }
 
+/* Body/reading font — optimized for longer text */
+.body-font {
+  font-family: var(--font-lora), Georgia, serif;
+}
+
 /* Split layout for desktop */
 .split-container {
   display: flex;

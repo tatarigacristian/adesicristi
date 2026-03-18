@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Alex_Brush, Montserrat } from "next/font/google";
+import { Cormorant_Garamond, Alex_Brush, Montserrat, Lora } from "next/font/google";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -19,6 +19,13 @@ const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600"],
+});
+
+const lora = Lora({
+  variable: "--font-lora",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
 });
 
 export const viewport: Viewport = {
@@ -47,7 +54,7 @@ export default function RootLayout({
     <html lang="ro" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${cormorant.variable} ${alexBrush.variable} ${montserrat.variable} antialiased`}
+        className={`${cormorant.variable} ${alexBrush.variable} ${montserrat.variable} ${lora.variable} antialiased`}
       >
         {children}
       </body>

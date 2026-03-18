@@ -240,7 +240,7 @@ export default function Hero({
               <SwiperSlide>
                 <div className="h-full flex flex-col items-center px-6">
                   <div className="flex-1 flex flex-col items-center justify-center">
-                    <p className="serif-font text-[0.85rem] leading-[1.8] text-foreground max-w-md mx-auto px-2">
+                    <p className="body-font text-[0.85rem] leading-[1.9] text-foreground max-w-md mx-auto px-2">
                       {guest ? personalizedText : defaultText}
                     </p>
                   </div>
@@ -289,7 +289,7 @@ export default function Hero({
           <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-5 font-medium">{audience ? getInvitationLine(audience) : "Cu drag vă invităm"}</p>
           <h2 className="serif-font text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-6">{audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}</h2>
           <SmallFlourish className="mx-auto my-6" />
-          <p className="serif-font text-[0.95rem] leading-[1.9] text-foreground mt-6 max-w-md mx-auto">
+          <p className="body-font text-[0.95rem] leading-[1.9] text-foreground mt-6 max-w-md mx-auto">
             {guest ? personalizedText : defaultText}
           </p>
         </div>

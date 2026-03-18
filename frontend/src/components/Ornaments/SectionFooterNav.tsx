@@ -22,8 +22,8 @@ export default function SectionFooterNav({
             href={`tel:${settings.telefon_mireasa.replace(/\s/g, "")}`}
             className="flex-1 min-w-0 flex flex-col items-center gap-0.5 group"
           >
-            <span className="text-[0.5rem] sm:text-[0.55rem] text-text-muted truncate max-w-full">{couple.mireasa}</span>
-            <span className="text-[0.55rem] sm:text-[0.6rem] text-button group-hover:text-button-hover transition-colors truncate max-w-full">
+            <span className="text-[0.55rem] text-text-muted truncate max-w-full">{couple.mireasa}</span>
+            <span className="text-[0.6rem] text-button group-hover:text-button-hover transition-colors truncate max-w-full">
               {settings.telefon_mireasa}
             </span>
           </a>
@@ -40,8 +40,8 @@ export default function SectionFooterNav({
             href={`tel:${settings.telefon_mire.replace(/\s/g, "")}`}
             className="flex-1 min-w-0 flex flex-col items-center gap-0.5 group"
           >
-            <span className="text-[0.5rem] sm:text-[0.55rem] text-text-muted truncate max-w-full">{couple.mire}</span>
-            <span className="text-[0.55rem] sm:text-[0.6rem] text-button group-hover:text-button-hover transition-colors truncate max-w-full">
+            <span className="text-[0.55rem] text-text-muted truncate max-w-full">{couple.mire}</span>
+            <span className="text-[0.6rem] text-button group-hover:text-button-hover transition-colors truncate max-w-full">
               {settings.telefon_mire}
             </span>
           </a>
