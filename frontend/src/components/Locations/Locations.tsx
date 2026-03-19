@@ -5,6 +5,7 @@ import { WeddingSettings, formatDate } from "@/utils/settings";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import { useSlideActive } from "@/hooks/useSlideActive";
 
 interface LocationCard {
@@ -162,7 +163,8 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
             Agenda
           </h2>
           <SectionDots />
-          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <SmallFlourish className="hidden sm:block mx-auto my-2" />
+          <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Când și unde
           </p>
         </div>

@@ -3,6 +3,7 @@
 import { WeddingSettings, getCoupleNames } from "@/utils/settings";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import { useSlideActive } from "@/hooks/useSlideActive";
 
 export default function Footer({ settings }: { settings?: WeddingSettings | null }) {
@@ -19,7 +20,8 @@ export default function Footer({ settings }: { settings?: WeddingSettings | null
           Vă mulțumim
         </h2>
         <SectionDots />
-          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <SmallFlourish className="hidden sm:block mx-auto my-2" />
+          <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Cu drag
           </p>
       </div>

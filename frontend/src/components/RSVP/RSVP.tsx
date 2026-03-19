@@ -7,6 +7,7 @@ import Flourish from "@/components/Ornaments/Flourish";
 import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import { useSlideActive } from "@/hooks/useSlideActive";
 import { CalendarBlank, DownloadSimple, CheckCircle, SmileySad, User, Users, Car, Leaf, Baby } from "@phosphor-icons/react";
 
@@ -336,7 +337,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         <div className="section-header">
           <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2">Confirmare</h2>
           <SectionDots />
-          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <SmallFlourish className="hidden sm:block mx-auto my-2" />
+          <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Prezența ta contează
           </p>
         </div>
@@ -357,7 +359,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             Confirmare
           </h2>
           <SectionDots />
-          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <SmallFlourish className="hidden sm:block mx-auto my-2" />
+          <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Prezența ta contează
           </p>
         </div>
@@ -440,7 +443,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           Confirmare
         </h2>
         <SectionDots />
-        <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+        <SmallFlourish className="hidden sm:block mx-auto my-2" />
+        <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
           Prezența ta contează
         </p>
       </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import { useSlideActive } from "@/hooks/useSlideActive";
 
 const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/embed/jEj57Rqeuy8";
@@ -87,7 +88,8 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       <div className="section-header">
         <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2 sm:mb-3">Noi doi</h2>
         <SectionDots />
-          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <SmallFlourish className="hidden sm:block mx-auto my-2" />
+          <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Povestea noastră
           </p>
       </div>
