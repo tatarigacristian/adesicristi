@@ -96,24 +96,24 @@ function LocationCardDesktop({
 }) {
   return (
     <div className="flex items-center gap-8 py-6">
-      <div className="w-12 h-12 rounded-full bg-button flex items-center justify-center text-white flex-shrink-0">
+      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-button flex items-center justify-center text-white flex-shrink-0">
         <EventIcon type={loc.title} />
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="serif-font text-xl text-text-heading leading-tight">
+        <h3 className="serif-font text-xl sm:text-2xl text-text-heading leading-tight">
           {loc.title}
         </h3>
-        <p className="text-[0.65rem] tracking-[0.15em] uppercase text-button mt-1">
+        <p className="text-[0.65rem] sm:text-[0.75rem] tracking-[0.15em] uppercase text-button mt-1">
           {loc.date}{loc.time ? ` · ${loc.time}` : ""}
         </p>
-        <p className="text-[0.7rem] text-text-muted mt-0.5 leading-snug">
+        <p className="text-[0.7rem] sm:text-[0.8rem] text-text-muted mt-0.5 leading-snug">
           {loc.address}
         </p>
       </div>
       {loc.googleMapsUrl && (
         <button
           onClick={() => onMapClick(loc)}
-          className="body-font text-[0.6rem] tracking-[0.15em] uppercase text-button hover:text-button-hover transition-colors cursor-pointer flex items-center gap-1.5 flex-shrink-0"
+          className="body-font text-[0.6rem] sm:text-[0.7rem] tracking-[0.15em] uppercase text-button hover:text-button-hover transition-colors cursor-pointer flex items-center gap-1.5 flex-shrink-0"
         >
           <MapPin size={11} weight="duotone" />
           Vezi pe hartă

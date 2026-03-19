@@ -257,7 +257,7 @@ export default function Hero({
         }`}
       >
         <div className={`relative mb-10 short:mb-4 transition-all duration-1000 delay-300 ease-out ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}>
-          <div className="relative w-32 h-32 short:w-24 short:h-24 mx-auto">
+          <div className="relative w-36 h-36 short:w-24 short:h-24 mx-auto">
             <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
               <circle cx="80" cy="80" r="68" className="stroke-button/25" strokeWidth="0.3" fill="none" />
@@ -265,29 +265,29 @@ export default function Hero({
               <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" className="fill-button/60" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center gap-2">
-              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
-              <span className="script-font text-lg text-button/80 italic">&amp;</span>
-              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">{initialMire}</span>
+              <span className="serif-font text-[2.5rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
+              <span className="script-font text-xl text-button/80 italic">&amp;</span>
+              <span className="serif-font text-[2.5rem] font-light text-text-heading tracking-wide">{initialMire}</span>
             </div>
           </div>
         </div>
 
         {guest && audience && (
           <div className="mb-6">
-            <p className="serif-font text-lg italic text-text-muted mb-1">
+            <p className="serif-font text-xl italic text-text-muted mb-1">
               {getGreeting(audience)}
             </p>
-            <p className="serif-font text-2xl text-text-heading font-light">
+            <p className="serif-font text-3xl text-text-heading font-light">
               {formatGuestNames(guest)}
             </p>
           </div>
         )}
 
         <div className={`transition-all duration-1000 delay-500 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-5 short:mb-3 font-medium">{audience ? getInvitationLine(audience) : "Cu drag vă invităm"}</p>
-          <h2 className="serif-font text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-6 short:mb-3">{audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}</h2>
+          <p className="text-[0.75rem] tracking-[0.4em] uppercase text-button mb-5 short:mb-3 font-medium">{audience ? getInvitationLine(audience) : "Cu drag vă invităm"}</p>
+          <h2 className="serif-font text-3xl font-light italic text-text-heading leading-relaxed mb-6 short:mb-3">{audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}</h2>
           <SmallFlourish className="mx-auto my-6 short:my-3" />
-          <p className="body-font text-[0.95rem] short:text-[0.85rem] leading-[1.9] text-foreground mt-6 short:mt-3 max-w-md mx-auto">
+          <p className="body-font text-[1.05rem] short:text-[0.85rem] leading-[1.9] text-foreground mt-6 short:mt-3 max-w-lg mx-auto">
             {guest ? personalizedText : defaultText}
           </p>
         </div>

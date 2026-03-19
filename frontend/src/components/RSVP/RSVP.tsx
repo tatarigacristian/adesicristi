@@ -450,7 +450,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
       </div>
 
       {/* Content */}
-      <div className="section-content max-w-md px-6" style={{ opacity: showContent ? 1 : 0, transform: showContent ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.7s ease-out, transform 0.7s ease-out" }}>
+      <div className="section-content max-w-md sm:max-w-lg px-6" style={{ opacity: showContent ? 1 : 0, transform: showContent ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.7s ease-out, transform 0.7s ease-out" }}>
         <form onSubmit={(e: FormEvent) => e.preventDefault()} className="w-full">
 
           {/* ── Step dots ── */}
@@ -471,10 +471,10 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 1: Câte persoane ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center ${stepClass(1)}`}>
-              <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-4">
+              <p className="body-font text-[0.55rem] sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-4">
                 Câte persoane participă?
               </p>
-              <div className="flex gap-3 w-full max-w-xs">
+              <div className="flex gap-3 w-full max-w-xs sm:max-w-sm">
                 <button
                   type="button"
                   onClick={() => {
@@ -482,11 +482,12 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     setErrors((prev) => ({ ...prev, personCount: "" }));
                     goToStep(2);
                   }}
-                  className={`flex-1 py-4 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center gap-2
+                  className={`flex-1 py-4 sm:py-5 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center gap-2 sm:gap-3
                     ${personCount === 1 ? "border-button bg-button/5" : "border-border-light bg-background-soft hover:border-button/40"}`}
                 >
-                  <User size={20} weight="duotone" className="text-button" />
-                  <span className="body-font text-xs font-medium text-text-heading">O persoană</span>
+                  <User size={20} weight="duotone" className="text-button sm:hidden" />
+                  <User size={26} weight="duotone" className="text-button hidden sm:block" />
+                  <span className="body-font text-xs sm:text-sm font-medium text-text-heading">O persoană</span>
                 </button>
                 <button
                   type="button"
@@ -495,11 +496,12 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     setErrors((prev) => ({ ...prev, personCount: "" }));
                     goToStep(2);
                   }}
-                  className={`flex-1 py-4 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center gap-2
+                  className={`flex-1 py-4 sm:py-5 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center gap-2 sm:gap-3
                     ${personCount === 2 ? "border-button bg-button/5" : "border-border-light bg-background-soft hover:border-button/40"}`}
                 >
-                  <Users size={24} weight="duotone" className="text-button" />
-                  <span className="body-font text-xs font-medium text-text-heading">Două persoane</span>
+                  <Users size={24} weight="duotone" className="text-button sm:hidden" />
+                  <Users size={30} weight="duotone" className="text-button hidden sm:block" />
+                  <span className="body-font text-xs sm:text-sm font-medium text-text-heading">Două persoane</span>
                 </button>
               </div>
               {errors.personCount && (
@@ -510,7 +512,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 2: Nume ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(2)}`}>
-              <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
+              <p className="body-font text-[0.55rem] sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 {personCount === 2 ? "Numele vostru" : "Numele tău"}
               </p>
               <input
@@ -522,7 +524,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 disabled={isDisabled}
                 placeholder={errors.name || "Numele tău"}
                 enterKeyHint="next"
-                className={`w-full max-w-xs border rounded-xl px-4 py-2.5 text-sm bg-background-soft text-center
+                className={`w-full max-w-xs sm:max-w-sm border rounded-xl px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-background-soft text-center
                            focus:outline-none focus:border-button transition-colors disabled:opacity-50
                            ${errors.name ? "border-button placeholder:text-button" : "border-border-light"}
                            ${errors.name && shakeErrors ? "animate-shake" : ""}`}
@@ -539,7 +541,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     disabled={isDisabled}
                     placeholder={errors.partnerName || "Numele partenerului"}
                     enterKeyHint="next"
-                    className={`w-full max-w-xs border rounded-xl px-4 py-2.5 text-sm bg-background-soft text-center
+                    className={`w-full max-w-xs sm:max-w-sm border rounded-xl px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-background-soft text-center
                                focus:outline-none focus:border-button transition-colors disabled:opacity-50
                                ${errors.partnerName ? "border-button placeholder:text-button" : "border-border-light"}
                                ${errors.partnerName && shakeErrors ? "animate-shake" : ""}`}
@@ -547,9 +549,9 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 </>
               )}
 
-              <div className="flex gap-3 w-full max-w-xs mt-2">
+              <div className="flex gap-3 w-full max-w-xs sm:max-w-sm mt-2">
                 <button type="button" onClick={() => goToStep(1)}
-                  className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
+                  className="flex-1 border border-button py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
                   Înapoi
                 </button>
                 <button type="button" onClick={() => {
@@ -559,7 +561,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                   if (Object.keys(e).length) { triggerErrors(e); return; }
                   goToStep(3);
                 }}
-                  className="flex-1 bg-button text-white py-2 rounded-xl text-xs font-medium hover:bg-button-hover transition-colors cursor-pointer">
+                  className="flex-1 bg-button text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
                   Continuă
                 </button>
               </div>
@@ -568,17 +570,18 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 3: Preferințe ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(3)}`}>
-              <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
+              <p className="body-font text-[0.55rem] sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 Preferințe
               </p>
 
               {/* Transport */}
               <button type="button" onClick={() => setNeedsTransport(!needsTransport)} disabled={isDisabled}
-                className={`w-full max-w-xs flex items-center justify-between py-3 px-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
+                className={`w-full max-w-xs sm:max-w-sm flex items-center justify-between py-3 sm:py-3.5 px-4 sm:px-5 rounded-xl border-2 transition-all duration-200 cursor-pointer
                   ${needsTransport ? "border-button bg-button/5" : "border-border-light bg-background-soft"}`}>
                 <div className="flex items-center gap-2.5">
-                  <Car size={18} weight="duotone" className="text-button" />
-                  <span className="body-font text-xs text-text-heading">Transport</span>
+                  <Car size={18} weight="duotone" className="text-button sm:hidden" />
+                  <Car size={22} weight="duotone" className="text-button hidden sm:block" />
+                  <span className="body-font text-xs sm:text-sm text-text-heading">Transport</span>
                 </div>
                 <div className={`relative w-10 h-5 rounded-full transition-colors duration-200
                   ${needsTransport ? "bg-button" : "bg-text-muted/20"}`}>
@@ -589,11 +592,12 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
 
               {/* Vegetarian */}
               <button type="button" onClick={() => setVegetarianMenu(!vegetarianMenu)} disabled={isDisabled}
-                className={`w-full max-w-xs flex items-center justify-between py-3 px-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
+                className={`w-full max-w-xs sm:max-w-sm flex items-center justify-between py-3 sm:py-3.5 px-4 sm:px-5 rounded-xl border-2 transition-all duration-200 cursor-pointer
                   ${vegetarianMenu ? "border-button bg-button/5" : "border-border-light bg-background-soft"}`}>
                 <div className="flex items-center gap-2.5">
-                  <Leaf size={18} weight="duotone" className="text-button" />
-                  <span className="body-font text-xs text-text-heading">Meniu vegetarian</span>
+                  <Leaf size={18} weight="duotone" className="text-button sm:hidden" />
+                  <Leaf size={22} weight="duotone" className="text-button hidden sm:block" />
+                  <span className="body-font text-xs sm:text-sm text-text-heading">Meniu vegetarian</span>
                 </div>
                 <div className={`relative w-10 h-5 rounded-full transition-colors duration-200
                   ${vegetarianMenu ? "bg-button" : "bg-text-muted/20"}`}>
@@ -605,12 +609,13 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
               {/* Children menu - shown when guest has children */}
               {hasChildren && (
                 <button type="button" onClick={() => setChildrenMenu(!childrenMenu)} disabled={isDisabled}
-                  className={`w-full max-w-xs flex items-center justify-between py-3 px-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
+                  className={`w-full max-w-xs sm:max-w-sm flex items-center justify-between py-3 sm:py-3.5 px-4 sm:px-5 rounded-xl border-2 transition-all duration-200 cursor-pointer
                     ${childrenMenu ? "border-button bg-button/5" : "border-border-light bg-background-soft"}`}>
                   <div className="flex items-center gap-2.5">
-                    <Baby size={18} weight="duotone" className="text-button" />
+                    <Baby size={18} weight="duotone" className="text-button sm:hidden" />
+                    <Baby size={22} weight="duotone" className="text-button hidden sm:block" />
                     <div className="flex flex-col items-start">
-                      <span className="body-font text-xs text-text-heading">Meniu copil</span>
+                      <span className="body-font text-xs sm:text-sm text-text-heading">Meniu copil</span>
                       <span className="text-[0.6rem] text-text-muted">
                         {guest!.children!.map((c) => c.prenume).join(", ")}
                       </span>
@@ -624,13 +629,13 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 </button>
               )}
 
-              <div className="flex gap-3 w-full max-w-xs mt-2">
+              <div className="flex gap-3 w-full max-w-xs sm:max-w-sm mt-2">
                 <button type="button" onClick={() => goToStep(2)}
-                  className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
+                  className="flex-1 border border-button py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
                   Înapoi
                 </button>
                 <button type="button" onClick={() => goToStep(4)}
-                  className="flex-1 bg-button text-white py-2 rounded-xl text-xs font-medium hover:bg-button-hover transition-colors cursor-pointer">
+                  className="flex-1 bg-button text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
                   Continuă
                 </button>
               </div>
@@ -639,7 +644,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 4: Mesaj + Confirmare ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(4)}`}>
-              <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-1">
+              <p className="body-font text-[0.55rem] sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 Un mesaj pentru noi?
               </p>
               <textarea
@@ -649,7 +654,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 disabled={isDisabled}
                 rows={2}
                 placeholder="Opțional"
-                className="w-full max-w-xs border border-border-light rounded-xl px-4 py-2.5 text-sm bg-background-soft text-center
+                className="w-full max-w-xs sm:max-w-sm border border-border-light rounded-xl px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-background-soft text-center
                            focus:outline-none focus:border-button transition-colors resize-none disabled:opacity-50"
               />
 
@@ -657,9 +662,9 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 <p className="text-[0.6rem] text-button">A apărut o eroare. Încearcă din nou.</p>
               )}
 
-              <div className="flex gap-3 w-full max-w-xs pt-1">
+              <div className="flex gap-3 w-full max-w-xs sm:max-w-sm pt-1">
                 <button type="button" onClick={() => goToStep(3)}
-                  className="flex-1 border border-button py-2 rounded-xl text-xs text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
+                  className="flex-1 border border-button py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
                   Înapoi
                 </button>
                 <button type="button" onClick={() => handleSubmit(false)} disabled={isDisabled}
@@ -668,7 +673,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 </button>
               </div>
               <button type="button" onClick={() => handleSubmit(true)} disabled={isDisabled}
-                className="w-full max-w-xs bg-button text-white py-2.5 rounded-xl text-xs font-medium
+                className="w-full max-w-xs sm:max-w-sm bg-button text-white py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-medium
                            hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer">
                 {formState === "submitting" ? "Se trimite..." : "Da, confirm prezența"}
               </button>
