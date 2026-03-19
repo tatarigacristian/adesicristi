@@ -16,55 +16,30 @@ function getYoutubeId(url: string): string | null {
 }
 
 const TIMELINE = [
-  { date: "2021-12-24", label: "Ne-am găsit", icon: "sparkle" },
+  { date: "2021-12-24", label: "Ne-am găsit", icon: "phone" },
   { date: "2022-01-10", label: "Ne-am întâlnit", icon: "coffee" },
   { date: "2022-02-02", label: "Un cuplu", icon: "heart" },
   { date: "2022-12-28", label: "Prima casă", icon: "home" },
   { date: "2023-05-02", label: "Logodna", icon: "ring" },
-  { date: "", label: "Nunta", icon: "celebrate" },
+  { date: "", label: "Nunta", icon: "champagne" },
 ];
 
-function TimelineIcon({ icon }: { icon: string }) {
+import { DeviceMobileCamera, Coffee, HeartStraight, House, Diamond, Champagne, Play } from "@phosphor-icons/react";
+
+function TimelineIcon({ icon, size = 16 }: { icon: string; size?: number }) {
   switch (icon) {
-    case "sparkle":
-      return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4" />
-        </svg>
-      );
+    case "phone":
+      return <DeviceMobileCamera size={size} weight="duotone" />;
     case "coffee":
-      return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M17 8h1a4 4 0 110 8h-1M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z" />
-        </svg>
-      );
+      return <Coffee size={size} weight="duotone" />;
     case "heart":
-      return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
-      );
+      return <HeartStraight size={size} weight="duotone" />;
     case "home":
-      return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-          <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
-      );
+      return <House size={size} weight="duotone" />;
     case "ring":
-      return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <circle cx="9" cy="14" r="6" />
-          <circle cx="15" cy="14" r="6" />
-          <path d="M12 2l1.5 4h-3L12 2z" />
-        </svg>
-      );
-    case "celebrate":
-      return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2v4M4.93 4.93l2.83 2.83M2 12h4M4.93 19.07l2.83-2.83M12 18v4M16.24 16.24l2.83 2.83M18 12h4M16.24 7.76l2.83-2.83" />
-        </svg>
-      );
+      return <Diamond size={size} weight="duotone" />;
+    case "champagne":
+      return <Champagne size={size} weight="duotone" />;
     default:
       return null;
   }
@@ -123,27 +98,22 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
 
           {/* Desktop: full vertical timeline (left side) */}
           <div className="hidden lg:flex w-full lg:w-1/2 justify-center lg:justify-end lg:self-stretch">
-            <div className="relative pl-8 flex flex-col h-full">
-              <div className="absolute left-[11px] top-2 bottom-2 w-px bg-button/20" />
+            <div className="relative flex flex-col h-full">
               <div className="flex flex-col justify-between h-full">
                 {timeline.map((item, i) => {
                   const isLast = i === timeline.length - 1;
                   return (
-                    <div key={i} className="relative flex items-start gap-4">
+                    <div key={i} className="flex items-center gap-4">
                       <div
-                        className={`absolute -left-8 top-0.5 w-[22px] h-[22px] rounded-full flex items-center justify-center
-                          ${isLast
-                            ? "bg-button text-white"
-                            : "bg-button/70 text-white"
-                          }`}
+                        className="w-10 h-10 short:w-9 short:h-9 rounded-full flex items-center justify-center shrink-0 bg-button text-white"
                       >
-                        <TimelineIcon icon={item.icon} />
+                        <TimelineIcon icon={item.icon} size={20} />
                       </div>
-                      <div className="pt-0">
+                      <div>
                         <p className="text-[0.6rem] tracking-[0.2em] uppercase text-text-muted mb-0.5">
                           {formatDate(item.date)}
                         </p>
-                        <p className={`serif-font text-lg leading-snug ${isLast ? "text-button font-medium" : "text-text-heading"}`}>
+                        <p className={`serif-font text-lg short:text-base leading-snug ${isLast ? "text-button font-medium" : "text-text-heading"}`}>
                           {item.label}
                         </p>
                       </div>
@@ -156,7 +126,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
 
           {/* Mobile: video + timeline below; Desktop: video right */}
           <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start gap-4">
-            <div className="w-[55vw] max-w-[240px] sm:max-w-xs lg:max-w-sm glass-card !p-0 overflow-hidden rounded-xl">
+            <div className="w-[55vw] max-w-[240px] sm:max-w-xs lg:max-w-sm short:lg:max-w-[260px] glass-card !p-0 overflow-hidden rounded-xl">
               <div className="relative w-full" style={{ paddingBottom: "150%" }}>
                 {!playing ? (
                   <button
@@ -172,9 +142,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                     <div className="absolute bottom-4 left-0 right-0 flex justify-center px-6">
                       <div className="flex items-center justify-center gap-1.5 bg-button/70 backdrop-blur-sm rounded-full py-1.5 px-5 group-hover:bg-button/90 transition-colors duration-300">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-white">
-                          <path d="M8 5v14l11-7z" fill="currentColor" />
-                        </svg>
+                        <Play size={12} weight="fill" className="text-white" />
                         <span className="text-[0.6rem] font-medium tracking-[0.1em] uppercase text-white/90">Play video</span>
                       </div>
                     </div>

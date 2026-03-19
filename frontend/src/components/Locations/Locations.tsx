@@ -95,7 +95,7 @@ function LocationCardDesktop({
 }) {
   return (
     <div className="flex items-center gap-8 py-6">
-      <div className="w-[44px] h-[44px] rounded-full border border-button/30 flex items-center justify-center text-button flex-shrink-0">
+      <div className="w-12 h-12 rounded-full bg-button flex items-center justify-center text-white flex-shrink-0">
         <EventIcon type={loc.title} />
       </div>
       <div className="flex-1 min-w-0">
@@ -114,10 +114,7 @@ function LocationCardDesktop({
           onClick={() => onMapClick(loc)}
           className="body-font text-[0.6rem] tracking-[0.15em] uppercase text-button hover:text-button-hover transition-colors cursor-pointer flex items-center gap-1.5 flex-shrink-0"
         >
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
+          <MapPin size={11} weight="duotone" />
           Vezi pe hartă
         </button>
       )}
@@ -125,39 +122,18 @@ function LocationCardDesktop({
   );
 }
 
-/* Event icons for mobile timeline */
+/* Event icons for location cards — using Phosphor Icons */
+import { Church, Car as PhCar, Champagne, MapPin, NavigationArrow } from "@phosphor-icons/react";
+
 function EventIcon({ type }: { type: string }) {
+  const size = 28;
   if (type.toLowerCase().includes("transport")) {
-    return (
-      <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 7 Q3 5, 5 5 L19 5 Q21 5, 21 7 L21 15 Q21 17, 19 17 L5 17 Q3 17, 3 15Z" />
-        <rect x="5" y="7" width="4" height="3" rx="0.5" />
-        <rect x="10" y="7" width="4" height="3" rx="0.5" />
-        <rect x="15" y="7" width="4" height="3" rx="0.5" />
-        <circle cx="7" cy="19" r="1.5" /><circle cx="17" cy="19" r="1.5" />
-      </svg>
-    );
+    return <PhCar size={size} weight="duotone" />;
   }
   if (type.toLowerCase().includes("petrecere") || type.toLowerCase().includes("recep")) {
-    return (
-      <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M7 2 L7 4 C7 8, 9 10, 12 10 C15 10, 17 8, 17 4 L17 2" />
-        <line x1="12" y1="10" x2="12" y2="18" />
-        <line x1="8" y1="18" x2="16" y2="18" />
-        <line x1="7" y1="2" x2="17" y2="2" />
-      </svg>
-    );
+    return <Champagne size={size} weight="duotone" />;
   }
-  // Default: church
-  return (
-    <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="1" x2="12" y2="5" />
-      <line x1="10" y1="3" x2="14" y2="3" />
-      <path d="M7 10 L12 5 L17 10" />
-      <rect x="6" y="10" width="12" height="11" />
-      <path d="M10 21 L10 17 Q10 15, 12 15 Q14 15, 14 17 L14 21" />
-    </svg>
-  );
+  return <Church size={size} weight="duotone" />;
 }
 
 export default function Locations({ settings }: { settings?: WeddingSettings | null }) {
@@ -219,10 +195,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                       </p>
                       {loc.googleMapsUrl && (
                         <p className="body-font mt-1.5 text-[0.6rem] tracking-[0.1em] uppercase text-button flex items-center gap-1">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                            <circle cx="12" cy="10" r="3" />
-                          </svg>
+                          <MapPin size={10} weight="duotone" />
                           Vezi pe hartă
                         </p>
                       )}
@@ -274,10 +247,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border-light hover:bg-background-soft transition-colors"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
+                <MapPin size={20} weight="duotone" className="text-button flex-shrink-0" />
                 <span className="text-sm font-medium text-text-heading">Google Maps</span>
               </a>
               <a
@@ -286,11 +256,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border-light hover:bg-background-soft transition-colors"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                  <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
-                  <line x1="8" y1="2" x2="8" y2="18" />
-                  <line x1="16" y1="6" x2="16" y2="22" />
-                </svg>
+                <NavigationArrow size={20} weight="duotone" className="text-button flex-shrink-0" />
                 <span className="text-sm font-medium text-text-heading">Apple Maps</span>
               </a>
               <a
@@ -299,12 +265,7 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border-light hover:bg-background-soft transition-colors"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button flex-shrink-0">
-                  <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H7L5 10l-2.5 1.1C1.7 11.3 1 12.1 1 13v3c0 .6.4 1 1 1h2" />
-                  <circle cx="7" cy="17" r="2" />
-                  <circle cx="17" cy="17" r="2" />
-                  <path d="M9 17h6" />
-                </svg>
+                <PhCar size={20} weight="duotone" className="text-button flex-shrink-0" />
                 <span className="text-sm font-medium text-text-heading">Waze</span>
               </a>
             </div>

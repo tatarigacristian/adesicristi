@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useMemo, useCallback } from "react";
 import { useAdminAuth } from "../_context";
 import { API_URL, Guest, RsvpEntry, authHeaders } from "../_shared";
 import { useTabParam } from "@/hooks/useTabParam";
+import { Car, Leaf, Baby } from "@phosphor-icons/react";
 
 interface Service {
   id: number;
@@ -544,18 +545,7 @@ function DashboardContent() {
             <div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#3b82f6"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 17h14v-5H5zm0 0v2h2v-2m10 0v2h2v-2M3 12l2-7h14l2 7" />
-                  </svg>
+                  <Car size={20} weight="duotone" color="#3b82f6" />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold text-text-heading">
@@ -570,20 +560,7 @@ function DashboardContent() {
             <div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#10b981"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
-                    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                    <path d="M15 9l-6 0" />
-                  </svg>
+                  <Leaf size={20} weight="duotone" color="#10b981" />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold text-text-heading">
@@ -598,19 +575,7 @@ function DashboardContent() {
             <div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#8b5cf6"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  </svg>
+                  <Baby size={20} weight="duotone" color="#8b5cf6" />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold text-text-heading">

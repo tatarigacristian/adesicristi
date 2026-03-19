@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { getInvitationAudience, getGreeting, getInvitationLineUpper, getAlaturiLine, getAsteptamLineShort, getDefaultInvitationLines } from "@/utils/invitation-text";
+import { Church, Bus, Champagne } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -125,47 +126,15 @@ function SmallFlourish({ color }: { color: string }) {
 }
 
 function ChurchIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <line x1="12" y1="1" x2="12" y2="5" />
-      <line x1="10" y1="3" x2="14" y2="3" />
-      <path d="M7 10 L12 5 L17 10" />
-      <rect x="6" y="10" width="12" height="11" />
-      <path d="M10 21 L10 17 Q10 15, 12 15 Q14 15, 14 17 L14 21" />
-      <circle cx="12" cy="12.5" r="1" />
-      <line x1="4" y1="21" x2="20" y2="21" />
-    </svg>
-  );
+  return <Church size={18} weight="duotone" color={color} />;
 }
 
 function TransportIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 7 Q3 5, 5 5 L19 5 Q21 5, 21 7 L21 15 Q21 17, 19 17 L18.5 17" />
-      <path d="M5.5 17 L3 17 L3 7" />
-      <rect x="5" y="7" width="4" height="3.5" rx="0.5" />
-      <rect x="10" y="7" width="4" height="3.5" rx="0.5" />
-      <rect x="15" y="7" width="4" height="3.5" rx="0.5" />
-      <path d="M3 12 L21 12" />
-      <circle cx="7" cy="17.5" r="1.8" />
-      <circle cx="17" cy="17.5" r="1.8" />
-      <path d="M8.8 17 L15.2 17" />
-    </svg>
-  );
+  return <Bus size={18} weight="duotone" color={color} />;
 }
 
 function VenueIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <path d="M7 2 L7 4 C7 8, 9 10, 12 10 C15 10, 17 8, 17 4 L17 2" />
-      <line x1="12" y1="10" x2="12" y2="18" />
-      <line x1="8" y1="18" x2="16" y2="18" />
-      <line x1="7" y1="2" x2="17" y2="2" />
-      <path d="M8 5 C9 4.5, 11 4.5, 12 5 C13 5.5, 15 5.5, 16 5" opacity="0.4" />
-      <circle cx="10" cy="7" r="0.5" opacity="0.3" />
-      <circle cx="13" cy="6" r="0.4" opacity="0.3" />
-    </svg>
-  );
+  return <Champagne size={18} weight="duotone" color={color} />;
 }
 
 export default function PublicInvitatiePage({ params }: { params: Promise<{ slug: string }> }) {

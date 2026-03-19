@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAdminAuth } from "../_context";
 import { API_URL, PAGE_SIZE, RsvpEntry, authHeaders, Pagination, SearchInput } from "../_shared";
+import { ArrowSquareOut, Trash } from "@phosphor-icons/react";
 
 type RsvpFilter = "all" | "attending" | "not_attending";
 type BoolFilter = "all" | "yes" | "no";
@@ -217,11 +218,7 @@ export default function ConfirmariPage() {
                         className="p-2 rounded-lg text-foreground/50 hover:text-accent hover:bg-background-soft/50 transition-colors cursor-pointer"
                         title="Vezi detalii"
                       >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                          <polyline points="15 3 21 3 21 9" />
-                          <line x1="10" y1="14" x2="21" y2="3" />
-                        </svg>
+                        <ArrowSquareOut size={18} weight="bold" />
                       </button>
                       <button
                         type="button"
@@ -229,10 +226,7 @@ export default function ConfirmariPage() {
                         className="p-2 rounded-lg text-foreground/50 hover:text-accent-rose hover:bg-background-soft/50 transition-colors cursor-pointer"
                         title="Sterge"
                       >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                        </svg>
+                        <Trash size={18} weight="bold" />
                       </button>
                     </div>
                   </div>
@@ -312,11 +306,7 @@ export default function ConfirmariPage() {
                             className="p-2 rounded-lg text-foreground/50 hover:text-accent hover:bg-background-soft/50 transition-colors cursor-pointer inline-flex items-center justify-center"
                             title="Vezi detalii"
                           >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                              <polyline points="15 3 21 3 21 9" />
-                              <line x1="10" y1="14" x2="21" y2="3" />
-                            </svg>
+                            <ArrowSquareOut size={18} weight="bold" />
                           </button>
                           <button
                             type="button"
@@ -324,10 +314,7 @@ export default function ConfirmariPage() {
                             className="p-2 rounded-lg text-foreground/50 hover:text-accent-rose hover:bg-background-soft/50 transition-colors cursor-pointer inline-flex items-center justify-center"
                             title="Sterge"
                           >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                            </svg>
+                            <Trash size={18} weight="bold" />
                           </button>
                         </div>
                       </td>
@@ -354,10 +341,7 @@ export default function ConfirmariPage() {
           <div className="bg-white rounded-xl w-full max-w-xs flex flex-col">
             <div className="p-5 text-center">
               <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                </svg>
+                <Trash size={24} weight="bold" className="text-red-600" />
               </div>
               <h3 className="serif-font text-lg text-text-heading mb-2">Sterge confirmarea</h3>
               <p className="text-sm text-text-muted mb-1">Esti sigur ca vrei sa stergi confirmarea de la</p>

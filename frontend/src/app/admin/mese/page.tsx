@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useMemo, useCallback } from "react";
 import { useAdminAuth } from "../_context";
 import { API_URL, Guest, RsvpEntry, authHeaders, SearchInput } from "../_shared";
 import { useTabParam } from "@/hooks/useTabParam";
+import { Crown, X, Plus } from "@phosphor-icons/react";
 
 interface TableAssignment {
   guest_id: number;
@@ -466,9 +467,7 @@ function MeseContent() {
       <div className="mb-6">
         <div className="rounded-xl border-2 border-button/40 bg-button/5 p-5">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-button">
-              <path d="M12 2l1.5 4h-3L12 2z" /><circle cx="9" cy="14" r="6" /><circle cx="15" cy="14" r="6" />
-            </svg>
+            <Crown size={16} weight="duotone" className="text-button" />
             <h4 className="text-sm font-medium text-text-heading">Masa de Prezidiu</h4>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
@@ -526,9 +525,7 @@ function MeseContent() {
                         className="text-text-muted/40 hover:text-red-500 md:opacity-0 md:group-hover:opacity-100 transition-all cursor-pointer p-1"
                         title="Elimina de la masa"
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
+                        <X size={12} weight="bold" />
                       </button>
                     </div>
                   ))}
@@ -541,9 +538,7 @@ function MeseContent() {
                         className="text-text-muted/40 hover:text-red-500 md:opacity-0 md:group-hover:opacity-100 transition-all cursor-pointer p-1"
                         title="Elimina de la masa"
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
+                        <X size={12} weight="bold" />
                       </button>
                     </div>
                   ))}
@@ -566,9 +561,7 @@ function MeseContent() {
                 onClick={() => { setAddToTable(table.number); setAddToTableSearch(""); }}
                 className="w-full mt-2 py-1.5 rounded-lg border border-dashed border-border-light text-xs text-text-muted hover:text-button hover:border-button/40 transition-colors cursor-pointer flex items-center justify-center gap-1"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
+                <Plus size={12} weight="bold" />
                 Adauga invitat
               </button>
             </div>

@@ -8,6 +8,7 @@ import { WeddingSettings, getCoupleNames, formatDate } from "@/utils/settings";
 import { getInvitationAudience, getGreeting, getInvitationLine, getAlaturiLine, getDefaultIntroLong } from "@/utils/invitation-text";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
+import { Heart } from "@phosphor-icons/react";
 import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import { useSwiper } from "@/context/SwiperContext";
@@ -185,10 +186,7 @@ export default function Hero({
           <div className="mb-3">
             <div className="flex items-center justify-center gap-3">
               <span className="block w-12 h-px bg-button/30" />
-              <svg viewBox="0 0 50 48" className="w-6 h-6 text-button/60" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
-                <path d="M25,38 C25,38 8,27 8,16 C8,10 13,7 18,10 C21,12 25,16 25,16 C25,16 29,12 32,10 C37,7 42,10 42,16 C42,27 25,38 25,38 Z" strokeWidth="0.6" opacity="0.4" />
-              </svg>
+              <Heart size={24} weight="fill" className="text-button/60" />
               <span className="block w-12 h-px bg-button/30" />
             </div>
             <p className="serif-font text-xl text-text-heading font-light mt-2 tracking-wide">{dateDisplay}</p>
@@ -258,8 +256,8 @@ export default function Hero({
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-        <div className={`relative mb-10 transition-all duration-1000 delay-300 ease-out ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}>
-          <div className="relative w-32 h-32 mx-auto">
+        <div className={`relative mb-10 short:mb-4 transition-all duration-1000 delay-300 ease-out ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}>
+          <div className="relative w-32 h-32 short:w-24 short:h-24 mx-auto">
             <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
               <circle cx="80" cy="80" r="68" className="stroke-button/25" strokeWidth="0.3" fill="none" />
@@ -286,10 +284,10 @@ export default function Hero({
         )}
 
         <div className={`transition-all duration-1000 delay-500 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-5 font-medium">{audience ? getInvitationLine(audience) : "Cu drag vă invităm"}</p>
-          <h2 className="serif-font text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-6">{audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}</h2>
-          <SmallFlourish className="mx-auto my-6" />
-          <p className="body-font text-[0.95rem] leading-[1.9] text-foreground mt-6 max-w-md mx-auto">
+          <p className="text-[0.6rem] tracking-[0.4em] uppercase text-button mb-5 short:mb-3 font-medium">{audience ? getInvitationLine(audience) : "Cu drag vă invităm"}</p>
+          <h2 className="serif-font text-2xl md:text-[1.7rem] font-light italic text-text-heading leading-relaxed mb-6 short:mb-3">{audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}</h2>
+          <SmallFlourish className="mx-auto my-6 short:my-3" />
+          <p className="body-font text-[0.95rem] short:text-[0.85rem] leading-[1.9] text-foreground mt-6 short:mt-3 max-w-md mx-auto">
             {guest ? personalizedText : defaultText}
           </p>
         </div>

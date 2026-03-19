@@ -5,6 +5,7 @@ import Countdown from "../Countdown/Countdown";
 import { WeddingSettings, getCoupleNames, formatDate, getWeddingDateISO } from "@/utils/settings";
 import Flourish from "@/components/Ornaments/Flourish";
 import { useSwiper, useSlideTo, SLIDE_IDS } from "@/context/SwiperContext";
+import { MapPin } from "@phosphor-icons/react";
 
 const NAV_ITEMS = [
   { label: "Noi doi", sectionId: "couple" },
@@ -48,36 +49,33 @@ export default function Sidebar({ settings, hasGuest }: { settings?: WeddingSett
   return (
     <aside className="left-panel">
       <div className="flex flex-col items-center text-center px-8 w-full">
-        <p className="text-[0.8rem] tracking-[0.35em] uppercase text-button serif-font font-medium mb-2">
+        <p className="text-[0.8rem] tracking-[0.35em] uppercase text-button serif-font font-medium mb-2 short:mb-1">
           Ne căsătorim!
         </p>
 
-        <h1 className="script-font text-6xl xl:text-7xl text-text-heading mb-4 leading-tight">
+        <h1 className="script-font text-6xl xl:text-7xl short:text-5xl text-text-heading mb-4 short:mb-2 leading-tight">
           {couple.display}
         </h1>
 
-        <Flourish size="sm" className="mb-4" />
+        <Flourish size="sm" className="mb-4 short:mb-2" />
 
-        <p className="serif-font text-2xl text-text-heading font-light tracking-wide mb-2">
+        <p className="serif-font text-2xl short:text-xl text-text-heading font-light tracking-wide mb-2 short:mb-1">
           {dateDisplay}
         </p>
 
-        <div className="flex flex-col items-center gap-0.5 text-button mb-8">
+        <div className="flex flex-col items-center gap-0.5 text-button mb-8 short:mb-4">
           <div className="flex items-center gap-1.5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
+            <MapPin size={14} weight="duotone" />
             <span className="serif-font text-sm">Iasi</span>
           </div>
         </div>
 
-        <div className="w-full max-w-xs mb-10">
+        <div className="w-full max-w-xs mb-10 short:mb-4">
           <Countdown variant="sidebar" weddingDateISO={weddingDateISO} />
         </div>
 
         <nav className="w-full">
-          <ul className="flex flex-col gap-4 w-min mx-auto">
+          <ul className="flex flex-col gap-4 short:gap-2.5 w-min mx-auto">
             {hasGuest && (
               <li className="grid grid-cols-[0.5rem_1fr] items-center gap-3">
                 <span

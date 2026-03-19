@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { safeToPng } from "@/utils/safari-png";
+import { CaretLeft, DownloadSimple, Champagne, Coffee } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -69,22 +70,13 @@ function SmallFlourish({ color }: { color: string }) {
   );
 }
 
-// Category icons for the design card (inline SVG for html-to-image compatibility)
+// Category icons for the design card
 function CocktailIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" style={{ width: 20, height: 20 }} fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 2l1.5 9H14.5L16 2" /><path d="M12 11v8" /><path d="M8 19h8" /><path d="M3 2h18" />
-    </svg>
-  );
+  return <Champagne size={20} weight="duotone" color={color} />;
 }
 
 function CupIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" style={{ width: 20, height: 20 }} fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17 8h1a4 4 0 0 1 0 8h-1" /><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-      <line x1="6" y1="2" x2="6" y2="4" /><line x1="10" y1="2" x2="10" y2="4" /><line x1="14" y1="2" x2="14" y2="4" />
-    </svg>
-  );
+  return <Coffee size={20} weight="duotone" color={color} />;
 }
 
 function PreviewBarContent() {
@@ -142,16 +134,12 @@ function PreviewBarContent() {
       <div className="flex items-center justify-between mb-6">
         <button onClick={() => router.back()}
           className="text-sm text-text-muted hover:text-text-heading transition-colors cursor-pointer flex items-center gap-1">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
+          <CaretLeft size={16} weight="bold" />
           Inapoi
         </button>
         <button onClick={handleSavePng}
           className="bg-button text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
+          <DownloadSimple size={16} weight="bold" />
           Salveaza PNG
         </button>
       </div>

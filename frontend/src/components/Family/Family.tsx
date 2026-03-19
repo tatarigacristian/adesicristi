@@ -3,6 +3,8 @@
 import { WeddingSettings } from "@/utils/settings";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
+import SmallFlourish from "@/components/Ornaments/SmallFlourish";
+import { Heart } from "@phosphor-icons/react";
 import { useSlideActive } from "@/hooks/useSlideActive";
 
 export default function Family({
@@ -43,7 +45,8 @@ export default function Family({
           Familie
         </h2>
         <SectionDots />
-          <p className="body-font text-[0.7rem] tracking-[0.2em] uppercase text-text-muted">
+          <SmallFlourish className="hidden sm:block mx-auto my-2" />
+          <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Cei dragi nouă
           </p>
       </div>
@@ -68,9 +71,7 @@ export default function Family({
           {hasNasi && hasParinti && (
             <div className="flex items-center gap-3 w-full max-w-[200px]">
               <span className="flex-1 h-px bg-button/15" />
-              <svg viewBox="0 0 50 48" className="w-4 h-4 text-button/30" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.5" fill="currentColor" fillOpacity="0.15" />
-              </svg>
+              <Heart size={16} weight="fill" className="text-button/30" />
               <span className="flex-1 h-px bg-button/15" />
             </div>
           )}

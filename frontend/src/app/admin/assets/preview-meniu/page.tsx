@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { safeToPng } from "@/utils/safari-png";
+import { CaretLeft, DownloadSimple, ForkKnife, CookingPot, BowlFood, IceCream } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -71,36 +72,19 @@ function SmallFlourish({ color }: { color: string }) {
 
 // Category icons for the design
 function AperitifIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="9" /><path d="M12 3a5 5 0 0 1 0 10" /><line x1="12" y1="7" x2="12" y2="7.01" />
-    </svg>
-  );
+  return <ForkKnife size={18} weight="duotone" color={color} />;
 }
 
 function MainCourseIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 14h18" /><path d="M4 14c0-4.4 3.6-8 8-8s8 3.6 8 8" /><path d="M6 18h12" /><line x1="12" y1="18" x2="12" y2="21" />
-    </svg>
-  );
+  return <CookingPot size={18} weight="duotone" color={color} />;
 }
 
 function SideDishIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2a7 7 0 0 0-7 7c0 3.5 2.5 6.5 7 12 4.5-5.5 7-8.5 7-12a7 7 0 0 0-7-7z" />
-      <circle cx="12" cy="9" r="2.5" />
-    </svg>
-  );
+  return <BowlFood size={18} weight="duotone" color={color} />;
 }
 
 function DessertIcon({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 18h20" /><path d="M4 18v-3a8 8 0 0 1 16 0v3" /><path d="M12 6V2" /><path d="M9 6.5L7 4" /><path d="M15 6.5l2-2.5" />
-    </svg>
-  );
+  return <IceCream size={18} weight="duotone" color={color} />;
 }
 
 const CATEGORY_CONFIG: Record<MenuItem["categorie"], { label: string; Icon: typeof AperitifIcon }> = {
@@ -168,16 +152,12 @@ function PreviewMeniuContent() {
       <div className="flex items-center justify-between mb-6">
         <button onClick={() => router.back()}
           className="text-sm text-text-muted hover:text-text-heading transition-colors cursor-pointer flex items-center gap-1">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
+          <CaretLeft size={16} weight="bold" />
           Inapoi
         </button>
         <button onClick={handleSavePng}
           className="bg-button text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
+          <DownloadSimple size={16} weight="bold" />
           Salveaza PNG
         </button>
       </div>

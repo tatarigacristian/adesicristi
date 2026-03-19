@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { safeToPng } from "@/utils/safari-png";
+import { CaretLeft, CaretRight, DownloadSimple } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -181,16 +182,12 @@ function PreviewMeseContent() {
       <div className="flex items-center justify-between mb-6">
         <button onClick={() => router.back()}
           className="text-sm text-text-muted hover:text-text-heading transition-colors cursor-pointer flex items-center gap-1">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
+          <CaretLeft size={16} weight="bold" />
           Inapoi
         </button>
         <button onClick={handleSavePng}
           className="bg-button text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
+          <DownloadSimple size={16} weight="bold" />
           Salveaza PNG
         </button>
       </div>
@@ -205,9 +202,7 @@ function PreviewMeseContent() {
         {/* Left arrow */}
         <button onClick={goLeft}
           className="shrink-0 w-10 h-10 rounded-full border border-border-light flex items-center justify-center text-text-muted hover:text-text-heading hover:border-button/40 transition-colors cursor-pointer">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
+          <CaretLeft size={20} weight="bold" />
         </button>
 
         <div
@@ -302,9 +297,7 @@ function PreviewMeseContent() {
         {/* Right arrow */}
         <button onClick={goRight}
           className="shrink-0 w-10 h-10 rounded-full border border-border-light flex items-center justify-center text-text-muted hover:text-text-heading hover:border-button/40 transition-colors cursor-pointer">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
+          <CaretRight size={20} weight="bold" />
         </button>
       </div>
     </div>
