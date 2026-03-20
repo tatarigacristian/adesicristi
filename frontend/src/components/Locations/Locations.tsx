@@ -158,12 +158,12 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
       >
         {/* Header */}
         <div className="section-header">
-          <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading mb-2 uppercase">
+          <h2 className="serif-font text-4xl md:text-4xl font-bold text-text-heading mb-2 uppercase">
             Agenda
           </h2>
           <SectionDots />
           <SmallFlourish className="hidden sm:block mx-auto my-2" />
-          <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
+          <p className="body-font text-sm sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Când și unde
           </p>
         </div>
