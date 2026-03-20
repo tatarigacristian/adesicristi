@@ -170,7 +170,7 @@ export default function Hero({
           style={{ paddingTop: "1.5rem" }}
         >
           {/* Static: Monogram + Heart + Date */}
-          <div className="relative w-44 h-44 mx-auto mb-1">
+          <div className="relative w-56 h-56 mx-auto mb-1">
             <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
               <circle cx="80" cy="80" r="68" className="stroke-button/25" strokeWidth="0.3" fill="none" />
@@ -178,9 +178,9 @@ export default function Hero({
               <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" className="fill-button/60" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center gap-2">
-              <span className="serif-font text-[3rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
-              <span className="script-font text-2xl text-button/80 italic">&amp;</span>
-              <span className="serif-font text-[3rem] font-light text-text-heading tracking-wide">{initialMire}</span>
+              <span className="serif-font text-[3.5rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
+              <span className="script-font text-3xl text-button/80 italic">&amp;</span>
+              <span className="serif-font text-[3.5rem] font-light text-text-heading tracking-wide">{initialMire}</span>
             </div>
           </div>
           <div className="mb-2">
