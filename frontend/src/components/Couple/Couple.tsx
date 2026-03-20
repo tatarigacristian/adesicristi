@@ -86,10 +86,10 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
     >
       {/* Header */}
       <div className="section-header">
-        <h2 className="serif-font text-2xl md:text-4xl font-bold text-text-heading uppercase mb-2 sm:mb-3">Noi doi</h2>
+        <h2 className="serif-font text-4xl md:text-4xl font-bold text-text-heading uppercase mb-2 sm:mb-3">Noi doi</h2>
         <SectionDots />
           <SmallFlourish className="hidden sm:block mx-auto my-2" />
-          <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
+          <p className="body-font text-sm sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Povestea noastră
           </p>
       </div>
