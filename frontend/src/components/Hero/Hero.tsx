@@ -170,7 +170,7 @@ export default function Hero({
           style={{ paddingTop: "1.5rem" }}
         >
           {/* Static: Monogram + Heart + Date */}
-          <div className="relative w-44 h-44 mx-auto mb-3">
+          <div className="relative w-44 h-44 mx-auto mb-1">
             <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
               <circle cx="80" cy="80" r="68" className="stroke-button/25" strokeWidth="0.3" fill="none" />
