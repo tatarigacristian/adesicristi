@@ -126,8 +126,7 @@ function LocationCardDesktop({
 /* Event icons for location cards — using Phosphor Icons */
 import { Church, Car as PhCar, Champagne, MapPin, NavigationArrow } from "@phosphor-icons/react";
 
-function EventIcon({ type }: { type: string }) {
-  const size = 28;
+function EventIcon({ type, size = 28 }: { type: string; size?: number }) {
   if (type.toLowerCase().includes("transport")) {
     return <PhCar size={size} weight="duotone" />;
   }
@@ -173,31 +172,31 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
         <div className={`section-content max-w-4xl px-4 transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           {/* Mobile timeline */}
           <div className="md:hidden px-6">
-            <div className="relative pl-10">
-              <div className="absolute left-[15px] top-4 bottom-4 w-px bg-button/20" />
-              <div className="flex flex-col gap-6">
+            <div className="relative pl-16">
+              <div className="absolute left-[24px] top-4 bottom-4 w-px bg-button/20" />
+              <div className="flex flex-col gap-8">
                 {locations.map((loc, i) => (
                   <div
                     key={loc.title}
                     className="relative cursor-pointer"
                     onClick={() => loc.googleMapsUrl && handleMapClick(loc)}
                   >
-                    <div className="absolute -left-10 top-0 w-[30px] h-[30px] rounded-full flex items-center justify-center bg-button text-white">
-                      <EventIcon type={loc.title} />
+                    <div className="absolute -left-16 top-0 w-[48px] h-[48px] rounded-full flex items-center justify-center bg-button text-white">
+                      <EventIcon type={loc.title} size={26} />
                     </div>
                     <div>
-                      <h3 className="serif-font text-base text-text-heading leading-tight">
+                      <h3 className="serif-font text-xl text-text-heading leading-tight">
                         {loc.title}
                       </h3>
-                      <p className="text-[0.65rem] text-button mt-0.5">
+                      <p className="text-sm text-button mt-1">
                         {loc.date}{loc.time ? `, ${loc.time}` : ""}
                       </p>
-                      <p className="text-[0.65rem] text-text-muted mt-0.5 leading-snug">
+                      <p className="text-sm text-text-muted mt-0.5 leading-snug">
                         {loc.address}
                       </p>
                       {loc.googleMapsUrl && (
-                        <p className="body-font mt-1.5 text-[0.6rem] tracking-[0.1em] uppercase text-button flex items-center gap-1">
-                          <MapPin size={10} weight="duotone" />
+                        <p className="body-font mt-2 text-xs tracking-[0.1em] uppercase text-button flex items-center gap-1">
+                          <MapPin size={13} weight="duotone" />
                           Vezi pe hartă
                         </p>
                       )}
