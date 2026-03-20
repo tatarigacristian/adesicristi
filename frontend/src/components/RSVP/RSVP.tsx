@@ -377,7 +377,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </div>
 
             {/* Title */}
-            <p className="body-font text-[0.55rem] text-text-muted tracking-[0.2em] uppercase mb-2">
+            <p className="body-font text-xs text-text-muted tracking-[0.2em] uppercase mb-2">
               {isPositive
                 ? (isPlural ? "Mulțumim pentru confirmare" : "Mulțumim pentru confirmare")
                 : formState === "declined"
@@ -389,7 +389,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             </p>
 
             {/* Message */}
-            <p className="text-xs text-text-muted leading-relaxed mb-5 max-w-[260px]">
+            <p className="text-sm text-text-muted leading-relaxed mb-5 max-w-[260px]">
               {isPositive
                 ? (isPlural ? "Abia așteptăm să fiți alături de noi!" : "Abia așteptăm să fii alături de noi!")
                 : (isPlural ? "Regretăm că nu veți putea fi alături de noi." : "Regretăm că nu vei putea fi alături de noi.")}
@@ -471,7 +471,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 1: Câte persoane ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center ${stepClass(1)}`}>
-              <p className="body-font text-[0.55rem] sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-4">
+              <p className="body-font text-xs sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-4">
                 Câte persoane participă?
               </p>
               <div className="flex gap-3 w-full max-w-xs sm:max-w-sm">
@@ -487,7 +487,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 >
                   <User size={20} weight="duotone" className="text-button sm:hidden" />
                   <User size={26} weight="duotone" className="text-button hidden sm:block" />
-                  <span className="body-font text-xs sm:text-sm font-medium text-text-heading">O persoană</span>
+                  <span className="body-font text-sm sm:text-sm font-medium text-text-heading">O persoană</span>
                 </button>
                 <button
                   type="button"
@@ -501,7 +501,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 >
                   <Users size={24} weight="duotone" className="text-button sm:hidden" />
                   <Users size={30} weight="duotone" className="text-button hidden sm:block" />
-                  <span className="body-font text-xs sm:text-sm font-medium text-text-heading">Două persoane</span>
+                  <span className="body-font text-sm sm:text-sm font-medium text-text-heading">Două persoane</span>
                 </button>
               </div>
               {errors.personCount && (
@@ -512,7 +512,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 2: Nume ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(2)}`}>
-              <p className="body-font text-[0.55rem] sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-1">
+              <p className="body-font text-xs sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 {personCount === 2 ? "Numele vostru" : "Numele tău"}
               </p>
               <input
@@ -551,7 +551,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
 
               <div className="flex gap-3 w-full max-w-xs sm:max-w-sm mt-2">
                 <button type="button" onClick={() => goToStep(1)}
-                  className="flex-1 border border-button py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
+                  className="flex-1 border border-button py-2 sm:py-2.5 rounded-xl text-sm sm:text-sm text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
                   Înapoi
                 </button>
                 <button type="button" onClick={() => {
@@ -561,7 +561,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                   if (Object.keys(e).length) { triggerErrors(e); return; }
                   goToStep(3);
                 }}
-                  className="flex-1 bg-button text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
+                  className="flex-1 bg-button text-white py-2 sm:py-2.5 rounded-xl text-sm sm:text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
                   Continuă
                 </button>
               </div>
@@ -570,7 +570,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 3: Preferințe ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(3)}`}>
-              <p className="body-font text-[0.55rem] sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-1">
+              <p className="body-font text-xs sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 Preferințe
               </p>
 
@@ -581,7 +581,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 <div className="flex items-center gap-2.5">
                   <Car size={18} weight="duotone" className="text-button sm:hidden" />
                   <Car size={22} weight="duotone" className="text-button hidden sm:block" />
-                  <span className="body-font text-xs sm:text-sm text-text-heading">Transport</span>
+                  <span className="body-font text-sm sm:text-sm text-text-heading">Transport</span>
                 </div>
                 <div className={`relative w-10 h-5 rounded-full transition-colors duration-200
                   ${needsTransport ? "bg-button" : "bg-text-muted/20"}`}>
@@ -597,7 +597,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                 <div className="flex items-center gap-2.5">
                   <Leaf size={18} weight="duotone" className="text-button sm:hidden" />
                   <Leaf size={22} weight="duotone" className="text-button hidden sm:block" />
-                  <span className="body-font text-xs sm:text-sm text-text-heading">Meniu vegetarian</span>
+                  <span className="body-font text-sm sm:text-sm text-text-heading">Meniu vegetarian</span>
                 </div>
                 <div className={`relative w-10 h-5 rounded-full transition-colors duration-200
                   ${vegetarianMenu ? "bg-button" : "bg-text-muted/20"}`}>
@@ -615,7 +615,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
                     <Baby size={18} weight="duotone" className="text-button sm:hidden" />
                     <Baby size={22} weight="duotone" className="text-button hidden sm:block" />
                     <div className="flex flex-col items-start">
-                      <span className="body-font text-xs sm:text-sm text-text-heading">Meniu copil</span>
+                      <span className="body-font text-sm sm:text-sm text-text-heading">Meniu copil</span>
                       <span className="text-[0.6rem] text-text-muted">
                         {guest!.children!.map((c) => c.prenume).join(", ")}
                       </span>
@@ -631,11 +631,11 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
 
               <div className="flex gap-3 w-full max-w-xs sm:max-w-sm mt-2">
                 <button type="button" onClick={() => goToStep(2)}
-                  className="flex-1 border border-button py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
+                  className="flex-1 border border-button py-2 sm:py-2.5 rounded-xl text-sm sm:text-sm text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
                   Înapoi
                 </button>
                 <button type="button" onClick={() => goToStep(4)}
-                  className="flex-1 bg-button text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
+                  className="flex-1 bg-button text-white py-2 sm:py-2.5 rounded-xl text-sm sm:text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer">
                   Continuă
                 </button>
               </div>
@@ -644,7 +644,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
             {/* ═══ STEP 4: Mesaj + Confirmare ═══ */}
             <div className={`
               transition-all duration-300 ease-out flex flex-col items-center justify-center gap-3 ${stepClass(4)}`}>
-              <p className="body-font text-[0.55rem] sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-1">
+              <p className="body-font text-xs sm:text-[0.75rem] text-text-muted tracking-[0.2em] uppercase mb-1">
                 Un mesaj pentru noi?
               </p>
               <textarea
@@ -664,7 +664,7 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
 
               <div className="flex gap-3 w-full max-w-xs sm:max-w-sm pt-1">
                 <button type="button" onClick={() => goToStep(3)}
-                  className="flex-1 border border-button py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
+                  className="flex-1 border border-button py-2 sm:py-2.5 rounded-xl text-sm sm:text-sm text-text-muted hover:bg-background-soft transition-colors cursor-pointer">
                   Înapoi
                 </button>
                 <button type="button" onClick={() => handleSubmit(false)} disabled={isDisabled}
