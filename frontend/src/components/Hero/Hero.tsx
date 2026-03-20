@@ -170,7 +170,7 @@ export default function Hero({
           style={{ paddingTop: "3.5rem" }}
         >
           {/* Static: Monogram + Heart + Date */}
-          <div className="relative w-32 h-32 mx-auto mb-4">
+          <div className="relative w-44 h-44 mx-auto mb-5">
             <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
               <circle cx="80" cy="80" r="68" className="stroke-button/25" strokeWidth="0.3" fill="none" />
@@ -178,18 +178,18 @@ export default function Hero({
               <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" className="fill-button/60" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center gap-2">
-              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
-              <span className="script-font text-lg text-button/80 italic">&amp;</span>
-              <span className="serif-font text-[2.2rem] font-light text-text-heading tracking-wide">{initialMire}</span>
+              <span className="serif-font text-[3rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
+              <span className="script-font text-2xl text-button/80 italic">&amp;</span>
+              <span className="serif-font text-[3rem] font-light text-text-heading tracking-wide">{initialMire}</span>
             </div>
           </div>
-          <div className="mb-3">
+          <div className="mb-4">
             <div className="flex items-center justify-center gap-3">
               <span className="block w-12 h-px bg-button/30" />
-              <Heart size={24} weight="fill" className="text-button/60" />
+              <Heart size={28} weight="fill" className="text-button/60" />
               <span className="block w-12 h-px bg-button/30" />
             </div>
-            <p className="serif-font text-xl text-text-heading font-light mt-2 tracking-wide">{dateDisplay}</p>
+            <p className="serif-font text-2xl text-text-heading font-light mt-2 tracking-wide">{dateDisplay}</p>
           </div>
 
           {/* Nested Swiper — only the dynamic part */}
@@ -223,10 +223,10 @@ export default function Hero({
                         </p>
                       </>
                     )}
-                    <p className={`text-[0.6rem] tracking-[0.4em] uppercase text-button mb-3 font-medium mt-2 transition-all duration-700 ease-out delay-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
+                    <p className={`text-xs tracking-[0.4em] uppercase text-button mb-3 font-medium mt-2 transition-all duration-700 ease-out delay-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
                       {audience ? getInvitationLine(audience) : "Cu drag vă invităm"}
                     </p>
-                    <h2 className={`serif-font text-xl font-light italic text-text-heading leading-relaxed transition-all duration-700 ease-out delay-[900ms] ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
+                    <h2 className={`serif-font text-2xl font-light italic text-text-heading leading-relaxed transition-all duration-700 ease-out delay-[900ms] ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
                       {audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}
                     </h2>
                   </div>
