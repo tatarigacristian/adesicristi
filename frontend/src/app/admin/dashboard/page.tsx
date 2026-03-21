@@ -174,10 +174,10 @@ function DashboardContent() {
         pending += personCount;
       }
 
-      // Gift estimation: confirmed only or all non-declined
+      // Gift estimation: confirmed only or all invited
       const includeInGift = onlyConfirmed
         ? rsvpStatus === true
-        : rsvpStatus !== false;
+        : true;
       if (includeInGift) {
         estimatedGiftMin += Number(g.estimated_gift_min || 0);
         estimatedGiftMax += Number(g.estimated_gift_max || 0);
