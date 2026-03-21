@@ -118,7 +118,7 @@ function SettingsSection({ title, children }: { title: string; children: React.R
   );
 }
 
-type TabId = "cuplu" | "program" | "familie" | "confirmare" | "aspect" | "logistica";
+type TabId = "cuplu" | "program" | "familie" | "confirmare" | "aspect" | "logistica" | "bazadedate";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "cuplu", label: "Cuplu & nași" },
@@ -127,17 +127,21 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "confirmare", label: "Confirmare & contact" },
   { id: "aspect", label: "Aspect" },
   { id: "logistica", label: "Mese & logistica" },
+  { id: "bazadedate", label: "Baza de date" },
 ];
 
 // ─── Settings Page ───────────────────────────────────────
 
 function SetariContent() {
   const { token, onUnauth } = useAdminAuth();
-  const [activeTab, setActiveTab] = useTabParam<TabId>("tab", "cuplu", ["cuplu", "program", "familie", "confirmare", "aspect", "logistica"] as const);
+  const [activeTab, setActiveTab] = useTabParam<TabId>("tab", "cuplu", ["cuplu", "program", "familie", "confirmare", "aspect", "logistica", "bazadedate"] as const);
   const [settings, setSettings] = useState<WeddingSettingsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [dumping, setDumping] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importStatus, setImportStatus] = useState<string | null>(null);
   const [form, setForm] = useState({
     nume_mire: "",
     nume_mireasa: "",
@@ -473,6 +477,99 @@ function SetariContent() {
             </SettingsSection>
             <SettingsSection title="Moneda">
               <SettingsInput label="Curs EUR/RON" value={form.curs_euro} onChange={updateForm("curs_euro")} type="number" placeholder="4.97" />
+            </SettingsSection>
+          </div>
+        )}
+
+        {/* Tab: Baza de date */}
+        {activeTab === "bazadedate" && (
+          <div className="space-y-6">
+            <SettingsSection title="Export baza de date">
+              <p className="text-xs text-text-muted">Descarca un fisier SQL cu toate datele din baza de date de productie. Util pentru sincronizare locala sau backup.</p>
+              <button
+                type="button"
+                disabled={dumping}
+                onClick={async () => {
+                  setDumping(true);
+                  try {
+                    const res = await fetch(`${API_URL}/api/admin/db-dump`, {
+                      headers: authHeaders(token),
+                    });
+                    if (res.status === 401) { onUnauth(); return; }
+                    if (!res.ok) throw new Error("Export failed");
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    const disposition = res.headers.get("Content-Disposition");
+                    const filename = disposition?.match(/filename="(.+)"/)?.[1] || `dump_${new Date().toISOString().slice(0, 10)}.sql`;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                  } catch {
+                    alert("Eroare la export.");
+                  } finally {
+                    setDumping(false);
+                  }
+                }}
+                className="w-full sm:w-auto bg-button text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                {dumping ? "Se exporta..." : "Descarca SQL dump"}
+              </button>
+            </SettingsSection>
+
+            <SettingsSection title="Import baza de date">
+              <p className="text-xs text-text-muted">Importa un fisier SQL exportat anterior. Atentie: datele existente vor fi suprascrise!</p>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <label className="w-full sm:w-auto bg-button text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors cursor-pointer text-center disabled:opacity-50">
+                  {importing ? "Se importa..." : "Incarca fisier SQL"}
+                  <input
+                    type="file"
+                    accept=".sql"
+                    className="hidden"
+                    disabled={importing}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (!confirm("Esti sigur? Datele existente vor fi suprascrise cu cele din fisier.")) {
+                        e.target.value = "";
+                        return;
+                      }
+                      setImporting(true);
+                      setImportStatus(null);
+                      try {
+                        const sql = await file.text();
+                        const res = await fetch(`${API_URL}/api/admin/db-import`, {
+                          method: "POST",
+                          headers: { ...authHeaders(token), "Content-Type": "application/json" },
+                          body: JSON.stringify({ sql }),
+                        });
+                        if (res.status === 401) { onUnauth(); return; }
+                        if (!res.ok) {
+                          const err = await res.json().catch(() => ({ error: "Import failed" }));
+                          setImportStatus(`Eroare: ${err.error}`);
+                        } else {
+                          const data = await res.json();
+                          setImportStatus(`Import reusit! ${data.statements} instructiuni executate.`);
+                          fetchSettings();
+                        }
+                      } catch {
+                        setImportStatus("Eroare la import.");
+                      } finally {
+                        setImporting(false);
+                        e.target.value = "";
+                      }
+                    }}
+                  />
+                </label>
+                {importStatus && (
+                  <span className={`text-sm font-medium ${importStatus.startsWith("Eroare") ? "text-red-600" : "text-green-600"}`}>
+                    {importStatus}
+                  </span>
+                )}
+              </div>
             </SettingsSection>
           </div>
         )}
