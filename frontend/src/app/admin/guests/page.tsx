@@ -29,6 +29,7 @@ export default function GuestsPage() {
   const [guestIdsWithLogs, setGuestIdsWithLogs] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<GuestFilter>("all");
+  const [sortByGift, setSortByGift] = useState<"none" | "desc" | "asc">("none");
   const [page, setPage] = useState(1);
 
   async function fetchGuests() {
@@ -85,15 +86,24 @@ export default function GuestsPage() {
     if (filter === "plus_one") result = result.filter((g) => g.plus_one);
     if (filter === "no_plus_one") result = result.filter((g) => !g.plus_one);
 
+    // Sort by gift average
+    if (sortByGift !== "none") {
+      result = [...result].sort((a, b) => {
+        const avgA = (Number(a.estimated_gift_min || 0) + Number(a.estimated_gift_max || 0)) / 2;
+        const avgB = (Number(b.estimated_gift_min || 0) + Number(b.estimated_gift_max || 0)) / 2;
+        return sortByGift === "desc" ? avgB - avgA : avgA - avgB;
+      });
+    }
+
     return result;
-  }, [mainGuests, guests, search, filter]);
+  }, [mainGuests, guests, search, filter, sortByGift]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   // Reset page when filters change
-  useEffect(() => { setPage(1); }, [search, filter]);
+  useEffect(() => { setPage(1); }, [search, filter, sortByGift]);
 
   const plusOneCount = mainGuests.filter((g) => g.plus_one).length;
   const noPlusOneCount = mainGuests.filter((g) => !g.plus_one).length;
@@ -189,6 +199,16 @@ export default function GuestsPage() {
           <FilterButton label="Toti" active={filter === "all"} count={mainGuests.length} onClick={() => setFilter("all")} />
           <FilterButton label="Cu +1" active={filter === "plus_one"} count={plusOneCount} onClick={() => setFilter("plus_one")} />
           <FilterButton label="Fara +1" active={filter === "no_plus_one"} count={noPlusOneCount} onClick={() => setFilter("no_plus_one")} />
+          <button
+            onClick={() => setSortByGift((prev) => prev === "none" ? "desc" : prev === "desc" ? "asc" : "none")}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-colors cursor-pointer font-medium ${
+              sortByGift !== "none"
+                ? "bg-blue-50 text-blue-700 border-blue-200"
+                : "bg-gray-50 text-text-muted border-gray-200"
+            }`}
+          >
+            Dar {sortByGift === "desc" ? "↓" : sortByGift === "asc" ? "↑" : "↕"}
+          </button>
         </div>
       </div>
 
