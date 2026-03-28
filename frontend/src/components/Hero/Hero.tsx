@@ -256,8 +256,8 @@ export default function Hero({
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-        <div className={`relative mb-10 short:mb-4 transition-all duration-1000 delay-300 ease-out ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}>
-          <div className="relative w-36 h-36 short:w-24 short:h-24 mx-auto">
+        <div className={`relative mb-8 short:mb-4 transition-all duration-1000 delay-300 ease-out ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}>
+          <div className="relative w-52 h-52 xl:w-64 xl:h-64 short:w-32 short:h-32 mx-auto">
             <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
               <circle cx="80" cy="80" r="68" className="stroke-button/25" strokeWidth="0.3" fill="none" />
@@ -265,9 +265,9 @@ export default function Hero({
               <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" className="fill-button/60" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center gap-2">
-              <span className="serif-font text-[2.5rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
-              <span className="script-font text-xl text-button/80 italic">&amp;</span>
-              <span className="serif-font text-[2.5rem] font-light text-text-heading tracking-wide">{initialMire}</span>
+              <span className="serif-font text-[2rem] xl:text-[2.5rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
+              <span className="script-font text-lg xl:text-xl text-button/80 italic">&amp;</span>
+              <span className="serif-font text-[2rem] xl:text-[2.5rem] font-light text-text-heading tracking-wide">{initialMire}</span>
             </div>
           </div>
         </div>

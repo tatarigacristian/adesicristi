@@ -11,12 +11,20 @@ const isIOS =
  */
 export async function safeToPng(
   element: HTMLElement,
-  options: { pixelRatio?: number } = {}
+  options: { pixelRatio?: number; skipFonts?: boolean } = {}
 ): Promise<string> {
-  const opts = { pixelRatio: 3, ...options };
+  const opts = {
+    pixelRatio: 6,
+    cacheBust: true,
+    skipFonts: false,
+    skipAutoScale: false,
+    preferredFontFormat: "woff2" as const,
+    ...options,
+  };
 
   if (isIOS) {
-    // Warm-up render — forces Safari to rasterize all resources
+    // Warm-up renders — forces Safari to rasterize all resources (fonts + images)
+    await toPng(element, opts).catch(() => {});
     await toPng(element, opts).catch(() => {});
   }
 

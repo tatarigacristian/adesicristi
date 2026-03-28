@@ -132,7 +132,7 @@ export default function GuestsPage() {
       estimated_gift_min: g.estimated_gift_min != null ? String(g.estimated_gift_min) : "",
       estimated_gift_max: g.estimated_gift_max != null ? String(g.estimated_gift_max) : "",
       din_partea: g.din_partea || "",
-      loc_pe_scaun: g.loc_pe_scaun !== false,
+      loc_pe_scaun: g.loc_pe_scaun === 1 || g.loc_pe_scaun === true,
       children: (g.children || []).map((c) => ({ nume: c.nume, prenume: c.prenume })),
     });
     setSaveError(null);

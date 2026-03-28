@@ -96,12 +96,12 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
 
       {/* Content */}
       <div className={`section-content max-w-5xl px-6 transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-        <div className="flex flex-col lg:flex-row items-center gap-2 sm:gap-10 lg:gap-14 w-full">
+        <div className="flex flex-col lg:flex-row items-center lg:items-stretch gap-2 sm:gap-10 lg:gap-8 w-full">
 
           {/* Desktop: full vertical timeline (left side) */}
           <div className="hidden lg:flex w-full lg:w-1/2 justify-center lg:justify-end lg:self-stretch">
             <div className="relative flex flex-col h-full">
-              <div className="flex flex-col justify-between h-full">
+              <div className="flex flex-col justify-center gap-4 xl:gap-5 h-full">
                 {timeline.map((item, i) => {
                   const isLast = i === timeline.length - 1;
                   return (
@@ -127,9 +127,9 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
           </div>
 
           {/* Mobile: video + timeline below; Desktop: video right */}
-          <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start gap-4">
-            <div className="w-[55vw] max-w-[240px] sm:max-w-xs lg:max-w-sm short:lg:max-w-[260px] glass-card !p-0 overflow-hidden rounded-xl">
-              <div className="relative w-full" style={{ paddingBottom: "150%" }}>
+          <div className="w-full lg:w-auto flex flex-col items-center gap-4 lg:self-stretch">
+            <div className="w-[55vw] max-w-[240px] sm:max-w-xs lg:max-w-none lg:w-48 xl:w-56 glass-card !p-0 overflow-hidden rounded-xl lg:h-full">
+              <div className="relative w-full lg:h-full pb-[150%] lg:pb-0">
                 {!playing ? (
                   <button
                     onClick={() => setPlaying(true)}

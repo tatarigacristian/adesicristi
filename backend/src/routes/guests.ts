@@ -128,7 +128,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
       // Create main guest
       const [result] = await conn.execute<ResultSetHeader>(
         'INSERT INTO guests (nume, prenume, plus_one, intro_short, intro_long, slug, sex, estimated_gift_min, estimated_gift_max, din_partea, loc_pe_scaun) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNorm, sex || null, estimated_gift_min ?? null, estimated_gift_max ?? null, din_partea || null, loc_pe_scaun !== false]
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNorm, sex || null, estimated_gift_min ?? null, estimated_gift_max ?? null, din_partea || null, loc_pe_scaun === true]
       );
       const mainId = result.insertId;
 
@@ -224,7 +224,7 @@ export async function guestRoutes(fastify: FastifyInstance) {
       // Update main guest
       await conn.execute(
         'UPDATE guests SET nume = ?, prenume = ?, plus_one = ?, intro_short = ?, intro_long = ?, slug = ?, sex = ?, estimated_gift_min = ?, estimated_gift_max = ?, din_partea = ?, loc_pe_scaun = ? WHERE id = ?',
-        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNormPut, sex || null, estimated_gift_min ?? null, estimated_gift_max ?? null, din_partea || null, loc_pe_scaun !== false, id]
+        [nume, prenume, plus_one ?? false, intro_short || null, intro_long || null, slugNormPut, sex || null, estimated_gift_min ?? null, estimated_gift_max ?? null, din_partea || null, loc_pe_scaun === true, id]
       );
 
       // Sync children: delete all and re-insert
