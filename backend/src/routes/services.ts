@@ -39,9 +39,15 @@ export async function serviceRoutes(fastify: FastifyInstance) {
       }
     }
 
+    // Ensure only one service is marked as restaurant
+    const isRestaurant = fields.is_restaurant === 'true' || fields.is_restaurant === '1';
+    if (isRestaurant) {
+      await pool.query('UPDATE services SET is_restaurant = FALSE WHERE is_restaurant = TRUE');
+    }
+
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO services (nume, numar_persoane, pret, avans, pret_per_invitat, has_pret_per_invitat, contract_start, contract_end, loc_la_masa, link, contract_path, telefon, type)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO services (nume, numar_persoane, pret, avans, pret_per_invitat, has_pret_per_invitat, contract_start, contract_end, loc_la_masa, is_restaurant, link, contract_path, telefon, type)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         fields.nume,
         parseInt(fields.numar_persoane) || 0,
@@ -52,6 +58,7 @@ export async function serviceRoutes(fastify: FastifyInstance) {
         fields.contract_start || null,
         fields.contract_end || null,
         fields.loc_la_masa === 'true' || fields.loc_la_masa === '1' ? 1 : 0,
+        fields.is_restaurant === 'true' || fields.is_restaurant === '1' ? 1 : 0,
         fields.link || null,
         contractPath,
         fields.telefon || null,
@@ -103,6 +110,14 @@ export async function serviceRoutes(fastify: FastifyInstance) {
     if (fields.contract_start !== undefined) { updateFields.push('contract_start = ?'); updateValues.push(fields.contract_start || null); }
     if (fields.contract_end !== undefined) { updateFields.push('contract_end = ?'); updateValues.push(fields.contract_end || null); }
     if (fields.loc_la_masa !== undefined) { updateFields.push('loc_la_masa = ?'); updateValues.push(fields.loc_la_masa === 'true' || fields.loc_la_masa === '1' ? 1 : 0); }
+    if (fields.is_restaurant !== undefined) {
+      const isRestaurant = fields.is_restaurant === 'true' || fields.is_restaurant === '1';
+      if (isRestaurant) {
+        await pool.query('UPDATE services SET is_restaurant = FALSE WHERE is_restaurant = TRUE AND id != ?', [id]);
+      }
+      updateFields.push('is_restaurant = ?');
+      updateValues.push(isRestaurant ? 1 : 0);
+    }
     if (fields.link !== undefined) { updateFields.push('link = ?'); updateValues.push(fields.link || null); }
     if (fields.telefon !== undefined) { updateFields.push('telefon = ?'); updateValues.push(fields.telefon || null); }
     if (contractPath !== undefined) { updateFields.push('contract_path = ?'); updateValues.push(contractPath); }

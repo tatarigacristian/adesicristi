@@ -15,6 +15,7 @@ interface Service {
   pret_per_invitat: number | null;
   has_pret_per_invitat: boolean;
   loc_la_masa: boolean;
+  is_restaurant: boolean;
   contract_path: string | null;
   type: "supplier" | "expense";
 }
@@ -67,6 +68,7 @@ function DashboardContent() {
   const [subtractAvans, setSubtractAvans] = useState(false);
   const [showEuro, setShowEuro] = useState(false);
   const [subtractExtra, setSubtractExtra] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
   const [costSearch, setCostSearch] = useState("");
   const [logSearchState, setLogSearchState] = useState("");
   const [miniLogSearch, setMiniLogSearch] = useState("");
@@ -174,29 +176,64 @@ function DashboardContent() {
         pending += personCount;
       }
 
-      // Gift estimation: confirmed only or all invited
+      // Gift estimation: confirmed only or all invited, adjusted by status
       const includeInGift = onlyConfirmed
         ? rsvpStatus === true
         : true;
       if (includeInGift) {
-        estimatedGiftMin += Number(g.estimated_gift_min || 0);
-        estimatedGiftMax += Number(g.estimated_gift_max || 0);
+        const giftMultiplier = g.status === "incertitudine" ? 0 : g.status === "doar_dar" ? 0.4 : 1;
+        estimatedGiftMin += Number(g.estimated_gift_min || 0) * giftMultiplier;
+        estimatedGiftMax += Number(g.estimated_gift_max || 0) * giftMultiplier;
       }
     });
 
     const seatedGuests = assignments.length;
     const unseatedGuests = totalInvited - seatedGuests;
 
+
+    // Count guests by status
+    let prezentaSiDarAdults = 0;
+    let prezentaSiDarChildren = 0;
+    let doarDarCount = 0;
+    let incertitudineCount = 0;
+    mainGuests.forEach((g) => {
+      if (g.status === "prezenta_si_dar") {
+        prezentaSiDarAdults += g.plus_one ? 2 : 1;
+        prezentaSiDarChildren += g.children ? g.children.length : 0;
+      } else if (g.status === "doar_dar") {
+        doarDarCount += g.plus_one ? 2 : 1;
+      } else if (g.status === "incertitudine") {
+        incertitudineCount += g.plus_one ? 2 : 1;
+      }
+    });
+    const seatedPersonCount = prezentaSiDarAdults + prezentaSiDarChildren;
+    // Service staff with loc_la_masa
+    const serviceStaffCount = services
+      .filter((s) => s.type === "supplier" && s.loc_la_masa)
+      .reduce((sum, s) => sum + Number(s.numar_persoane || 0), 0);
+
+    // Fictitious menu cost for minimum menus
+    const nrMinimMeniuri = Number(settings.nr_minim_meniuri) || 0;
+    const procentPretMeniu = Number(settings.procent_pret_meniu ?? 100);
+    const restaurant = services.find((s) => Boolean(s.is_restaurant));
+    const pretPerMeniu = restaurant?.pret_per_invitat ? Number(restaurant.pret_per_invitat) : 0;
+    const actualMenuCount = seatedPersonCount + serviceStaffCount;
+    const menuDifference = Math.max(0, nrMinimMeniuri - actualMenuCount);
+    const fictitiousMenuCost = menuDifference * pretPerMeniu * (procentPretMeniu / 100);
+
     const filteredServices = subtractExtra ? services.filter((s) => s.type !== "expense") : services;
+    const restaurantMenuCount = seatedPersonCount + serviceStaffCount;
     const totalServiceCost = filteredServices.reduce(
       (sum, s) => {
         if (s.has_pret_per_invitat && s.pret_per_invitat != null) {
-          return sum + Number(s.pret_per_invitat) * totalInvited;
+          // Restaurant uses seated guests + staff; other services use all invited
+          const count = Boolean(s.is_restaurant) ? restaurantMenuCount : totalInvited;
+          return sum + Number(s.pret_per_invitat) * count;
         }
         return sum + Number(s.pret);
       },
       0
-    );
+    ) + fictitiousMenuCost;
     const totalAvans = filteredServices.reduce(
       (sum, s) => sum + Number(s.avans || 0),
       0
@@ -292,6 +329,26 @@ function DashboardContent() {
       totalChildren,
       dinPartea,
       daysUntilWedding,
+      fictitiousMenuCost,
+      menuDifference,
+      restaurantMenuCount,
+      // Debug data
+      prezentaSiDarAdults,
+      prezentaSiDarChildren,
+      doarDarCount,
+      incertitudineCount,
+      seatedPersonCount,
+      serviceStaffCount,
+      nrMinimMeniuri,
+      procentPretMeniu,
+      pretPerMeniu,
+      serviceCostBreakdown: filteredServices.map((s) => {
+        const hasPPI = Boolean(s.has_pret_per_invitat) && s.pret_per_invitat != null;
+        const isRest = Boolean(s.is_restaurant);
+        const count = isRest ? restaurantMenuCount : totalInvited;
+        const cost = hasPPI ? Number(s.pret_per_invitat) * count : Number(s.pret);
+        return { name: s.nume, isRestaurant: isRest, hasPPI, ppiValue: Number(s.pret_per_invitat || 0), count, cost, avans: Number(s.avans || 0) };
+      }),
     };
   }, [
     mainGuests,
@@ -640,6 +697,12 @@ function DashboardContent() {
               {formatPrice(stats.totalServiceCost)} {currency}
             </span>
           </div>
+          {stats.fictitiousMenuCost > 0 && (
+            <div className="flex justify-between">
+              <span className="text-xs text-amber-600">incl. {stats.menuDifference} meniuri diferenta</span>
+              <span className="text-xs text-amber-600">+{formatPrice(stats.fictitiousMenuCost)} {currency}</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-sm text-text-muted">Total avans</span>
             <span className="text-sm font-medium text-green-600">
@@ -738,6 +801,85 @@ function DashboardContent() {
             })()}
           </div>
         )}
+        {/* Debug section */}
+        <div className="mt-4 pt-3 border-t border-border-light">
+          <button
+            type="button"
+            onClick={() => setShowDebug(!showDebug)}
+            className="text-[10px] text-text-muted hover:text-foreground transition-colors cursor-pointer"
+          >
+            {showDebug ? "Ascunde detalii calcul" : "Detalii calcul"}
+          </button>
+          {showDebug && (
+            <div className="mt-3 space-y-3 text-[11px] text-foreground/70 font-mono bg-background-soft/50 rounded-lg p-3">
+              {/* Guest breakdown */}
+              <div>
+                <p className="text-text-muted font-sans font-medium mb-1 text-[10px] uppercase tracking-wider">Invitati per status</p>
+                <p>Prezenta si dar: {stats.prezentaSiDarAdults} adulti + {stats.prezentaSiDarChildren} copii = {stats.seatedPersonCount} persoane</p>
+                <p>Doar dar: {stats.doarDarCount} persoane (40% din estimare)</p>
+                <p>Incertitudine: {stats.incertitudineCount} persoane (0% din estimare)</p>
+                <p className="font-medium">Total invitati: {stats.totalInvited}</p>
+              </div>
+
+              {/* Restaurant menus */}
+              <div>
+                <p className="text-text-muted font-sans font-medium mb-1 text-[10px] uppercase tracking-wider">Calcul meniuri restaurant</p>
+                <p>Invitati cu loc la masa: {stats.seatedPersonCount}</p>
+                <p>Staff furnizori cu loc la masa: {stats.serviceStaffCount}</p>
+                <p className="font-medium">Total meniuri reale: {stats.restaurantMenuCount}</p>
+                {stats.nrMinimMeniuri > 0 && (
+                  <>
+                    <p className="mt-1">Nr. minim meniuri (din setari): {stats.nrMinimMeniuri}</p>
+                    <p>Diferenta: max(0, {stats.nrMinimMeniuri} - {stats.restaurantMenuCount}) = {stats.menuDifference}</p>
+                    {stats.menuDifference > 0 && (
+                      <>
+                        <p>Pret per meniu: {formatPrice(stats.pretPerMeniu)} {currency}</p>
+                        <p>Procent aplicat: {stats.procentPretMeniu}%</p>
+                        <p className="font-medium">Cost fictiv: {stats.menuDifference} x {formatPrice(stats.pretPerMeniu)} x {stats.procentPretMeniu}% = {formatPrice(stats.fictitiousMenuCost)} {currency}</p>
+                      </>
+                    )}
+                  </>
+                )}
+                {stats.nrMinimMeniuri === 0 && <p className="text-text-muted italic">Nr. minim meniuri nu este configurat in setari.</p>}
+              </div>
+
+              {/* Per-service cost breakdown */}
+              <div>
+                <p className="text-text-muted font-sans font-medium mb-1 text-[10px] uppercase tracking-wider">Cost per serviciu</p>
+                {stats.serviceCostBreakdown.map((s, i) => (
+                  <div key={i} className="mb-1.5">
+                    <p className="font-medium">{s.name} {s.isRestaurant ? "(restaurant)" : ""}</p>
+                    {s.hasPPI ? (
+                      <p className="pl-2">{formatPrice(s.ppiValue)} {currency}/buc x {s.count} = {formatPrice(s.cost)} {currency} {s.avans > 0 ? `(avans: ${formatPrice(s.avans)} ${currency})` : ""}</p>
+                    ) : (
+                      <p className="pl-2">Pret fix: {formatPrice(s.cost)} {currency} {s.avans > 0 ? `(avans: ${formatPrice(s.avans)} ${currency})` : ""}</p>
+                    )}
+                  </div>
+                ))}
+                {stats.fictitiousMenuCost > 0 && (
+                  <div className="mb-1.5">
+                    <p className="font-medium text-amber-600">Meniuri diferenta (fictiv)</p>
+                    <p className="pl-2 text-amber-600">{stats.menuDifference} x {formatPrice(stats.pretPerMeniu)} x {stats.procentPretMeniu}% = {formatPrice(stats.fictitiousMenuCost)} {currency}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Totals */}
+              <div className="border-t border-border-light pt-2">
+                <p className="text-text-muted font-sans font-medium mb-1 text-[10px] uppercase tracking-wider">Totaluri</p>
+                <p>Cost total servicii: {formatPrice(stats.totalServiceCost)} {currency}</p>
+                <p>Total avans: {formatPrice(stats.totalAvans)} {currency}</p>
+                <p>Rest de plata: {formatPrice(stats.remainingToPay)} {currency}</p>
+                <p>Dar estimat (min): {formatPrice(stats.estimatedGiftMin)} {currency}</p>
+                <p>Dar estimat (max): {formatPrice(stats.estimatedGiftMax)} {currency}</p>
+                <p className="font-medium">Dar estimat (curent): {formatPrice(Math.round(stats.estimatedGift))} {currency}</p>
+                <p className={stats.giftVsCost >= 0 ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+                  Diferenta dar - cost: {stats.giftVsCost >= 0 ? "+" : ""}{formatPrice(Math.round(stats.giftVsCost))} {currency}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Estimare dar - full width card */}
@@ -1090,7 +1232,9 @@ function DashboardContent() {
               .filter((s) => !costSearch.trim() || s.nume.toLowerCase().includes(costSearch.toLowerCase()))
               .map((s) => {
               const hasPPI = Boolean(s.has_pret_per_invitat) && s.pret_per_invitat != null;
-              const pret = hasPPI ? Number(s.pret_per_invitat) * stats.totalInvited : Number(s.pret);
+              const isRest = Boolean(s.is_restaurant);
+              const count = isRest ? stats.restaurantMenuCount : stats.totalInvited;
+              const pret = hasPPI ? Number(s.pret_per_invitat) * count : Number(s.pret);
               const avans = Number(s.avans || 0);
               const suma = subtractAvans ? pret - avans : pret;
               const perGuest = suma / stats.totalInvited;
@@ -1098,13 +1242,13 @@ function DashboardContent() {
                 <div key={s.id} className="rounded-lg border border-border-light p-3">
                   <p className="text-sm font-medium text-text-heading mb-2 truncate">
                     {s.nume}
-                    {hasPPI && <span className="text-[10px] text-purple-600 ml-1.5 font-normal">per invitat</span>}
+                    {hasPPI && <span className="text-[10px] text-purple-600 ml-1.5 font-normal">{isRest ? "per meniu" : "per invitat"}</span>}
                   </p>
                   <div className="space-y-1 text-xs">
                     {hasPPI && (
                       <div className="flex justify-between">
-                        <span className="text-text-muted">Pret/invitat</span>
-                        <span className="text-purple-600">{formatPrice(Number(s.pret_per_invitat))} {currency} × {stats.totalInvited}</span>
+                        <span className="text-text-muted">{isRest ? "Pret/meniu" : "Pret/invitat"}</span>
+                        <span className="text-purple-600">{formatPrice(Number(s.pret_per_invitat))} {currency} × {count}</span>
                       </div>
                     )}
                     <div className="flex justify-between">

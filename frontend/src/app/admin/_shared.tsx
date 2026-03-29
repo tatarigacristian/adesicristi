@@ -36,7 +36,7 @@ export interface Guest {
   estimated_gift_max: number | null;
   partner_id: number | null;
   din_partea: "mire" | "mireasa" | "nasi" | "parintii_mire" | "parintii_mireasa" | null;
-  loc_pe_scaun: boolean;
+  status: "prezenta_si_dar" | "doar_dar" | "incertitudine";
   children: GuestChild[];
   created_at: string;
 }

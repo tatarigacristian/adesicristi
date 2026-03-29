@@ -18,6 +18,7 @@ interface Service {
   contract_start: string | null;
   contract_end: string | null;
   loc_la_masa: boolean;
+  is_restaurant: boolean;
   link: string | null;
   contract_path: string | null;
   telefon: string | null;
@@ -62,10 +63,13 @@ export default function ServiciiPage() {
   const { token, onUnauth } = useAdminAuth();
   const [services, setServices] = useState<Service[]>([]);
   const [totalInvitati, setTotalInvitati] = useState(0);
+  const [seatedInvitati, setSeatedInvitati] = useState(0);
+  const [seatedChildren, setSeatedChildren] = useState(0);
+  const [settings, setSettings] = useState<{ nr_minim_meniuri?: number | null; procent_pret_meniu?: number | null }>({});
   const [weddingDate, setWeddingDate] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editService, setEditService] = useState<Service | null>(null);
-  const [form, setForm] = useState({ type: "supplier" as ServiceType, nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: "", contract_end: "", numar_ore: "", loc_la_masa: false, link: "", telefon: "" });
+  const [form, setForm] = useState({ type: "supplier" as ServiceType, nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: "", contract_end: "", numar_ore: "", loc_la_masa: false, is_restaurant: false, link: "", telefon: "" });
   const [contractFile, setContractFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<Service | null>(null);
@@ -99,12 +103,16 @@ export default function ServiciiPage() {
     if (settingsRes.ok) {
       const s = await settingsRes.json();
       setWeddingDate(s.ceremonie_data || null);
+      setSettings({ nr_minim_meniuri: s.nr_minim_meniuri, procent_pret_meniu: s.procent_pret_meniu });
     }
     if (guestsRes.ok) {
-      const allGuests: { id: number; plus_one: boolean; partner_id: number | null }[] = await guestsRes.json();
+      const allGuests: { id: number; plus_one: boolean; partner_id: number | null; status: string; children?: { id: number }[] }[] = await guestsRes.json();
       const partnerIds = new Set(allGuests.filter((g) => g.partner_id && g.plus_one).map((g) => g.partner_id));
       const mainGuests = allGuests.filter((g) => !partnerIds.has(g.id));
       setTotalInvitati(mainGuests.reduce((sum, g) => sum + (g.plus_one ? 2 : 1), 0));
+      const seated = mainGuests.filter((g) => g.status === "prezenta_si_dar");
+      setSeatedInvitati(seated.reduce((sum, g) => sum + (g.plus_one ? 2 : 1), 0));
+      setSeatedChildren(seated.reduce((sum, g) => sum + (g.children ? g.children.length : 0), 0));
     }
   }
 
@@ -129,17 +137,23 @@ export default function ServiciiPage() {
 
   useEffect(() => { setPage(1); }, [search, typeFilter]);
 
+  const staffWithSeatCount = useMemo(() => services
+    .filter((s) => s.type === "supplier" && s.loc_la_masa)
+    .reduce((sum, s) => sum + Number(s.numar_persoane || 0), 0), [services]);
+  const restaurantMenuCount = seatedInvitati + seatedChildren + staffWithSeatCount;
+
   const totalCost = useMemo(() => services.reduce((sum, s) => {
-    if (s.has_pret_per_invitat && s.pret_per_invitat != null && totalInvitati > 0) {
-      return sum + Number(s.pret_per_invitat) * totalInvitati;
+    if (s.has_pret_per_invitat && s.pret_per_invitat != null) {
+      const count = Boolean(s.is_restaurant) ? restaurantMenuCount : totalInvitati;
+      if (count > 0) return sum + Number(s.pret_per_invitat) * count;
     }
     return sum + Number(s.pret);
-  }, 0), [services, totalInvitati]);
+  }, 0), [services, totalInvitati, restaurantMenuCount]);
   const totalAvans = useMemo(() => services.reduce((sum, s) => sum + Number(s.avans || 0), 0), [services]);
 
   function openNew() {
     setEditService(null);
-    setForm({ type: "supplier", nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: getDefaultStart(), contract_end: getDefaultEnd(), numar_ore: computeHoursFromDates(getDefaultStart(), getDefaultEnd()), loc_la_masa: false, link: "", telefon: "" });
+    setForm({ type: "supplier", nume: "", numar_persoane: "", pret: "", avans: "", pret_per_invitat: "", has_pret_per_invitat: false, contract_start: getDefaultStart(), contract_end: getDefaultEnd(), numar_ore: computeHoursFromDates(getDefaultStart(), getDefaultEnd()), loc_la_masa: false, is_restaurant: false, link: "", telefon: "" });
     setContractFile(null);
     setShowForm(true);
   }
@@ -150,8 +164,8 @@ export default function ServiciiPage() {
       type: s.type || "supplier",
       nume: s.nume,
       numar_persoane: String(s.numar_persoane),
-      pret: Boolean(s.has_pret_per_invitat) && s.pret_per_invitat != null && totalInvitati > 0
-        ? String(Math.round(Number(s.pret_per_invitat) * totalInvitati))
+      pret: Boolean(s.has_pret_per_invitat) && s.pret_per_invitat != null
+        ? String(Math.round(Number(s.pret_per_invitat) * (Boolean(s.is_restaurant) ? restaurantMenuCount : totalInvitati)))
         : String(Math.round(Number(s.pret))),
       avans: s.avans != null ? String(Math.round(Number(s.avans))) : "",
       pret_per_invitat: s.pret_per_invitat != null ? String(Math.round(Number(s.pret_per_invitat))) : "",
@@ -163,6 +177,7 @@ export default function ServiciiPage() {
         s.contract_end ? s.contract_end.replace(" ", "T").slice(0, 16) : getDefaultEnd()
       ),
       loc_la_masa: s.loc_la_masa,
+      is_restaurant: Boolean(s.is_restaurant),
       link: s.link || "",
       telefon: s.telefon || "",
     });
@@ -188,6 +203,7 @@ export default function ServiciiPage() {
     fd.append("contract_start", form.type === "expense" ? "" : form.contract_start);
     fd.append("contract_end", form.type === "expense" ? "" : form.contract_end);
     fd.append("loc_la_masa", form.type === "expense" ? "false" : String(form.loc_la_masa));
+    fd.append("is_restaurant", form.type === "expense" ? "false" : String(form.is_restaurant));
     fd.append("link", form.link);
     fd.append("telefon", form.type === "expense" ? "" : form.telefon);
     if (contractFile && form.type === "supplier") fd.append("contract", contractFile);
@@ -273,9 +289,9 @@ export default function ServiciiPage() {
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs text-text-muted mb-1">Numar persoane</label>
+                      <label className={`block text-xs mb-1 ${form.is_restaurant ? "text-text-muted/40" : "text-text-muted"}`}>Numar persoane</label>
                       <input type="number" value={form.numar_persoane} onChange={(e) => setForm({ ...form, numar_persoane: e.target.value })}
-                        required min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
+                        required={!form.is_restaurant} disabled={form.is_restaurant} min="0" className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors ${form.is_restaurant ? "opacity-40 cursor-not-allowed" : ""}`} />
                     </div>
                     <div>
                       <label className={`block text-xs mb-1 ${form.has_pret_per_invitat ? "text-text-muted/40" : "text-text-muted"}`}>Pret fix (RON)</label>
@@ -283,9 +299,34 @@ export default function ServiciiPage() {
                         onChange={(e) => setForm({ ...form, pret: e.target.value })}
                         required={!form.has_pret_per_invitat} disabled={form.has_pret_per_invitat}
                         min="0" step="1" className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors ${form.has_pret_per_invitat ? "opacity-40 cursor-not-allowed" : ""}`} />
-                      {form.has_pret_per_invitat && form.pret && (
-                        <p className="text-[10px] text-text-muted mt-0.5">{totalInvitati} invitati × {form.pret_per_invitat || 0} RON</p>
-                      )}
+                      {form.has_pret_per_invitat && form.pret && (() => {
+                        const ppi = Number(form.pret_per_invitat) || 0;
+                        const staffCount = services
+                          .filter((s) => s.type === "supplier" && s.loc_la_masa && s.id !== editService?.id)
+                          .reduce((sum, s) => sum + Number(s.numar_persoane || 0), 0)
+                          + (form.loc_la_masa ? (Number(form.numar_persoane) || 0) : 0);
+                        if (form.is_restaurant) {
+                          const guestCount = seatedInvitati + seatedChildren;
+                          const menuCount = guestCount + staffCount;
+                          const nrMinim = Number(settings.nr_minim_meniuri) || 0;
+                          const procentMeniu = Number(settings.procent_pret_meniu ?? 100);
+                          const diff = Math.max(0, nrMinim - menuCount);
+                          const diffCost = diff * ppi * (procentMeniu / 100);
+                          const baseCost = menuCount * ppi;
+                          return (
+                            <div className="text-[10px] text-text-muted mt-0.5 space-y-0.5">
+                              <p>{guestCount} invitati + {staffCount} staff = {menuCount} meniuri × {ppi} RON = {Math.round(baseCost).toLocaleString()} RON</p>
+                              {diff > 0 && (
+                                <p className="text-amber-600">+ {diff} meniuri diferenta × {ppi} RON × {procentMeniu}% = {Math.round(diffCost).toLocaleString()} RON</p>
+                              )}
+                              {diff > 0 && (
+                                <p className="font-medium">Total: {Math.round(baseCost + diffCost).toLocaleString()} RON</p>
+                              )}
+                            </div>
+                          );
+                        }
+                        return <p className="text-[10px] text-text-muted mt-0.5">{totalInvitati} invitati × {ppi} RON</p>;
+                      })()}
                     </div>
                   </div>
                   <div>
@@ -299,7 +340,10 @@ export default function ServiciiPage() {
                         onChange={(e) => {
                           const checked = e.target.checked;
                           if (checked) {
-                            setForm({ ...form, has_pret_per_invitat: true, pret: totalInvitati > 0 && form.pret_per_invitat ? String(Math.round(Number(form.pret_per_invitat) * totalInvitati)) : "" });
+                            const selfStaff = form.loc_la_masa ? (Number(form.numar_persoane) || 0) : 0;
+                            const otherStaff = services.filter((s) => s.type === "supplier" && s.loc_la_masa && s.id !== editService?.id).reduce((sum, s) => sum + Number(s.numar_persoane || 0), 0);
+                            const count = form.is_restaurant ? (seatedInvitati + seatedChildren + otherStaff + selfStaff) : totalInvitati;
+                            setForm({ ...form, has_pret_per_invitat: true, pret: count > 0 && form.pret_per_invitat ? String(Math.round(Number(form.pret_per_invitat) * count)) : "" });
                           } else {
                             setForm({ ...form, has_pret_per_invitat: false, pret_per_invitat: "" });
                           }
@@ -312,7 +356,10 @@ export default function ServiciiPage() {
                         <input type="number" value={form.pret_per_invitat}
                           onChange={(e) => {
                             const ppi = e.target.value;
-                            const computed = ppi && totalInvitati > 0 ? String(Math.round(Number(ppi) * totalInvitati)) : "";
+                            const selfStaff = form.loc_la_masa ? (Number(form.numar_persoane) || 0) : 0;
+                            const otherStaff = services.filter((s) => s.type === "supplier" && s.loc_la_masa && s.id !== editService?.id).reduce((sum, s) => sum + Number(s.numar_persoane || 0), 0);
+                            const count = form.is_restaurant ? (seatedInvitati + seatedChildren + otherStaff + selfStaff) : totalInvitati;
+                            const computed = ppi && count > 0 ? String(Math.round(Number(ppi) * count)) : "";
                             setForm({ ...form, pret_per_invitat: ppi, pret: computed });
                           }}
                           required min="0" step="1" placeholder="ex: 200"
@@ -405,12 +452,32 @@ export default function ServiciiPage() {
               {/* Supplier-only: loc la masa, contract */}
               {form.type === "supplier" && (
                 <>
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" id="loc_la_masa" checked={form.loc_la_masa}
-                      onChange={(e) => setForm({ ...form, loc_la_masa: e.target.checked })}
-                      className="w-4 h-4 accent-accent" />
-                    <label htmlFor="loc_la_masa" className="text-sm text-foreground">Loc la masa</label>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" id="loc_la_masa" checked={form.loc_la_masa}
+                        onChange={(e) => setForm({ ...form, loc_la_masa: e.target.checked })}
+                        className="w-4 h-4 accent-accent" />
+                      <label htmlFor="loc_la_masa" className="text-sm text-foreground">Loc la masa</label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" id="is_restaurant" checked={form.is_restaurant}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            // Only one service can be restaurant - warn if another already is
+                            const existing = services.find((s) => Boolean(s.is_restaurant) && s.id !== editService?.id);
+                            if (existing) {
+                              if (!confirm(`"${existing.nume}" este deja marcat ca restaurant. Doriti sa mutati flag-ul pe acest serviciu?`)) return;
+                            }
+                          }
+                          setForm({ ...form, is_restaurant: e.target.checked });
+                        }}
+                        className="w-4 h-4 accent-accent" />
+                      <label htmlFor="is_restaurant" className="text-sm text-foreground">Restaurant</label>
+                    </div>
                   </div>
+                  {form.is_restaurant && (
+                    <p className="text-xs text-amber-600 -mt-1">Acest furnizor va fi folosit ca referinta pentru calculul meniurilor minime in statistici.</p>
+                  )}
                   <div>
                     <label className="block text-xs text-text-muted mb-1">Contract (PDF)</label>
                     <input type="file" accept=".pdf"
@@ -510,7 +577,7 @@ export default function ServiciiPage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-                    <span className="text-foreground/60"><span className="text-text-muted">Pret:</span> {s.has_pret_per_invitat && s.pret_per_invitat != null && totalInvitati > 0 ? `${formatPrice(Number(s.pret_per_invitat) * totalInvitati)} RON (${formatPrice(s.pret_per_invitat)}/inv)` : `${formatPrice(s.pret)} RON`}</span>
+                    <span className="text-foreground/60"><span className="text-text-muted">Pret:</span> {s.has_pret_per_invitat && s.pret_per_invitat != null ? (() => { const count = Boolean(s.is_restaurant) ? restaurantMenuCount : totalInvitati; return count > 0 ? `${formatPrice(Number(s.pret_per_invitat) * count)} RON (${formatPrice(s.pret_per_invitat)}/${Boolean(s.is_restaurant) ? "meniu" : "inv"})` : `${formatPrice(s.pret)} RON`; })() : `${formatPrice(s.pret)} RON`}</span>
                     {s.avans != null && s.avans > 0 && (
                       <span className="text-foreground/60"><span className="text-text-muted">Avans:</span> {formatPrice(s.avans)} RON</span>
                     )}
@@ -548,8 +615,8 @@ export default function ServiciiPage() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-foreground/70">
-                        {s.has_pret_per_invitat && s.pret_per_invitat != null && totalInvitati > 0
-                          ? <>{formatPrice(Number(s.pret_per_invitat) * totalInvitati)} RON <span className="text-[10px] text-purple-600">({formatPrice(s.pret_per_invitat)}/inv)</span></>
+                        {s.has_pret_per_invitat && s.pret_per_invitat != null
+                          ? (() => { const count = Boolean(s.is_restaurant) ? restaurantMenuCount : totalInvitati; return count > 0 ? <>{formatPrice(Number(s.pret_per_invitat) * count)} RON <span className="text-[10px] text-purple-600">({formatPrice(s.pret_per_invitat)}/{Boolean(s.is_restaurant) ? "meniu" : "inv"})</span></> : <>{formatPrice(s.pret)} RON</>; })()
                           : <>{formatPrice(s.pret)} RON</>}
                       </td>
                       <td className="px-4 py-3 text-foreground/70">

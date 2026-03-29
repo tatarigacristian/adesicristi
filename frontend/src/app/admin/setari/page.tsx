@@ -56,6 +56,8 @@ interface WeddingSettingsData {
   numar_estimativ_invitati: number | null;
   numar_estimativ_staff: number | null;
   curs_euro: number | null;
+  nr_minim_meniuri: number | null;
+  procent_pret_meniu: number | null;
   updated_at: string;
 }
 
@@ -189,6 +191,8 @@ function SetariContent() {
     numar_estimativ_invitati: "",
     numar_estimativ_staff: "",
     curs_euro: "",
+    nr_minim_meniuri: "",
+    procent_pret_meniu: "100",
   });
 
   async function fetchSettings() {
@@ -245,6 +249,8 @@ function SetariContent() {
           numar_estimativ_invitati: data.numar_estimativ_invitati != null ? String(data.numar_estimativ_invitati) : "",
           numar_estimativ_staff: data.numar_estimativ_staff != null ? String(data.numar_estimativ_staff) : "",
           curs_euro: data.curs_euro != null ? String(data.curs_euro) : "",
+          nr_minim_meniuri: data.nr_minim_meniuri != null ? String(data.nr_minim_meniuri) : "",
+          procent_pret_meniu: data.procent_pret_meniu != null ? String(data.procent_pret_meniu) : "100",
         });
       }
     } catch {
@@ -473,6 +479,20 @@ function SetariContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <SettingsInput label="Numar estimativ invitati" value={form.numar_estimativ_invitati} onChange={updateForm("numar_estimativ_invitati")} type="number" placeholder="200" />
                 <SettingsInput label="Numar estimativ staff" value={form.numar_estimativ_staff} onChange={updateForm("numar_estimativ_staff")} type="number" placeholder="15" />
+              </div>
+            </SettingsSection>
+            <SettingsSection title="Restaurant - meniuri minime">
+              <SettingsInput label="Nr. minim meniuri restaurant" value={form.nr_minim_meniuri} onChange={updateForm("nr_minim_meniuri")} type="number" placeholder="150" />
+              <p className="text-xs text-text-muted -mt-2">Daca numarul de invitati prezenti + personalul furnizorilor cu loc la masa este sub acest minim, diferenta va fi calculata ca un cost suplimentar.</p>
+              <div>
+                <label className="block text-xs text-text-muted mb-2">Procent pret meniu pentru diferenta: <span className="font-medium text-foreground">{form.procent_pret_meniu || 100}%</span></label>
+                <input type="range" min="0" max="100" step="25"
+                  value={form.procent_pret_meniu || "100"}
+                  onChange={(e) => setForm({ ...form, procent_pret_meniu: e.target.value })}
+                  className="w-full accent-accent" />
+                <div className="flex justify-between text-[10px] text-text-muted mt-1">
+                  <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+                </div>
               </div>
             </SettingsSection>
             <SettingsSection title="Moneda">

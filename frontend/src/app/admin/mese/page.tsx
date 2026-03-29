@@ -112,7 +112,7 @@ function MeseContent() {
   const unassigned = useMemo(() => {
     return mainGuests.filter((g) => {
       if (assignmentMap.has(g.id)) return false;
-      if (g.loc_pe_scaun === false) return false;
+      if (g.status !== "prezenta_si_dar") return false;
       if (!search.trim()) return true;
       const q = search.toLowerCase();
       const partner = g.partner_id ? guests.find((p) => p.id === g.partner_id) : null;

@@ -17,7 +17,7 @@ export default function GuestsPage() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editGuest, setEditGuest] = useState<Guest | null>(null);
-  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "" as "" | "M" | "F", estimated_gift_min: "", estimated_gift_max: "", din_partea: "" as "" | "mire" | "mireasa" | "nasi" | "parintii_mire" | "parintii_mireasa", loc_pe_scaun: true, children: [] as { nume: string; prenume: string }[] });
+  const [form, setForm] = useState({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "" as "" | "M" | "F", estimated_gift_min: "", estimated_gift_max: "", din_partea: "" as "" | "mire" | "mireasa" | "nasi" | "parintii_mire" | "parintii_mireasa", status: "prezenta_si_dar" as "prezenta_si_dar" | "doar_dar" | "incertitudine", children: [] as { nume: string; prenume: string }[] });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<{ message: string; field?: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Guest | null>(null);
@@ -111,7 +111,7 @@ export default function GuestsPage() {
   function openNew() {
     setEditGuest(null);
     setSaveError(null);
-    setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "", estimated_gift_min: "", estimated_gift_max: "", din_partea: "", loc_pe_scaun: true, children: [] });
+    setForm({ nume: "", prenume: "", plus_one: false, intro_short: "", intro_long: "", slug: "", partner_nume: "", partner_prenume: "", sex: "", estimated_gift_min: "", estimated_gift_max: "", din_partea: "", status: "prezenta_si_dar" as "prezenta_si_dar" | "doar_dar" | "incertitudine", children: [] });
     setShowForm(true);
   }
 
@@ -132,7 +132,7 @@ export default function GuestsPage() {
       estimated_gift_min: g.estimated_gift_min != null ? String(g.estimated_gift_min) : "",
       estimated_gift_max: g.estimated_gift_max != null ? String(g.estimated_gift_max) : "",
       din_partea: g.din_partea || "",
-      loc_pe_scaun: g.loc_pe_scaun === 1 || g.loc_pe_scaun === true,
+      status: g.status || "prezenta_si_dar",
       children: (g.children || []).map((c) => ({ nume: c.nume, prenume: c.prenume })),
     });
     setSaveError(null);
@@ -242,19 +242,13 @@ export default function GuestsPage() {
                 </select>
               </div>
 
-              {/* Checkboxes row: Plus one | Loc pe scaun | Plus copil */}
-              <div className="flex items-center justify-between">
+              {/* Checkboxes row: Plus one | Plus copil */}
+              <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <input type="checkbox" id="plus_one" checked={form.plus_one}
                     onChange={(e) => setForm({ ...form, plus_one: e.target.checked, ...(!e.target.checked ? { partner_nume: "", partner_prenume: "" } : {}) })}
                     className="w-4 h-4 accent-accent" />
                   <label htmlFor="plus_one" className="text-sm text-foreground">Plus one</label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input type="checkbox" id="loc_pe_scaun" checked={form.loc_pe_scaun}
-                    onChange={(e) => setForm({ ...form, loc_pe_scaun: e.target.checked })}
-                    className="w-4 h-4 accent-accent" />
-                  <label htmlFor="loc_pe_scaun" className="text-sm text-foreground">Loc pe scaun</label>
                 </div>
                 <div className="flex items-center gap-2">
                   <input type="checkbox" id="has_children" checked={form.children.length > 0}
@@ -408,6 +402,26 @@ export default function GuestsPage() {
                 <p className="text-xs text-text-muted text-right mt-1">{form.intro_long.length}/400</p>
               </div>
 
+              {/* Status */}
+              <div>
+                <label className="block text-xs text-text-muted mb-1">Status</label>
+                <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as "prezenta_si_dar" | "doar_dar" | "incertitudine" })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors">
+                  <option value="prezenta_si_dar">Prezenta si dar</option>
+                  <option value="doar_dar">Doar dar</option>
+                  <option value="incertitudine">Incertitudine</option>
+                </select>
+                {form.status === "prezenta_si_dar" && (
+                  <p className="text-xs text-green-600 mt-1">Invitatul va fi asezat la masa.</p>
+                )}
+                {form.status === "doar_dar" && (
+                  <p className="text-xs text-amber-600 mt-1">Invitatul nu va fi asezat la masa.</p>
+                )}
+                {form.status === "incertitudine" && (
+                  <p className="text-xs text-red-500 mt-1">Invitatul nu va fi asezat la masa.</p>
+                )}
+              </div>
+
               {/* Cadou estimat */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -425,6 +439,22 @@ export default function GuestsPage() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
                 </div>
               </div>
+              {form.status === "prezenta_si_dar" && (
+                <p className="text-xs text-green-600 -mt-1">Darul estimat va fi inclus integral in statistici.</p>
+              )}
+              {form.status === "doar_dar" && (() => {
+                const min = Number(form.estimated_gift_min) || 0;
+                const max = Number(form.estimated_gift_max) || 0;
+                const avg40 = Math.round(((min + max) / 2) * 0.4);
+                return (
+                  <p className="text-xs text-amber-600 -mt-1">
+                    40% din darul estimat va fi luat in calcul in statistici{min || max ? ` (~${avg40} RON)` : ""}. Modificati statusul pentru a include integral.
+                  </p>
+                );
+              })()}
+              {form.status === "incertitudine" && (
+                <p className="text-xs text-red-500 -mt-1">Darul estimat nu va fi luat in calcul in statistici (0 RON). Modificati statusul pentru a-l include.</p>
+              )}
               </div>
               <div className="sticky bottom-0 p-5 pt-3 bg-white border-t border-border-light rounded-b-xl flex gap-3">
                 <button type="submit" disabled={saving}
@@ -733,8 +763,11 @@ export default function GuestsPage() {
                       {g.din_partea && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">{DIN_PARTEA_LABELS[g.din_partea]}</span>
                       )}
-                      {!g.loc_pe_scaun && (
+                      {g.status === "doar_dar" && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">Doar dar</span>
+                      )}
+                      {g.status === "incertitudine" && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-600">Incertitudine</span>
                       )}
                       {g.children && g.children.length > 0 && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">{g.children.length} {g.children.length === 1 ? "copil" : "copii"}</span>
@@ -778,8 +811,11 @@ export default function GuestsPage() {
                               {g.din_partea && (
                                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">{DIN_PARTEA_LABELS[g.din_partea]}</span>
                               )}
-                              {!g.loc_pe_scaun && (
+                              {g.status === "doar_dar" && (
                                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">Doar dar</span>
+                              )}
+                              {g.status === "incertitudine" && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-600">Incertitudine</span>
                               )}
                             </div>
                             {partner && (
