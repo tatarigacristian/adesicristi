@@ -7,13 +7,28 @@ import SectionDots from "@/components/Ornaments/SectionDots";
 import SmallFlourish from "@/components/Ornaments/SmallFlourish";
 import { useSlideActive } from "@/hooks/useSlideActive";
 
-const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/embed/jEj57Rqeuy8";
+const DEFAULT_VIDEO_URL = "https://vimeo.com/1182620857";
 
-function getYoutubeId(url: string): string | null {
-  const match = url.match(
+type VideoEmbed = { provider: "youtube" | "vimeo"; src: string } | null;
+
+function parseVideoUrl(url: string): VideoEmbed {
+  const yt = url.match(
     /(?:youtube\.com\/(?:embed\/|watch\?v=)|youtu\.be\/)([\w-]+)/
   );
-  return match ? match[1] : null;
+  if (yt) {
+    return {
+      provider: "youtube",
+      src: `https://www.youtube.com/embed/${yt[1]}?autoplay=1&controls=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&playsinline=1`,
+    };
+  }
+  const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vm) {
+    return {
+      provider: "vimeo",
+      src: `https://player.vimeo.com/video/${vm[1]}?autoplay=1&title=0&byline=0&portrait=0&dnt=1&playsinline=1`,
+    };
+  }
+  return null;
 }
 
 const TIMELINE = [
@@ -52,15 +67,9 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
   const [activeTimelineIndex, setActiveTimelineIndex] = useState(0);
   const [timelineFading, setTimelineFading] = useState(false);
 
-  const youtubeUrl = settings?.link_youtube_video || DEFAULT_YOUTUBE_URL;
-  const videoId = getYoutubeId(youtubeUrl);
-  const thumbnailUrl = videoId
-    ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-    : null;
-
-  const embedSrc = videoId
-    ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&playsinline=1`
-    : youtubeUrl;
+  const videoUrl = settings?.link_youtube_video || DEFAULT_VIDEO_URL;
+  const videoEmbed = parseVideoUrl(videoUrl);
+  const embedSrc = videoEmbed?.src ?? videoUrl;
 
   useEffect(() => {
     const timer = setInterval(() => {

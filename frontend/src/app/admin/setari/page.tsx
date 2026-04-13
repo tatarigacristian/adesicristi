@@ -442,10 +442,10 @@ function SetariContent() {
           <div className="space-y-6">
             <SettingsSection title="Video">
               <SettingsInput
-                label="Link YouTube (embed format)"
+                label="Link video (YouTube sau Vimeo)"
                 value={form.link_youtube_video}
                 onChange={updateForm("link_youtube_video")}
-                placeholder="https://www.youtube.com/embed/..."
+                placeholder="https://vimeo.com/123456789 sau https://youtube.com/watch?v=..."
               />
             </SettingsSection>
             <SettingsSection title="Culori tema">
