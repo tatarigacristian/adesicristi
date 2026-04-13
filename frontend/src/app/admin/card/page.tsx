@@ -550,22 +550,37 @@ function CardPageContent() {
     return res.blob();
   }, []);
 
-  const handleSavePng = useCallback(async (target: "front" | "back" | "full") => {
+  const handleSavePng = useCallback(async (target: "front" | "back" | "full" | "full-vertical") => {
     setPngMenuOpen(false);
     if (!printRef.current || !guest) return;
 
     let element: HTMLElement | null = null;
     let suffix = "";
+    let stackVertical = false;
+
     if (target === "front") {
       element = printRef.current.querySelector<HTMLElement>(".card-front");
       suffix = "-fata";
     } else if (target === "back") {
       element = printRef.current.querySelector<HTMLElement>(".card-back");
       suffix = "-verso";
+    } else if (target === "full-vertical") {
+      element = printRef.current;
+      suffix = "-vertical";
+      stackVertical = true;
     } else {
       element = printRef.current;
     }
     if (!element) return;
+
+    // Temporarily stack cards vertically for the vertical export
+    let originalFlexDirection = "";
+    if (stackVertical) {
+      originalFlexDirection = element.style.flexDirection;
+      element.style.flexDirection = "column";
+      // Wait one frame so the browser applies the new layout before capture
+      await new Promise<void>((r) => requestAnimationFrame(() => r()));
+    }
 
     try {
       const dataUrl = await safeToPng(element);
@@ -575,6 +590,10 @@ function CardPageContent() {
       link.click();
     } catch (err) {
       console.error("Failed to save PNG:", err);
+    } finally {
+      if (stackVertical) {
+        element.style.flexDirection = originalFlexDirection;
+      }
     }
   }, [guest]);
 
@@ -752,7 +771,15 @@ function CardPageContent() {
                   onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                 >
-                  Full (fața + verso)
+                  Full (stânga / dreapta)
+                </button>
+                <button
+                  onClick={() => handleSavePng("full-vertical")}
+                  style={{ display: "block", width: "100%", padding: "8px 14px", border: "none", background: "transparent", textAlign: "left", fontSize: "0.8rem", cursor: "pointer" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  Full (sus / jos)
                 </button>
               </div>
             )}
@@ -772,7 +799,11 @@ function CardPageContent() {
           </button>
         </div>
 
-        <div className="cards-container" ref={printRef}>
+        <div
+          className="cards-container"
+          ref={printRef}
+          style={{ background: settings.color_main || "#FDF8F7", padding: "5px" }}
+        >
           <CardFront guest={guest} partner={partner} settings={settings} qrDataUrl={qrDataUrl} />
           <CardBack guest={guest} partner={partner} settings={settings} />
         </div>
