@@ -58,10 +58,10 @@ export default function Family({
           {/* Nasi */}
           {hasNasi && (
             <div className="text-center">
-              <p className="body-font text-xs sm:text-[0.75rem] tracking-[0.2em] uppercase text-text-muted mb-2">
+              <p className="body-font text-[0.65rem] sm:text-[0.75rem] tracking-[0.2em] uppercase text-text-muted mb-2">
                 Împreună cu nașii
               </p>
-              <p className="script-font text-3xl sm:text-3xl text-text-heading">
+              <p className="script-font text-2xl sm:text-3xl text-text-heading">
                 {nasNume}
               </p>
             </div>
@@ -79,16 +79,16 @@ export default function Family({
           {/* Parinti */}
           {hasParinti && (
             <div className="text-center">
-              <p className="body-font text-xs sm:text-[0.75rem] tracking-[0.2em] uppercase text-text-muted mb-2">
+              <p className="body-font text-[0.65rem] sm:text-[0.75rem] tracking-[0.2em] uppercase text-text-muted mb-2">
                 Dragii noștri părinți
               </p>
               {parintiMireasa && (
-                <p className="script-font text-3xl sm:text-3xl text-text-heading leading-relaxed">
+                <p className="script-font text-2xl sm:text-3xl text-text-heading leading-relaxed">
                   {parintiMireasa}
                 </p>
               )}
               {parintiMire && (
-                <p className="script-font text-3xl sm:text-3xl text-text-heading leading-relaxed mt-1">
+                <p className="script-font text-2xl sm:text-3xl text-text-heading leading-relaxed mt-1">
                   {parintiMire}
                 </p>
               )}

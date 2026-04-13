@@ -169,22 +169,22 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                     className="relative cursor-pointer"
                     onClick={() => loc.googleMapsUrl && handleMapClick(loc)}
                   >
-                    <div className="absolute -left-16 top-0 w-[48px] h-[48px] rounded-full flex items-center justify-center bg-button text-white">
-                      <EventIcon type={loc.title} size={26} />
+                    <div className="absolute -left-16 top-0 w-[42px] h-[42px] rounded-full flex items-center justify-center bg-button text-white">
+                      <EventIcon type={loc.title} size={22} />
                     </div>
                     <div>
-                      <h3 className="serif-font text-xl text-text-heading leading-tight">
+                      <h3 className="serif-font text-lg text-text-heading leading-tight">
                         {loc.title}
                       </h3>
-                      <p className="text-sm text-button mt-1">
+                      <p className="text-[0.7rem] tracking-[0.05em] text-button mt-1">
                         {loc.date}{loc.time ? `, ${loc.time}` : ""}
                       </p>
-                      <p className="text-sm text-text-muted mt-0.5 leading-snug">
+                      <p className="text-[0.7rem] text-text-muted mt-0.5 leading-snug">
                         {loc.address}
                       </p>
                       {loc.googleMapsUrl && (
-                        <p className="body-font mt-2 text-xs tracking-[0.1em] uppercase text-button flex items-center gap-1.5">
-                          <MapPin size={18} weight="fill" />
+                        <p className="body-font mt-2 text-[0.65rem] tracking-[0.1em] uppercase text-button flex items-center gap-1.5">
+                          <MapPin size={15} weight="fill" />
                           Vezi pe hartă
                         </p>
                       )}
