@@ -74,7 +74,12 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
   const vimeoPlayerRef = useRef<VimeoPlayer | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const isTouchDevice = () =>
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(hover: none)").matches === true;
+
   const scheduleHide = () => {
+    if (isTouchDevice()) return; // keep button visible on touch devices
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     hideTimerRef.current = setTimeout(() => setControlsVisible(false), 3000);
   };
@@ -263,7 +268,9 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                     className="absolute inset-0 bg-black"
                     onMouseEnter={showControls}
                     onMouseMove={showControls}
-                    onMouseLeave={() => setControlsVisible(false)}
+                    onMouseLeave={() => {
+                      if (!isTouchDevice()) setControlsVisible(false);
+                    }}
                     onTouchStart={showControls}
                   >
                     <iframe
@@ -275,7 +282,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                     />
                     <button
                       onClick={toggleFullscreen}
-                      className={`absolute top-2 left-2 z-10 flex items-center bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 shadow-md transition-all duration-300 ${
+                      className={`absolute top-2 left-2 z-10 flex items-center bg-black backdrop-blur-sm rounded-full hover:bg-black/90 shadow-md transition-all duration-300 ${
                         isFullscreen ? "gap-1.5 py-1.5 px-3" : "w-8 h-8 justify-center"
                       } ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
                       aria-label={isFullscreen ? "Exit full screen" : "Ecran complet"}
