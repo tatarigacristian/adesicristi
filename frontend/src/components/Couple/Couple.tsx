@@ -68,9 +68,21 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
   const [activeTimelineIndex, setActiveTimelineIndex] = useState(0);
   const [timelineFading, setTimelineFading] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [controlsVisible, setControlsVisible] = useState(true);
   const videoWrapperRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const vimeoPlayerRef = useRef<VimeoPlayer | null>(null);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleHide = () => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => setControlsVisible(false), 3000);
+  };
+
+  const showControls = () => {
+    setControlsVisible(true);
+    scheduleHide();
+  };
 
   const videoUrl = settings?.link_youtube_video || DEFAULT_VIDEO_URL;
   const videoEmbed = parseVideoUrl(videoUrl);
@@ -103,6 +115,17 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       vimeoPlayerRef.current = null;
     };
   }, [playing, videoEmbed?.provider]);
+
+  // When video starts: show button for 3s, then auto-hide (mirrors Vimeo's own idle behavior)
+  useEffect(() => {
+    if (playing) {
+      showControls();
+    }
+    return () => {
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playing]);
 
   const isIOS = (): boolean =>
     typeof navigator !== "undefined" &&
@@ -235,7 +258,14 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                     </div>
                   </button>
                 ) : (
-                  <div ref={videoWrapperRef} className="absolute inset-0 bg-black">
+                  <div
+                    ref={videoWrapperRef}
+                    className="absolute inset-0 bg-black"
+                    onMouseEnter={showControls}
+                    onMouseMove={showControls}
+                    onMouseLeave={() => setControlsVisible(false)}
+                    onTouchStart={showControls}
+                  >
                     <iframe
                       ref={iframeRef}
                       className="w-full h-full border-0"
@@ -245,9 +275,9 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                     />
                     <button
                       onClick={toggleFullscreen}
-                      className={`absolute top-2 left-2 z-10 flex items-center bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 transition-colors shadow-md ${
+                      className={`absolute top-2 left-2 z-10 flex items-center bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 shadow-md transition-all duration-300 ${
                         isFullscreen ? "gap-1.5 py-1.5 px-3" : "w-8 h-8 justify-center"
-                      }`}
+                      } ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
                       aria-label={isFullscreen ? "Exit full screen" : "Ecran complet"}
                     >
                       {isFullscreen ? (
