@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SectionCorners from "@/components/Ornaments/SectionCorners";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
@@ -78,14 +78,6 @@ function buildLocations(settings: WeddingSettings | null): LocationCard[] {
   ];
 }
 
-function getWazeUrl(googleMapsUrl: string) {
-  return `https://waze.com/ul?navigate=yes&ll=${encodeURIComponent(googleMapsUrl)}`;
-}
-
-function getAppleMapsUrl(googleMapsUrl: string) {
-  return `https://maps.apple.com/?daddr=${encodeURIComponent(googleMapsUrl)}`;
-}
-
 /* Desktop card — minimalist row, no image */
 function LocationCardDesktop({
   loc,
@@ -115,7 +107,7 @@ function LocationCardDesktop({
           onClick={() => onMapClick(loc)}
           className="body-font text-[0.6rem] sm:text-[0.7rem] tracking-[0.15em] uppercase text-button hover:text-button-hover transition-colors cursor-pointer flex items-center gap-1.5 flex-shrink-0"
         >
-          <MapPin size={11} weight="duotone" />
+          <MapPin size={18} weight="fill" />
           Vezi pe hartă
         </button>
       )}
@@ -124,7 +116,7 @@ function LocationCardDesktop({
 }
 
 /* Event icons for location cards — using Phosphor Icons */
-import { Church, Car as PhCar, Champagne, MapPin, NavigationArrow } from "@phosphor-icons/react";
+import { Church, Car as PhCar, Champagne, MapPin } from "@phosphor-icons/react";
 
 function EventIcon({ type, size = 28 }: { type: string; size?: number }) {
   if (type.toLowerCase().includes("transport")) {
@@ -138,16 +130,12 @@ function EventIcon({ type, size = 28 }: { type: string; size?: number }) {
 
 export default function Locations({ settings }: { settings?: WeddingSettings | null }) {
   const showContent = useSlideActive("locations");
-  const [drawerLocation, setDrawerLocation] = useState<LocationCard | null>(null);
 
   const locations = useMemo(() => buildLocations(settings ?? null), [settings]);
 
   function handleMapClick(loc: LocationCard) {
-    if (window.innerWidth < 1024) {
-      setDrawerLocation(loc);
-    } else {
-      window.open(loc.googleMapsUrl, "_blank");
-    }
+    if (!loc.googleMapsUrl) return;
+    window.open(loc.googleMapsUrl, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -195,8 +183,8 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
                         {loc.address}
                       </p>
                       {loc.googleMapsUrl && (
-                        <p className="body-font mt-2 text-xs tracking-[0.1em] uppercase text-button flex items-center gap-1">
-                          <MapPin size={13} weight="duotone" />
+                        <p className="body-font mt-2 text-xs tracking-[0.1em] uppercase text-button flex items-center gap-1.5">
+                          <MapPin size={18} weight="fill" />
                           Vezi pe hartă
                         </p>
                       )}
@@ -222,63 +210,6 @@ export default function Locations({ settings }: { settings?: WeddingSettings | n
         {/* Footer */}
         <SectionFooterNav settings={settings} />
       </section>
-
-      {/* Mobile map drawer */}
-      {drawerLocation && (
-        <div
-          className="fixed inset-0 z-50 lg:hidden"
-          onClick={() => setDrawerLocation(null)}
-        >
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          <div
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 animate-slide-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="w-10 h-1 bg-border-light rounded-full mx-auto mb-4" />
-            <h3 className="serif-font text-lg text-text-heading text-center mb-1">
-              {drawerLocation.title}
-            </h3>
-            <p className="text-xs text-text-muted text-center mb-5">
-              Deschide cu aplicația preferată
-            </p>
-            <div className="flex flex-col gap-3">
-              <a
-                href={drawerLocation.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border-light hover:bg-background-soft transition-colors"
-              >
-                <MapPin size={20} weight="duotone" className="text-button flex-shrink-0" />
-                <span className="text-sm font-medium text-text-heading">Google Maps</span>
-              </a>
-              <a
-                href={getAppleMapsUrl(drawerLocation.googleMapsUrl)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border-light hover:bg-background-soft transition-colors"
-              >
-                <NavigationArrow size={20} weight="duotone" className="text-button flex-shrink-0" />
-                <span className="text-sm font-medium text-text-heading">Apple Maps</span>
-              </a>
-              <a
-                href={getWazeUrl(drawerLocation.googleMapsUrl)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border-light hover:bg-background-soft transition-colors"
-              >
-                <PhCar size={20} weight="duotone" className="text-button flex-shrink-0" />
-                <span className="text-sm font-medium text-text-heading">Waze</span>
-              </a>
-            </div>
-            <button
-              onClick={() => setDrawerLocation(null)}
-              className="w-full mt-4 py-2.5 text-sm text-text-muted hover:text-text-heading transition-colors cursor-pointer"
-            >
-              Închide
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }
