@@ -132,7 +132,7 @@ function CardFront({
                 <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 300, color: text }}>{initialMire}</span>
               </div>
             </div>
-            <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.1cm" }}>Ne casatorim!</p>
+            <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.1cm" }}>Ne căsătorim!</p>
           </div>
 
           {/* Vertical divider */}
@@ -144,7 +144,7 @@ function CardFront({
               <img src={qrDataUrl} alt="QR Code" style={{ width: "2cm", height: "2cm" }} />
             </div>
             <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.08cm" }}>
-              Scanati codul
+              Scanați codul
             </p>
           </div>
 
@@ -227,7 +227,7 @@ function CardBack({
         <div className="corner-ornament bottom-left" />
         <div className="corner-ornament bottom-right" />
 
-        <p className="card-label" style={{ marginBottom: "0.1cm" }}>Invitatie</p>
+        <p className="card-label" style={{ marginBottom: "0.1cm" }}>Invitație</p>
 
         {/* Heart divider */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: "0.2cm" }}>
@@ -259,7 +259,7 @@ function CardBack({
           <p className="card-back-names">{mireasa} & {mire}</p>
           {(settings.nas_prenume || settings.nasa_prenume) && (
             <p className="card-nasi" style={{ marginBottom: 0, marginTop: "0.03cm" }}>
-              impreuna cu nasii {settings.nasa_prenume} & {settings.nas_prenume}{" "}
+              împreună cu nașii {settings.nasa_prenume} & {settings.nas_prenume}{" "}
               {settings.nasa_nume === settings.nas_nume
                 ? settings.nasa_nume
                 : `${settings.nasa_nume} & ${settings.nas_nume}`}
