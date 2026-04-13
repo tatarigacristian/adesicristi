@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import type VimeoPlayer from "@vimeo/player";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
@@ -68,6 +69,12 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
   const [timelineFading, setTimelineFading] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const videoWrapperRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const vimeoPlayerRef = useRef<VimeoPlayer | null>(null);
+
+  const videoUrl = settings?.link_youtube_video || DEFAULT_VIDEO_URL;
+  const videoEmbed = parseVideoUrl(videoUrl);
+  const embedSrc = videoEmbed?.src ?? videoUrl;
 
   useEffect(() => {
     const onChange = () => {
@@ -82,6 +89,25 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
     };
   }, []);
 
+  // Lazy-load Vimeo Player SDK when the Vimeo iframe mounts — needed for iOS fullscreen
+  useEffect(() => {
+    if (!playing || videoEmbed?.provider !== "vimeo") return;
+    let cancelled = false;
+    import("@vimeo/player").then(({ default: Player }) => {
+      if (cancelled || !iframeRef.current) return;
+      vimeoPlayerRef.current = new Player(iframeRef.current);
+    });
+    return () => {
+      cancelled = true;
+      vimeoPlayerRef.current?.destroy();
+      vimeoPlayerRef.current = null;
+    };
+  }, [playing, videoEmbed?.provider]);
+
+  const isIOS = (): boolean =>
+    typeof navigator !== "undefined" &&
+    /iPhone|iPad|iPod/.test(navigator.userAgent);
+
   const toggleFullscreen = () => {
     const doc = document as Document & {
       webkitFullscreenElement?: Element;
@@ -94,7 +120,16 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
         document.exitFullscreen().catch(() => {});
       } else if (doc.webkitExitFullscreen) {
         doc.webkitExitFullscreen();
+      } else {
+        vimeoPlayerRef.current?.exitFullscreen().catch(() => {});
       }
+      return;
+    }
+
+    // iOS Safari can't fullscreen iframes — delegate to Vimeo SDK which triggers
+    // native <video> fullscreen via postMessage to the player.
+    if (isIOS() && vimeoPlayerRef.current) {
+      vimeoPlayerRef.current.requestFullscreen().catch(() => {});
       return;
     }
 
@@ -106,12 +141,11 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
       el.requestFullscreen().catch(() => {});
     } else if (el.webkitRequestFullscreen) {
       el.webkitRequestFullscreen();
+    } else {
+      // Final fallback — let Vimeo SDK try
+      vimeoPlayerRef.current?.requestFullscreen().catch(() => {});
     }
   };
-
-  const videoUrl = settings?.link_youtube_video || DEFAULT_VIDEO_URL;
-  const videoEmbed = parseVideoUrl(videoUrl);
-  const embedSrc = videoEmbed?.src ?? videoUrl;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -203,6 +237,7 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                 ) : (
                   <div ref={videoWrapperRef} className="absolute inset-0 bg-black">
                     <iframe
+                      ref={iframeRef}
                       className="w-full h-full border-0"
                       src={embedSrc}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
