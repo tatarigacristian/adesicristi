@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { WeddingSettings, formatDate } from "@/utils/settings";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import SectionDots from "@/components/Ornaments/SectionDots";
@@ -40,7 +40,7 @@ const TIMELINE = [
   { date: "", label: "Nunta", icon: "champagne" },
 ];
 
-import { DeviceMobileCamera, Coffee, HeartStraight, House, Diamond, Champagne, Play } from "@phosphor-icons/react";
+import { DeviceMobileCamera, Coffee, HeartStraight, House, Diamond, Champagne, Play, CornersOut, CornersIn } from "@phosphor-icons/react";
 
 function TimelineIcon({ icon, size = 16 }: { icon: string; size?: number }) {
   switch (icon) {
@@ -66,6 +66,48 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
   const [playing, setPlaying] = useState(false);
   const [activeTimelineIndex, setActiveTimelineIndex] = useState(0);
   const [timelineFading, setTimelineFading] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const videoWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onChange = () => {
+      const doc = document as Document & { webkitFullscreenElement?: Element };
+      setIsFullscreen(!!(document.fullscreenElement || doc.webkitFullscreenElement));
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    document.addEventListener("webkitfullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      document.removeEventListener("webkitfullscreenchange", onChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    const doc = document as Document & {
+      webkitFullscreenElement?: Element;
+      webkitExitFullscreen?: () => Promise<void>;
+    };
+    const isFs = !!(document.fullscreenElement || doc.webkitFullscreenElement);
+
+    if (isFs) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (doc.webkitExitFullscreen) {
+        doc.webkitExitFullscreen();
+      }
+      return;
+    }
+
+    const el = videoWrapperRef.current as (HTMLDivElement & {
+      webkitRequestFullscreen?: () => Promise<void>;
+    }) | null;
+    if (!el) return;
+    if (el.requestFullscreen) {
+      el.requestFullscreen().catch(() => {});
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    }
+  };
 
   const videoUrl = settings?.link_youtube_video || DEFAULT_VIDEO_URL;
   const videoEmbed = parseVideoUrl(videoUrl);
@@ -159,12 +201,32 @@ export default function Couple({ settings }: { settings?: WeddingSettings | null
                     </div>
                   </button>
                 ) : (
-                  <iframe
-                    className="absolute inset-0 w-full h-full border-0"
-                    src={embedSrc}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                  <div ref={videoWrapperRef} className="absolute inset-0 bg-black">
+                    <iframe
+                      className="w-full h-full border-0"
+                      src={embedSrc}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                      allowFullScreen
+                    />
+                    <button
+                      onClick={toggleFullscreen}
+                      className={`absolute top-2 left-2 z-10 flex items-center bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 transition-colors shadow-md ${
+                        isFullscreen ? "gap-1.5 py-1.5 px-3" : "w-8 h-8 justify-center"
+                      }`}
+                      aria-label={isFullscreen ? "Exit full screen" : "Ecran complet"}
+                    >
+                      {isFullscreen ? (
+                        <CornersIn size={14} weight="bold" className="text-white" />
+                      ) : (
+                        <CornersOut size={14} weight="bold" className="text-white" />
+                      )}
+                      {isFullscreen && (
+                        <span className="text-[0.6rem] font-medium tracking-[0.1em] uppercase text-white whitespace-nowrap">
+                          Exit full screen
+                        </span>
+                      )}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
