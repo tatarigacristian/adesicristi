@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { safeToPng } from "@/utils/safari-png";
 import { getInvitationAudience, getGreetingShort, getDefaultIntroShort } from "@/utils/invitation-text";
-import { ShareNetwork, ArrowSquareOut, Church, Bus, Champagne } from "@phosphor-icons/react";
+import { ShareNetwork, ArrowSquareOut, Church, Bus, Champagne, CaretDown } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://adesicristi.vercel.app";
@@ -539,7 +539,9 @@ function CardPageContent() {
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [pngMenuOpen, setPngMenuOpen] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
+  const pngMenuRef = useRef<HTMLDivElement>(null);
 
   const generatePngBlob = useCallback(async (): Promise<Blob | null> => {
     if (!printRef.current) return null;
@@ -548,18 +550,44 @@ function CardPageContent() {
     return res.blob();
   }, []);
 
-  const handleSavePng = useCallback(async () => {
+  const handleSavePng = useCallback(async (target: "front" | "back" | "full") => {
+    setPngMenuOpen(false);
     if (!printRef.current || !guest) return;
+
+    let element: HTMLElement | null = null;
+    let suffix = "";
+    if (target === "front") {
+      element = printRef.current.querySelector<HTMLElement>(".card-front");
+      suffix = "-fata";
+    } else if (target === "back") {
+      element = printRef.current.querySelector<HTMLElement>(".card-back");
+      suffix = "-verso";
+    } else {
+      element = printRef.current;
+    }
+    if (!element) return;
+
     try {
-      const dataUrl = await safeToPng(printRef.current);
+      const dataUrl = await safeToPng(element);
       const link = document.createElement("a");
-      link.download = `card-${guest.prenume}-${guest.nume}.png`;
+      link.download = `card-${guest.prenume}-${guest.nume}${suffix}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
       console.error("Failed to save PNG:", err);
     }
   }, [guest]);
+
+  useEffect(() => {
+    if (!pngMenuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (pngMenuRef.current && !pngMenuRef.current.contains(e.target as Node)) {
+        setPngMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [pngMenuOpen]);
 
   const handleShare = useCallback(async () => {
     if (!guest) return;
@@ -678,9 +706,57 @@ function CardPageContent() {
             <option value="invitatie">Invitatie v1</option>
             <option value="invitatie-v2">Invitatie v2</option>
           </select>
-          <button className="print-btn print-btn-primary" onClick={handleSavePng}>
-            Salveaza ca PNG
-          </button>
+          <div ref={pngMenuRef} style={{ position: "relative", display: "inline-block" }}>
+            <button
+              className="print-btn print-btn-primary"
+              onClick={() => setPngMenuOpen((v) => !v)}
+              style={{ display: "flex", alignItems: "center", gap: 6 }}
+            >
+              Salveaza ca PNG
+              <CaretDown size={12} weight="bold" />
+            </button>
+            {pngMenuOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "calc(100% + 4px)",
+                  left: 0,
+                  minWidth: "100%",
+                  background: "#fff",
+                  border: "1px solid #e5e5e5",
+                  borderRadius: 6,
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+                  overflow: "hidden",
+                  zIndex: 20,
+                }}
+              >
+                <button
+                  onClick={() => handleSavePng("front")}
+                  style={{ display: "block", width: "100%", padding: "8px 14px", border: "none", background: "transparent", textAlign: "left", fontSize: "0.8rem", cursor: "pointer" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  Fața
+                </button>
+                <button
+                  onClick={() => handleSavePng("back")}
+                  style={{ display: "block", width: "100%", padding: "8px 14px", border: "none", background: "transparent", textAlign: "left", fontSize: "0.8rem", cursor: "pointer" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  Verso
+                </button>
+                <button
+                  onClick={() => handleSavePng("full")}
+                  style={{ display: "block", width: "100%", padding: "8px 14px", border: "none", background: "transparent", textAlign: "left", fontSize: "0.8rem", cursor: "pointer" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  Full (fața + verso)
+                </button>
+              </div>
+            )}
+          </div>
           <button className="print-btn print-btn-secondary" onClick={handleShare} style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <ShareNetwork size={16} weight="bold" />
             Share
