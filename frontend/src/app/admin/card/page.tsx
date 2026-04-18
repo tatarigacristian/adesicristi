@@ -575,9 +575,15 @@ function CardPageContent() {
 
     // Temporarily stack cards vertically for the vertical export
     let originalFlexDirection = "";
+    let originalGap = "";
+    let originalPadding = "";
     if (stackVertical) {
       originalFlexDirection = element.style.flexDirection;
+      originalGap = element.style.gap;
+      originalPadding = element.style.padding;
       element.style.flexDirection = "column";
+      element.style.gap = "20px";
+      element.style.padding = "20px";
       // Wait one frame so the browser applies the new layout before capture
       await new Promise<void>((r) => requestAnimationFrame(() => r()));
     }
@@ -593,6 +599,8 @@ function CardPageContent() {
     } finally {
       if (stackVertical) {
         element.style.flexDirection = originalFlexDirection;
+        element.style.gap = originalGap;
+        element.style.padding = originalPadding;
       }
     }
   }, [guest]);
