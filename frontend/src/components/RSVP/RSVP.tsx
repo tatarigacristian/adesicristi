@@ -330,6 +330,8 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
   const isPositive = formState === "confirmed";
   const isPlural = personCount === 2;
 
+  const confirmareDeadline = settings?.confirmare_pana_la ? formatDate(settings.confirmare_pana_la) : null;
+
   // Loading state
   if (formState === "loading") {
     return (
@@ -341,6 +343,11 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Prezența ta contează
           </p>
+          {confirmareDeadline && (
+            <p className="body-font text-[0.6rem] sm:text-[0.7rem] text-text-muted mt-1.5">
+              Vă rugăm să ne confirmați prezența până la data de {confirmareDeadline}
+            </p>
+          )}
         </div>
         <div className={`section-content transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <p className="text-sm text-text-muted">Se încarcă...</p>
@@ -363,6 +370,11 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
           <p className="body-font text-[0.7rem] sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
             Prezența ta contează
           </p>
+          {confirmareDeadline && (
+            <p className="body-font text-[0.6rem] sm:text-[0.7rem] text-text-muted mt-1.5">
+              Vă rugăm să ne confirmați prezența până la data de {confirmareDeadline}
+            </p>
+          )}
         </div>
 
         <div className={`section-content max-w-md px-6 transition-all duration-700 ease-out ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
@@ -447,6 +459,11 @@ export default function RSVP({ guest, settings }: { guest?: GuestData | null; se
         <p className="body-font text-sm sm:text-[0.85rem] tracking-[0.2em] uppercase text-text-muted">
           Prezența ta contează
         </p>
+        {confirmareDeadline && (
+          <p className="body-font text-[0.65rem] sm:text-[0.7rem] text-text-muted mt-1.5">
+            Vă rugăm să ne confirmați prezența până la data de {confirmareDeadline}
+          </p>
+        )}
       </div>
 
       {/* Content */}
