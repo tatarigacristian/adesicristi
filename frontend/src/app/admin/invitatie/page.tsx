@@ -396,7 +396,7 @@ function InvitatieContent() {
 
             {/* ─── Guest greeting ─── */}
             <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 400, color: c.primary, letterSpacing: "0.03em" }}>
-              {getGreeting(audience, true)} {(() => {
+              {getGreeting(audience, true, guest.slug)} {(() => {
                 const childNames = guest.children && guest.children.length > 0 ? guest.children.map((c) => c.prenume) : [];
                 if (partner) {
                   const same = guest.nume === partner.nume;

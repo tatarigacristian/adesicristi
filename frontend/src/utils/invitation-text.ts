@@ -20,16 +20,16 @@ export function isPlural(audience: InvitationAudience): boolean {
  * Formă de adresare: Dragii noștri (plural), Dragul nostru (M), Draga noastră (F).
  * Pentru card/invitații scurte se poate folosi forma scurtă pentru singular.
  */
-export function getGreeting(audience: InvitationAudience, shortForm = false): string {
-  if (audience.hasPartner) return "Dragii noștri";
+export function getGreeting(audience: InvitationAudience, shortForm = false, slug?: string | null): string {
+  if (audience.hasPartner) return slug === "calix" ? "Dragele noastre" : "Dragii noștri";
   if (audience.sex === "M") return "Dragul nostru";
   if (shortForm) return "Dragă"; // formă scurtă comună (sau poți diferenția M/F)
   return audience.sex === "F" ? "Draga noastră" : "Dragul nostru";
 }
 
 /** "Draga" / "Dragul nostru" / "Dragii nostri" pentru card (formă scurtă). */
-export function getGreetingShort(audience: InvitationAudience): string {
-  if (audience.hasPartner) return "Dragii noștri";
+export function getGreetingShort(audience: InvitationAudience, slug?: string | null): string {
+  if (audience.hasPartner) return slug === "calix" ? "Dragele noastre" : "Dragii noștri";
   return audience.sex === "M" ? "Dragul nostru" : "Draga";
 }
 

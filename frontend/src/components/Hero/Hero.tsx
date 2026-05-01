@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useParams } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
@@ -63,6 +64,8 @@ export default function Hero({
   const [isMobile, setIsMobile] = useState(false);
   const nestedRef = useRef<SwiperType | null>(null);
   const parentSwiper = useSwiper();
+  const params = useParams();
+  const slug = typeof params?.slug === "string" ? params.slug : null;
 
   const couple = getCoupleNames(settings ?? null);
   const dateDisplay = settings?.ceremonie_data
@@ -216,7 +219,7 @@ export default function Hero({
                     {guest && audience && (
                       <>
                         <p className={`serif-font text-base italic text-text-muted mb-1 transition-all duration-700 ease-out delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
-                          {getGreeting(audience)}
+                          {getGreeting(audience, false, slug)}
                         </p>
                         <p className={`serif-font text-xl text-text-heading font-light mb-3 transition-all duration-700 ease-out delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
                           {formatGuestNames(guest)}
@@ -275,7 +278,7 @@ export default function Hero({
         {guest && audience && (
           <div className="mb-6">
             <p className="serif-font text-xl italic text-text-muted mb-1">
-              {getGreeting(audience)}
+              {getGreeting(audience, false, slug)}
             </p>
             <p className="serif-font text-3xl text-text-heading font-light">
               {formatGuestNames(guest)}
