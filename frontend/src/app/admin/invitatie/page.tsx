@@ -371,18 +371,18 @@ function InvitatieContent() {
             <CornerOrnament color={c.ornament} style={{ bottom: -2, right: -2, transform: "scale(-1, -1)" }} />
 
             {/* ─── Monogram (large, central) ─── */}
-            <div style={{ position: "relative", marginBottom: "0.2cm", marginTop: "0.1cm" }}>
-              <svg viewBox="0 0 160 160" style={{ width: 140, height: 140 }} xmlns="http://www.w3.org/2000/svg">
+            <div style={{ marginBottom: "0.2cm", marginTop: "0.1cm" }}>
+              <svg width="140" height="140" viewBox="0 0 160 160" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
                 <circle cx="80" cy="80" r="72" stroke={c.ornament} strokeWidth="0.5" fill="none" />
                 <circle cx="80" cy="80" r="68" stroke={c.ornament} strokeWidth="0.3" fill="none" />
                 <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={c.ornament} opacity="0.7" />
                 <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={c.ornament} opacity="0.7" />
+                <text x="80" y="80" textAnchor="middle" dominantBaseline="central" fontFamily={f.serif} fontSize="49" fontWeight="300" fill={c.primary}>
+                  <tspan>{initialMireasa}</tspan>
+                  <tspan dx="6" fontFamily={f.script} fontSize="27" fill={c.muted}>&amp;</tspan>
+                  <tspan dx="6">{initialMire}</tspan>
+                </text>
               </svg>
-              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", display: "flex", alignItems: "center", gap: "0.3cm" }}>
-                <span style={{ fontFamily: f.serif, fontSize: "2.69rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>{initialMireasa}</span>
-                <span style={{ fontFamily: f.script, fontSize: "1.49rem", color: c.muted }}>&amp;</span>
-                <span style={{ fontFamily: f.serif, fontSize: "2.69rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>{initialMire}</span>
-              </div>
             </div>
 
             {/* ─── Heart divider ─── */}
@@ -421,7 +421,7 @@ function InvitatieContent() {
             </p>
 
             {/* ─── Flourish ─── */}
-            <div style={{ margin: "0.1cm 0" }}>
+            <div style={{ marginTop: "5px", marginBottom: "0.1cm" }}>
               <Flourish width={180} color={c.ornament} />
             </div>
 
@@ -477,21 +477,19 @@ function InvitatieContent() {
               <Flourish width={180} color={c.ornament} />
             </div>
 
-            {/* ─── Date row ─── */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.4cm" }}>
-              <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.3em", fontWeight: 600, color: c.primary }}>{dayOfWeek}</span>
-              <svg viewBox="0 0 4 20" style={{ width: 3, height: 16 }} xmlns="http://www.w3.org/2000/svg">
-                <line x1="2" y1="0" x2="2" y2="20" stroke={c.ornament} strokeWidth="0.8" />
+            {/* ─── Date row (rendered as SVG for reliable PNG alignment) ─── */}
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+              <svg width="240" height="20" viewBox="0 0 240 20" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
+                <text x="90" y="15" textAnchor="end" fontFamily={f.mont} fontSize="12" fontWeight="600" style={{ letterSpacing: "0.3em" }} fill={c.primary}>{dayOfWeek}</text>
+                <line x1="103" y1="5" x2="103" y2="17" stroke={c.ornament} strokeWidth="1" />
+                <text x="140" y="15" textAnchor="middle" fontFamily={f.mont} fontSize="12" fontWeight="600" style={{ letterSpacing: "0.2em" }} fill={c.primary}>{dateFormatted}</text>
+                <line x1="178" y1="5" x2="178" y2="17" stroke={c.ornament} strokeWidth="1" />
+                <text x="190" y="15" textAnchor="start" fontFamily={f.mont} fontSize="12" fontWeight="600" style={{ letterSpacing: "0.2em" }} fill={c.primary}>{year}</text>
               </svg>
-              <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{dateFormatted}</span>
-              <svg viewBox="0 0 4 20" style={{ width: 3, height: 16 }} xmlns="http://www.w3.org/2000/svg">
-                <line x1="2" y1="0" x2="2" y2="20" stroke={c.ornament} strokeWidth="0.8" />
-              </svg>
-              <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{year}</span>
             </div>
 
             {/* ─── Events (matching card style: icon → time → address) ─── */}
-            <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm", marginTop: "0.2cm", width: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm", marginTop: "10px", width: "100%" }}>
               {settings.ceremonie_ora && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
                   <ChurchIcon color={c.muted} />
@@ -536,7 +534,7 @@ function InvitatieContent() {
             </div>
 
             {/* ─── Script Closing ─── */}
-            <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "0.3cm" }}>
+            <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "10px" }}>
               {getAsteptamLineShort(audience)}
             </p>
 
