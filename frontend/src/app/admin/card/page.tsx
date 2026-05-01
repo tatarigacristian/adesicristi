@@ -72,12 +72,18 @@ function darkenHex(hex: string, amount: number): string {
   return `#${Math.round(r * f).toString(16).padStart(2, "0")}${Math.round(g * f).toString(16).padStart(2, "0")}${Math.round(b * f).toString(16).padStart(2, "0")}`;
 }
 
-/* ─── SVG Corner Ornament (inline in CSS via background) ─── */
-function cornerSvg(color: string) {
-  const encoded = encodeURIComponent(
-    `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke="${color}" stroke-width="0.8"/><path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke="${color}" stroke-width="0.6"/><path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke="${color}" stroke-width="0.5" opacity="0.6"/><circle cx="8" cy="8" r="1.5" fill="${color}" opacity="0.5"/></svg>`
+type CornerPos = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+function CornerOrnament({ position, color }: { position: CornerPos; color: string }) {
+  return (
+    <div className={`corner-ornament ${position}`}>
+      <svg viewBox="0 0 80 80" style={{ width: "100%", height: "100%", display: "block" }} xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke={color} strokeWidth="2" />
+        <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke={color} strokeWidth="1.5" />
+        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke={color} strokeWidth="1" opacity="0.6" />
+        <circle cx="8" cy="8" r="3" fill={color} opacity="0.5" />
+      </svg>
+    </div>
   );
-  return `url("data:image/svg+xml,${encoded}")`;
 }
 
 function CardFront({
@@ -106,28 +112,28 @@ function CardFront({
   return (
     <div className="card-face card-front">
       <div className="card-inner" style={{ flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0.3cm 0.8cm", gap: 0 }}>
-        <div className="corner-ornament top-left" />
-        <div className="corner-ornament top-right" />
-        <div className="corner-ornament bottom-left" />
-        <div className="corner-ornament bottom-right" />
+        <CornerOrnament position="top-left" color={accent} />
+        <CornerOrnament position="top-right" color={accent} />
+        <CornerOrnament position="bottom-left" color={accent} />
+        <CornerOrnament position="bottom-right" color={accent} />
 
         {/* Row: monogram + divider + QR */}
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%", flex: 1, gap: "0.5cm" }}>
 
           {/* Left side - Monogram + text */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
-            <div style={{ position: "relative", width: 80, height: 80 }}>
-              <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }} xmlns="http://www.w3.org/2000/svg">
-                <circle cx="80" cy="80" r="72" stroke={accent} strokeWidth="0.7" fill="none" opacity="0.5" />
-                <circle cx="80" cy="80" r="68" stroke={accent} strokeWidth="0.4" fill="none" opacity="0.3" />
+            <div style={{ width: 80, height: 80 }}>
+              <svg width="80" height="80" viewBox="0 0 160 160" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
+                <circle cx="80" cy="80" r="72" stroke={accent} strokeWidth="1.5" fill="none" opacity="0.5" />
+                <circle cx="80" cy="80" r="68" stroke={accent} strokeWidth="1" fill="none" opacity="0.3" />
                 <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={accent} opacity="0.5" />
                 <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={accent} opacity="0.5" />
+                <text x="80" y="80" textAnchor="middle" dominantBaseline="central" fontFamily="var(--font-cormorant), 'Cormorant Garamond', serif" fontSize="44" fontWeight="300" fill={text}>
+                  <tspan>{initialMireasa}</tspan>
+                  <tspan dx="4" fontFamily="var(--font-script), 'Alex Brush', cursive" fontSize="26" fill={muted}>&amp;</tspan>
+                  <tspan dx="4">{initialMire}</tspan>
+                </text>
               </svg>
-              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 300, color: text }}>{initialMireasa}</span>
-                <span style={{ fontFamily: "'Alex Brush', cursive", fontSize: "0.8rem", color: muted }}>&amp;</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 300, color: text }}>{initialMire}</span>
-              </div>
             </div>
             <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.1cm" }}>Ne căsătorim!</p>
           </div>
@@ -220,12 +226,12 @@ function CardBack({
   return (
     <div className="card-face card-back">
       <div className="card-inner" style={{ paddingBottom: "0.3cm" }}>
-        <div className="corner-ornament top-left" />
-        <div className="corner-ornament top-right" />
-        <div className="corner-ornament bottom-left" />
-        <div className="corner-ornament bottom-right" />
+        <CornerOrnament position="top-left" color={accent} />
+        <CornerOrnament position="top-right" color={accent} />
+        <CornerOrnament position="bottom-left" color={accent} />
+        <CornerOrnament position="bottom-right" color={accent} />
 
-        <p className="card-label" style={{ marginBottom: "0.1cm" }}>Invitație</p>
+        <p className="card-label" style={{ marginBottom: "10px" }}>Invitație</p>
 
         {/* Heart divider */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: "0.2cm" }}>
@@ -237,7 +243,7 @@ function CardBack({
         </div>
 
         <p className="card-greeting">
-          {getGreetingShort(audience)} {guestNames},
+          {getGreetingShort(audience, guest.slug)} {guestNames},
         </p>
 
         <p className="card-message">{introText}</p>
@@ -256,7 +262,7 @@ function CardBack({
         <div className="card-back-footer" style={{ marginTop: "auto" }}>
           <p className="card-back-names">{mireasa} & {mire}</p>
           {(settings.nas_prenume || settings.nasa_prenume) && (
-            <p className="card-nasi" style={{ marginBottom: 0, marginTop: "0.03cm" }}>
+            <p className="card-nasi" style={{ marginBottom: 0, marginTop: "10px" }}>
               împreună cu nașii {settings.nasa_prenume} & {settings.nas_prenume}{" "}
               {settings.nasa_nume === settings.nas_nume
                 ? settings.nasa_nume
@@ -289,13 +295,9 @@ function buildStyles(s: WeddingSettings | null) {
   const bgOuter = darkenHex(main, 5);
   const bgCard = lightenHex(main, 30);
 
-  const cornerImg = cornerSvg(button);
-
   return `
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Alex+Brush&family=Montserrat:wght@300;400;500;600&display=swap');
-
     .card-page-root {
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-montserrat), 'Montserrat', sans-serif;
     }
 
     .card-page-root .print-page {
@@ -318,7 +320,7 @@ function buildStyles(s: WeddingSettings | null) {
       padding: 0.45rem 1rem;
       border-radius: 0.5rem;
       font-size: 0.8rem;
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-montserrat), 'Montserrat', sans-serif;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s;
@@ -377,9 +379,6 @@ function buildStyles(s: WeddingSettings | null) {
       position: absolute;
       width: 22px;
       height: 22px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-image: ${cornerImg};
     }
     .card-page-root .corner-ornament.top-left     { top: 2px; left: 2px; }
     .card-page-root .corner-ornament.top-right    { top: 2px; right: 2px; transform: scaleX(-1); }
@@ -388,7 +387,7 @@ function buildStyles(s: WeddingSettings | null) {
 
     /* Front card */
     .card-page-root .card-label {
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-montserrat), 'Montserrat', sans-serif;
       font-size: 0.35rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
@@ -398,7 +397,7 @@ function buildStyles(s: WeddingSettings | null) {
     }
 
     .card-page-root .card-couple-names {
-      font-family: 'Alex Brush', cursive;
+      font-family: var(--font-script), 'Alex Brush', cursive;
       font-size: 1.5rem;
       color: ${text};
       font-weight: 400;
@@ -417,7 +416,7 @@ function buildStyles(s: WeddingSettings | null) {
     }
 
     .card-page-root .card-guest-name {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
       font-size: 0.5rem;
       color: ${text};
       font-weight: 500;
@@ -426,7 +425,7 @@ function buildStyles(s: WeddingSettings | null) {
     }
 
     .card-page-root .card-date {
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-montserrat), 'Montserrat', sans-serif;
       font-size: 0.33rem;
       color: ${muted};
       font-weight: 400;
@@ -440,14 +439,14 @@ function buildStyles(s: WeddingSettings | null) {
     }
 
     .card-page-root .card-greeting {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
       font-size: 0.5rem;
       color: ${text};
       font-weight: 500;
       margin-bottom: 0.05cm;
     }
     .card-page-root .card-nasi {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
       font-size: 0.38rem;
       color: ${muted};
       font-weight: 400;
@@ -456,7 +455,7 @@ function buildStyles(s: WeddingSettings | null) {
     }
 
     .card-page-root .card-message {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
       font-size: 0.42rem;
       color: ${lightenHex(text, 30)};
       font-weight: 300;
@@ -464,7 +463,7 @@ function buildStyles(s: WeddingSettings | null) {
       line-height: 1.6;
       text-align: center;
       max-width: 7cm;
-      margin-bottom: 0.15cm;
+      margin-bottom: 10px;
     }
 
     .card-page-root .card-events-row {
@@ -480,14 +479,14 @@ function buildStyles(s: WeddingSettings | null) {
       flex: 1;
     }
     .card-page-root .card-event-time {
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-montserrat), 'Montserrat', sans-serif;
       font-size: 0.3rem;
       font-weight: 500;
       color: ${text};
       letter-spacing: 0.05em;
     }
     .card-page-root .card-event-address {
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-montserrat), 'Montserrat', sans-serif;
       font-size: 0.24rem;
       color: ${muted};
       text-align: center;
@@ -499,7 +498,7 @@ function buildStyles(s: WeddingSettings | null) {
       text-align: center;
     }
     .card-page-root .card-back-names {
-      font-family: 'Alex Brush', cursive;
+      font-family: var(--font-script), 'Alex Brush', cursive;
       font-size: 0.85rem;
       color: ${text};
     }
@@ -810,7 +809,8 @@ function CardPageContent() {
         <div
           className="cards-container"
           ref={printRef}
-          style={{ background: settings.color_main || "#FDF8F7", padding: "5px" }}
+          lang="ro"
+          style={{ background: settings.color_main || "#FDF8F7", padding: "5px", fontSynthesis: "none", textRendering: "geometricPrecision" }}
         >
           <CardFront guest={guest} partner={partner} settings={settings} qrDataUrl={qrDataUrl} />
           <CardBack guest={guest} partner={partner} settings={settings} />

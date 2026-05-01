@@ -1,32 +1,40 @@
-import { toPng } from "html-to-image";
-
-const isIOS =
-  typeof navigator !== "undefined" &&
-  /iPad|iPhone|iPod/.test(navigator.userAgent);
+import html2canvas from "html2canvas";
 
 /**
  * Generates a PNG data URL from an HTML element.
- * On iOS Safari, does a warm-up render first to ensure embedded images
- * (base64 QR codes) and thin CSS elements (gradients, borders) are captured.
+ * Uses html2canvas (canvas fillText) so fonts render identically to the live DOM,
+ * including Romanian comma-below diacritics from latin-ext italic subsets.
  */
 export async function safeToPng(
   element: HTMLElement,
   options: { pixelRatio?: number; skipFonts?: boolean } = {}
 ): Promise<string> {
-  const opts = {
-    pixelRatio: 6,
-    cacheBust: true,
-    skipFonts: false,
-    skipAutoScale: false,
-    preferredFontFormat: "woff2" as const,
-    ...options,
-  };
+  const scale = options.pixelRatio ?? 6;
 
-  if (isIOS) {
-    // Warm-up renders — forces Safari to rasterize all resources (fonts + images)
-    await toPng(element, opts).catch(() => {});
-    await toPng(element, opts).catch(() => {});
+  if (typeof document !== "undefined" && document.fonts) {
+    const roDiacritics = "ăâîșțĂÂÎȘȚ";
+    const families = ["Cormorant Garamond", "Montserrat", "Alex Brush", "Lora"];
+    const weights = ["300", "400", "500", "600"];
+    const styles = ["normal", "italic"];
+    await Promise.all(
+      families.flatMap((f) =>
+        weights.flatMap((w) =>
+          styles.map((s) =>
+            document.fonts.load(`${s} ${w} 1em "${f}"`, roDiacritics).catch(() => {})
+          )
+        )
+      )
+    );
+    await document.fonts.ready;
   }
 
-  return toPng(element, opts);
+  const canvas = await html2canvas(element, {
+    scale,
+    useCORS: true,
+    allowTaint: false,
+    backgroundColor: null,
+    logging: false,
+  });
+
+  return canvas.toDataURL("image/png");
 }
