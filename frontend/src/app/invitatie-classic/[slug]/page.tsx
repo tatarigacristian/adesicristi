@@ -1,13 +1,15 @@
 "use client";
 
-import { Suspense, useEffect, useState, useRef, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { safeToPng } from "@/utils/safari-png";
+import { use, useEffect, useState } from "react";
 import { getInvitationAudience, getInvitationLineUpper, getAlaturiLine, getAsteptamLineShort } from "@/utils/invitation-text";
-import { ShareNetwork, ArrowSquareOut, Church, Bus, Champagne } from "@phosphor-icons/react";
+import { Church, Bus, Champagne } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://adesicristi.vercel.app";
+
+interface PartnerData {
+  nume: string;
+  prenume: string;
+}
 
 interface GuestData {
   id: number;
@@ -16,9 +18,9 @@ interface GuestData {
   plus_one: boolean;
   intro_short: string | null;
   intro_long: string | null;
-  slug: string | null;
-  partner_id: number | null;
   sex: "M" | "F" | null;
+  partner: PartnerData | null;
+  children?: { id: number; nume: string; prenume: string }[];
 }
 
 interface WeddingSettings {
@@ -57,7 +59,7 @@ interface WeddingSettings {
   color_text: string | null;
 }
 
-/* ─── Color utilities ─── */
+/* --- Color utilities --- */
 function hexToRgb(hex: string) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -91,7 +93,7 @@ function buildPalette(settings: WeddingSettings) {
   };
 }
 
-/* ─── SVG Decorative Elements ─── */
+/* --- SVG Decorative Elements --- */
 function CornerOrnament({ style, color }: { style: React.CSSProperties; color: string }) {
   return (
     <svg style={{ position: "absolute", ...style }} viewBox="0 0 80 80" width="45" height="45" xmlns="http://www.w3.org/2000/svg">
@@ -137,111 +139,48 @@ function VenueIcon({ color }: { color: string }) {
   return <Champagne size={18} weight="duotone" color={color} />;
 }
 
-function InvitatieV2Content() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const guestId = searchParams.get("guestId");
-  const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+export default function PublicInvitatieV2Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
 
   const [guest, setGuest] = useState<GuestData | null>(null);
-  const [partner, setPartner] = useState<GuestData | null>(null);
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [loading, setLoading] = useState(true);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const generatePngBlob = useCallback(async (): Promise<Blob | null> => {
-    if (!cardRef.current) return null;
-    const dataUrl = await safeToPng(cardRef.current);
-    const res = await fetch(dataUrl);
-    return res.blob();
-  }, []);
-
-  const handleSavePng = useCallback(async () => {
-    if (!cardRef.current || !guest) return;
-    try {
-      const dataUrl = await safeToPng(cardRef.current);
-      const link = document.createElement("a");
-      link.download = `invitatie-v2-${guest.prenume}-${guest.nume}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error("Failed to save PNG:", err);
-    }
-  }, [guest]);
-
-  const handleShare = useCallback(async () => {
-    if (!guest) return;
-    const fileName = `invitatie-v2-${guest.prenume}-${guest.nume}.png`;
-    const inviteUrl = guest.slug ? `${SITE_URL}/${guest.slug}` : SITE_URL;
-    const text = `Invitatie pentru ${guest.prenume} ${guest.nume}`;
-
-    try {
-      const blob = await generatePngBlob();
-      if (blob && navigator.share && navigator.canShare) {
-        const file = new File([blob], fileName, { type: "image/png" });
-        const shareData = { files: [file], text };
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData);
-          return;
-        }
-      }
-      if (navigator.share) {
-        await navigator.share({ title: text, text: `${text}\n${inviteUrl}`, url: inviteUrl });
-        return;
-      }
-    } catch (err) {
-      if ((err as DOMException)?.name === "AbortError") return;
-    }
-    try {
-      await navigator.clipboard.writeText(inviteUrl);
-      alert("Link copiat în clipboard.");
-    } catch {
-      window.open(`https://wa.me/?text=${encodeURIComponent(text + "\n" + inviteUrl)}`, "_blank");
-    }
-  }, [guest, generatePngBlob]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!guestId || !token) return;
-
     async function load() {
       try {
-        const [guestsRes, settingsRes] = await Promise.all([
-          fetch(`${API_URL}/api/admin/guests`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+        const [guestRes, settingsRes] = await Promise.all([
+          fetch(`${API_URL}/api/guests/${slug}`),
           fetch(`${API_URL}/api/wedding-settings`),
         ]);
 
-        if (settingsRes.ok) setSettings(await settingsRes.json());
-
-        if (guestsRes.ok) {
-          const guests: GuestData[] = await guestsRes.json();
-          const found = guests.find((g) => g.id === parseInt(guestId!));
-          if (found) {
-            setGuest(found);
-            if (found.partner_id) {
-              setPartner(guests.find((g) => g.id === found.partner_id) || null);
-            }
-          }
+        if (!guestRes.ok) {
+          setError("Invitația nu a fost găsită.");
+          return;
         }
+
+        setGuest(await guestRes.json());
+        if (settingsRes.ok) setSettings(await settingsRes.json());
       } catch {
-        // silently fail
+        setError("A apărut o eroare. Vă rugăm încercați din nou.");
       } finally {
         setLoading(false);
       }
     }
 
     load();
-  }, [guestId, token]);
+  }, [slug]);
 
   if (loading) {
     return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se incarca...</p>;
   }
 
-  if (!guest || !settings) {
-    return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Invitatul nu a fost gasit.</p>;
+  if (error || !guest || !settings) {
+    return <p style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>{error || "Invitația nu a fost găsită."}</p>;
   }
 
+  const partner = guest.partner;
   const mireasa = settings.nume_mireasa || "Ade";
   const mire = settings.nume_mire || "Cristi";
   const initialMireasa = mireasa.charAt(0).toUpperCase();
@@ -261,7 +200,7 @@ function InvitatieV2Content() {
     : "";
 
   const c = buildPalette(settings);
-  const audience = getInvitationAudience(!!partner, guest.sex ?? null);
+  const audience = getInvitationAudience(!!partner || !!(guest.children && guest.children.length > 0), guest.sex ?? null);
 
   const f = {
     mont: "'Montserrat', sans-serif" as const,
@@ -285,7 +224,7 @@ function InvitatieV2Content() {
 
   const hasParinti = parintiMireasaNames || parintiMireasaFallback || parintiMireNames || parintiMireFallback;
 
-  // Nasi — single line: "Prenume1 și Prenume2 Nume"
+  // Nasi
   const nasiText = settings.nas_prenume && settings.nasa_prenume
     ? settings.nasa_nume === settings.nas_nume
       ? `${settings.nasa_prenume} și ${settings.nas_prenume} ${settings.nas_nume}`
@@ -298,45 +237,11 @@ function InvitatieV2Content() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Alex+Brush&family=Montserrat:wght@300;400;500;600&display=swap');
         .inv-root .inv-page { display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; gap: 1.5rem; }
-        .inv-root .inv-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-        .inv-root .inv-btn { padding: 0.45rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-family: 'Montserrat', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; background: ${c.secondary}; color: #fff; }
-        .inv-root .inv-btn:hover { background: ${c.primary}; }
-        .inv-root .inv-btn-secondary { background: ${c.bg}; color: ${c.secondary}; border: 1px solid ${c.ornament}; }
-        .inv-root .inv-btn-secondary:hover { background: #f5f0ea; }
-        @media print {
-          .inv-root .inv-actions { display: none !important; }
-          .inv-root .inv-page { padding: 0; }
-        }
       `}</style>
 
       <div className="inv-page">
-        <div className="inv-actions">
-          <select
-            className="inv-btn inv-btn-secondary"
-            value="invitatie-v2"
-            onChange={(e) => router.push(`/admin/${e.target.value}?guestId=${guestId}`)}
-          >
-            <option value="card">Card</option>
-            <option value="invitatie">Invitatie v1</option>
-            <option value="invitatie-v2">Invitatie v2</option>
-          </select>
-          <button className="inv-btn" onClick={handleSavePng}>Salveaza ca PNG</button>
-          <button className="inv-btn inv-btn-secondary" onClick={handleShare} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <ShareNetwork size={16} weight="bold" />
-            Share
-          </button>
-          {guest?.slug && (
-            <button className="inv-btn inv-btn-secondary" onClick={() => window.open(`/invitatie-v2/${guest.slug}`, '_blank')} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <ArrowSquareOut size={16} weight="bold" />
-              Pagina publica
-            </button>
-          )}
-          <button className="inv-btn inv-btn-secondary" onClick={() => window.close()}>Inchide</button>
-        </div>
-
-        {/* ─── Outer Card with crop marks for cutting guide ─── */}
+        {/* --- Outer Card with crop marks for cutting guide --- */}
         <div
-          ref={cardRef}
           style={{ position: "relative", padding: "5px", background: "transparent" }}
         >
           {/* Crop marks: 4 dotted lines aligned with solid border, extending 5px beyond corners */}
@@ -354,7 +259,7 @@ function InvitatieV2Content() {
               position: "relative",
             }}
           >
-          {/* ─── Inner Border ─── */}
+          {/* --- Inner Border --- */}
           <div
             style={{
               border: `1px solid ${c.ornament}`,
@@ -400,7 +305,7 @@ function InvitatieV2Content() {
               <span style={{ display: "block", width: 40, height: 0.5, background: c.ornament, opacity: 0.4 }} />
             </div>
 
-            {/* 3. Nași first, then Parents */}
+            {/* 3. Nasi first, then Parents */}
             {hasNasi && (
               <div style={{ textAlign: "center", marginBottom: "0.1cm" }}>
                 <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
@@ -451,29 +356,15 @@ function InvitatieV2Content() {
               </>
             )}
 
-            {/* 4. "Cu drag te/vă invităm" */}
+            {/* 4. "Cu drag te/va invitam" */}
             <p style={{ fontSize: "0.64rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.ornament, marginTop: "0.1cm" }}>
               {getInvitationLineUpper(audience)}
             </p>
 
-            {/* "Să fii/fiți alături de noi" */}
+            {/* "Sa fii/fiti alaturi de noi" */}
             <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic", paddingBottom: "5px" }}>
               {getAlaturiLine(audience)}
             </p>
-
-            {/* 5. "la celebrarea căsătoriei noastre" — replacing personalized text */}
-            <div style={{ margin: "0.1cm 0" }}>
-              <Flourish width={180} color={c.ornament} />
-            </div>
-
-            <p style={{ fontSize: "0.69rem", fontFamily: f.serif, fontWeight: 400, fontStyle: "italic", color: c.secondary, letterSpacing: "0.05em", paddingBottom: "5px" }}>
-              la celebrarea căsătoriei noastre
-            </p>
-
-            {/* Flourish */}
-            <div style={{ margin: "0.1cm 0" }}>
-              <Flourish width={180} color={c.ornament} />
-            </div>
 
             {/* 6. Date row (rendered as SVG for reliable PNG alignment) */}
             <div style={{ width: "100%", display: "flex", justifyContent: "center", paddingBottom: "5px" }}>
@@ -548,7 +439,7 @@ function InvitatieV2Content() {
               </div>
             )}
 
-            {/* Contact — phone numbers */}
+            {/* Contact -- phone numbers */}
             {(settings.telefon_mireasa || settings.telefon_mire) && (
               <div style={{ marginTop: "0.15cm", paddingTop: "5px", width: "80%" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>
@@ -573,13 +464,5 @@ function InvitatieV2Content() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function InvitatieV2Page() {
-  return (
-    <Suspense fallback={<div style={{ textAlign: "center", padding: "2rem", fontFamily: "sans-serif", color: "#999" }}>Se incarca...</div>}>
-      <InvitatieV2Content />
-    </Suspense>
   );
 }

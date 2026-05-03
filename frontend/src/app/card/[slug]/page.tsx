@@ -200,7 +200,7 @@ function CardBack({
     return guest.prenume;
   })();
 
-  const audience = getInvitationAudience(!!partner, guest.sex ?? null);
+  const audience = getInvitationAudience(!!partner || !!(guest.children && guest.children.length > 0), guest.sex ?? null);
   const introText = guest.intro_short
     ? guest.intro_short
     : getDefaultIntroShort(audience);

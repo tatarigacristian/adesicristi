@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { getInvitationAudience, getGreeting, getInvitationLineUpper, getAlaturiLine, getAsteptamLineShort, getDefaultInvitationLines } from "@/utils/invitation-text";
+import { getInvitationAudience, getGreeting, getInvitationLineUpper, getAlaturiLine, getAsteptamLineShort, getDefaultIntroShort } from "@/utils/invitation-text";
 import { Church, Bus, Champagne } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
@@ -139,7 +139,7 @@ function VenueIcon({ color }: { color: string }) {
   return <Champagne size={18} weight="duotone" color={color} />;
 }
 
-export default function PublicInvitatiePage({ params }: { params: Promise<{ slug: string }> }) {
+export default function PublicInvitatieV2Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
 
   const [guest, setGuest] = useState<GuestData | null>(null);
@@ -199,11 +199,8 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
     ? new Date(settings.confirmare_pana_la).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })
     : "";
 
-  const audience = getInvitationAudience(!!partner, guest.sex ?? null);
-  const introLines = guest.intro_short
-    ? guest.intro_short.split("\n").filter((l) => l.trim())
-    : getDefaultInvitationLines(audience);
   const c = buildPalette(settings);
+  const audience = getInvitationAudience(!!partner || !!(guest.children && guest.children.length > 0), guest.sex ?? null);
 
   const f = {
     mont: "'Montserrat', sans-serif" as const,
@@ -212,13 +209,20 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
     upper: "uppercase" as const,
   };
 
-  // Parents
-  const parintiMireasa = settings.tata_mireasa_prenume
-    ? `${settings.mama_mireasa_prenume} și ${settings.tata_mireasa_prenume} ${settings.tata_mireasa_nume}`
-    : settings.parinti_mireasa;
-  const parintiMire = settings.tata_mire_prenume
-    ? `${settings.mama_mire_prenume} și ${settings.tata_mire_prenume} ${settings.tata_mire_nume}`
-    : settings.parinti_mire;
+  // Parents — split into first names line + family name line
+  const parintiMireasaNames = settings.tata_mireasa_prenume
+    ? `${settings.mama_mireasa_prenume} și ${settings.tata_mireasa_prenume}`
+    : null;
+  const parintiMireasaFamilie = settings.tata_mireasa_nume || null;
+  const parintiMireasaFallback = settings.parinti_mireasa;
+
+  const parintiMireNames = settings.tata_mire_prenume
+    ? `${settings.mama_mire_prenume} și ${settings.tata_mire_prenume}`
+    : null;
+  const parintiMireFamilie = settings.tata_mire_nume || null;
+  const parintiMireFallback = settings.parinti_mire;
+
+  const hasParinti = parintiMireasaNames || parintiMireasaFallback || parintiMireNames || parintiMireFallback;
 
   // Nasi
   const nasiText = settings.nas_prenume && settings.nasa_prenume
@@ -226,6 +230,7 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
       ? `${settings.nasa_prenume} și ${settings.nas_prenume} ${settings.nas_nume}`
       : `${settings.nasa_prenume} ${settings.nasa_nume} și ${settings.nas_prenume} ${settings.nas_nume}`
     : null;
+  const hasNasi = !!nasiText;
 
   return (
     <div className="inv-root" style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -276,7 +281,7 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
             <CornerOrnament color={c.ornament} style={{ bottom: -2, left: -2, transform: "scaleY(-1)" }} />
             <CornerOrnament color={c.ornament} style={{ bottom: -2, right: -2, transform: "scale(-1, -1)" }} />
 
-            {/* --- Monogram (large, central) --- */}
+            {/* 1. Monogram (large, central) */}
             <div style={{ marginBottom: "0.2cm", marginTop: "0.1cm" }}>
               <svg width="140" height="140" viewBox="0 0 160 160" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
                 <circle cx="80" cy="80" r="72" stroke={c.ornament} strokeWidth="0.5" fill="none" />
@@ -291,7 +296,7 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
               </svg>
             </div>
 
-            {/* --- Heart divider --- */}
+            {/* 2. Heart divider */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: "0.15cm" }}>
               <span style={{ display: "block", width: 40, height: 0.5, background: c.ornament, opacity: 0.4 }} />
               <svg viewBox="0 0 50 48" style={{ width: 14, height: 14 }} fill="none" stroke={c.ornament} xmlns="http://www.w3.org/2000/svg">
@@ -300,102 +305,32 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
               <span style={{ display: "block", width: 40, height: 0.5, background: c.ornament, opacity: 0.4 }} />
             </div>
 
-            {/* --- Guest greeting --- */}
-            <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 400, color: c.primary, letterSpacing: "0.03em" }}>
-              {getGreeting(audience, true, slug)} {(() => {
-                const childNames = guest.children && guest.children.length > 0 ? guest.children.map((c) => c.prenume) : [];
-                if (partner) {
-                  const same = guest.nume === partner.nume;
-                  const allNames = [guest.prenume, partner.prenume, ...childNames];
-                  const last = allNames.pop()!;
-                  return same
-                    ? `${allNames.join(", ")} și ${last} ${guest.nume}`
-                    : `${allNames.join(", ")} și ${last}`;
-                }
-                return `${guest.prenume} ${guest.nume}`;
-              })()},
-            </p>
-
-            {/* --- "Cu drag te/va invitam" --- */}
-            <p style={{ fontSize: "0.64rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.ornament, marginTop: "0.1cm" }}>
-              {getInvitationLineUpper(audience)}
-            </p>
-
-            {/* --- Script heading --- */}
-            <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic" }}>
-              {getAlaturiLine(audience)}
-            </p>
-
-            {/* --- Flourish --- */}
-            <div style={{ marginTop: "5px", marginBottom: "0.1cm" }}>
-              <Flourish width={180} color={c.ornament} />
+            {/* 3. Nasi first, then Parents */}
+            {/* Guest greeting (Dragii noștri / names on next line) */}
+            <div style={{ textAlign: "center", marginBottom: "0.15cm" }}>
+              <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 400, color: c.primary, letterSpacing: "0.03em", margin: 0 }}>
+                {getGreeting(audience, true, slug)},
+              </p>
+              <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 400, color: c.primary, letterSpacing: "0.03em", margin: 0 }}>
+                {(() => {
+                  const childNames = guest.children && guest.children.length > 0 ? guest.children.map((c) => c.prenume) : [];
+                  if (partner) {
+                    const same = guest.nume === partner.nume;
+                    const allNames = [guest.prenume, partner.prenume, ...childNames];
+                    const last = allNames.pop()!;
+                    return same
+                      ? `${allNames.join(", ")} și ${last} ${guest.nume}`
+                      : `${allNames.join(", ")} și ${last}`;
+                  }
+                  return `${guest.prenume} ${guest.nume}`;
+                })()}
+              </p>
             </div>
 
-            {/* --- Invitation Text --- */}
-            <div style={{ lineHeight: 1.8, maxWidth: "10cm" }}>
-              {introLines.map((line, i) => (
-                <p key={i} style={{ fontSize: "0.61rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 300, color: c.secondary }}>
-                  {line}
-                </p>
-              ))}
-            </div>
-
-            {/* --- Parents (single title, two columns) --- */}
-            {(parintiMireasa || parintiMire) && (
-              <div style={{ marginTop: "0.2cm", width: "100%" }}>
-                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.1cm", textAlign: "center" }}>
-                  ÎMPREUNĂ CU PĂRINȚII NOȘTRI
-                </p>
-                <div style={{ display: "flex", justifyContent: "center", gap: "1.2cm" }}>
-                  {parintiMireasa && (
-                    <div style={{ textAlign: "center", flex: 1 }}>
-                      {settings.tata_mireasa_prenume ? (
-                        <>
-                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                            {settings.mama_mireasa_prenume} și {settings.tata_mireasa_prenume}
-                          </p>
-                          {settings.tata_mireasa_nume && (
-                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                              {settings.tata_mireasa_nume}
-                            </p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                          {parintiMireasa}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                  {parintiMire && (
-                    <div style={{ textAlign: "center", flex: 1 }}>
-                      {settings.tata_mire_prenume ? (
-                        <>
-                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                            {settings.mama_mire_prenume} și {settings.tata_mire_prenume}
-                          </p>
-                          {settings.tata_mire_nume && (
-                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                              {settings.tata_mire_nume}
-                            </p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                          {parintiMire}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* --- Nasi --- */}
-            {nasiText && (
-              <div style={{ textAlign: "center", marginTop: "0.15cm" }}>
-                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
-                  ȘI ALĂTURI DE NAȘII
+            {hasNasi && (
+              <div style={{ textAlign: "center", marginBottom: "0.1cm" }}>
+                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
+                  ALĂTURI DE NAȘII
                 </p>
                 <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
                   {nasiText}
@@ -403,13 +338,75 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
               </div>
             )}
 
-            {/* --- Flourish --- */}
-            <div style={{ margin: "0.15cm 0" }}>
+            {hasParinti && (
+              <>
+                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
+                  ȘI ÎMPREUNĂ CU PĂRINȚII
+                </p>
+                {/* Parents block rendered as SVG for reliable PNG separator alignment */}
+                <div style={{ width: "100%", display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>
+                  <svg width="340" height="50" viewBox="0 0 340 50" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
+                    {/* Parent 1 — Mireasa (centered at x=170 if alone, x=85 if both present) */}
+                    {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireasaNames ? (
+                      <>
+                        <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="18" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireasaNames}</text>
+                        {parintiMireasaFamilie && (
+                          <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="38" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireasaFamilie}</text>
+                        )}
+                      </>
+                    ) : (
+                      <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="28" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireasaFallback}</text>
+                    ))}
+                    {/* Separator (only when both parents present) */}
+                    {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireNames || parintiMireFallback) && (
+                      <line x1="170" y1="5" x2="170" y2="45" stroke={c.ornament} strokeWidth="0.5" strokeOpacity="0.4" />
+                    )}
+                    {/* Parent 2 — Mire (centered at x=170 if alone, x=255 if both present) */}
+                    {(parintiMireNames || parintiMireFallback) && (parintiMireNames ? (
+                      <>
+                        <text x={(parintiMireasaNames || parintiMireasaFallback) ? 255 : 170} y="18" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireNames}</text>
+                        {parintiMireFamilie && (
+                          <text x={(parintiMireasaNames || parintiMireasaFallback) ? 255 : 170} y="38" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireFamilie}</text>
+                        )}
+                      </>
+                    ) : (
+                      <text x={(parintiMireasaNames || parintiMireasaFallback) ? 255 : 170} y="28" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireFallback}</text>
+                    ))}
+                  </svg>
+                </div>
+              </>
+            )}
+
+            {/* 4. "Cu drag te/va invitam" */}
+            <p style={{ fontSize: "0.64rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 500, color: c.ornament, marginTop: "0.1cm" }}>
+              {getInvitationLineUpper(audience)}
+            </p>
+
+            {/* "Sa fii/fiti alaturi de noi" */}
+            <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic" }}>
+              {getAlaturiLine(audience)}
+            </p>
+
+            {/* 5. Personalized short text (intro_short with fallback) — tight unit with ornaments */}
+            <div style={{ marginTop: "0.1cm" }}>
               <Flourish width={180} color={c.ornament} />
             </div>
 
-            {/* --- Date row (rendered as SVG for reliable PNG alignment) --- */}
-            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            <div>
+              {(guest.intro_short || getDefaultIntroShort(audience)).split("\n").filter((l) => l.trim()).map((line, i) => (
+                <p key={i} style={{ fontSize: "0.69rem", fontFamily: f.serif, fontWeight: 400, fontStyle: "italic", color: c.secondary, letterSpacing: "0.05em", margin: 0 }}>
+                  {line}
+                </p>
+              ))}
+            </div>
+
+            {/* Flourish */}
+            <div style={{ marginBottom: "0.1cm" }}>
+              <Flourish width={180} color={c.ornament} />
+            </div>
+
+            {/* 6. Date row (rendered as SVG for reliable PNG alignment) */}
+            <div style={{ width: "100%", display: "flex", justifyContent: "center", paddingBottom: "5px" }}>
               <svg width="240" height="20" viewBox="0 0 240 20" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
                 <text x="90" y="15" textAnchor="end" fontFamily={f.mont} fontSize="12" fontWeight="600" style={{ letterSpacing: "0.3em" }} fill={c.primary}>{dayOfWeek}</text>
                 <line x1="103" y1="5" x2="103" y2="17" stroke={c.ornament} strokeWidth="1" />
@@ -419,8 +416,8 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
               </svg>
             </div>
 
-            {/* --- Events --- */}
-            <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm", marginTop: "10px", width: "100%" }}>
+            {/* Events */}
+            <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm", marginTop: "0.2cm", width: "100%" }}>
               {settings.ceremonie_ora && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
                   <ChurchIcon color={c.muted} />
@@ -464,12 +461,12 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
               )}
             </div>
 
-            {/* --- Script Closing --- */}
-            <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "10px" }}>
+            {/* Script Closing */}
+            <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "0.3cm", paddingBottom: "5px" }}>
               {getAsteptamLineShort(audience)}
             </p>
 
-            {/* --- RSVP --- */}
+            {/* RSVP */}
             {confirmareDate && (
               <div>
                 <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted, lineHeight: 2 }}>
@@ -481,7 +478,7 @@ export default function PublicInvitatiePage({ params }: { params: Promise<{ slug
               </div>
             )}
 
-            {/* --- Contact — phone numbers --- */}
+            {/* Contact -- phone numbers */}
             {(settings.telefon_mireasa || settings.telefon_mire) && (
               <div style={{ marginTop: "0.15cm", paddingTop: "5px", width: "80%" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>

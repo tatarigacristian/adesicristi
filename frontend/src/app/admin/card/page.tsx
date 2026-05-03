@@ -197,7 +197,7 @@ function CardBack({
     return guest.prenume;
   })();
 
-  const audience = getInvitationAudience(!!partner, guest.sex ?? null);
+  const audience = getInvitationAudience(!!partner || !!(guest.children && guest.children.length > 0), guest.sex ?? null);
   const introText = guest.intro_short
     ? guest.intro_short
     : getDefaultIntroShort(audience);
@@ -729,8 +729,8 @@ function CardPageContent() {
             onChange={(e) => router.push(`/admin/${e.target.value}?guestId=${guestId}`)}
           >
             <option value="card">Card</option>
-            <option value="invitatie">Invitatie v1</option>
-            <option value="invitatie-v2">Invitatie v2</option>
+            <option value="invitatie-classic">Classic</option>
+            <option value="invitatie-personalisat-classic">Personalisat Classic</option>
           </select>
           <div ref={pngMenuRef} style={{ position: "relative", display: "inline-block" }}>
             <button

@@ -513,22 +513,22 @@ export default function GuestsPage() {
             </div>
             <div className="px-5 overflow-y-auto flex-1">
               <div className="flex flex-col gap-4">
-                {/* Invitatie V1 */}
+                {/* Invitatie Classic */}
                 <div className="rounded-lg border border-border-light p-3">
                   <div className="flex items-center gap-2.5 mb-2.5">
                     <FileText size={18} weight="duotone" className="text-button flex-shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-text-heading">Invitatie V1</p>
-                      <p className="text-[10px] text-text-muted">Text personalizat per invitat</p>
+                      <p className="text-sm font-medium text-text-heading">Classic</p>
+                      <p className="text-[10px] text-text-muted">Parinti si nasi, fara text personalizat</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => { window.open(`/admin/invitatie?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
+                    <button onClick={() => { window.open(`/admin/invitatie-classic?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
                       className="flex-1 py-2 rounded-lg text-xs font-medium bg-background-soft hover:bg-border-light transition-colors cursor-pointer text-text-heading">
                       Privat
                     </button>
                     {invitatiePicker.slug && (
-                      <button onClick={() => { window.open(`/invitatie/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
+                      <button onClick={() => { window.open(`/invitatie-classic/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
                         className="flex-1 py-2 rounded-lg text-xs font-medium bg-button/10 hover:bg-button/20 transition-colors cursor-pointer text-button">
                         Public
                       </button>
@@ -536,22 +536,22 @@ export default function GuestsPage() {
                   </div>
                 </div>
 
-                {/* Invitatie V2 */}
+                {/* Invitatie Personalisat Classic */}
                 <div className="rounded-lg border border-border-light p-3">
                   <div className="flex items-center gap-2.5 mb-2.5">
                     <FileText size={18} weight="duotone" className="text-button flex-shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-text-heading">Invitatie V2</p>
-                      <p className="text-[10px] text-text-muted">Parinti si nasi, text generic</p>
+                      <p className="text-sm font-medium text-text-heading">Personalisat Classic</p>
+                      <p className="text-[10px] text-text-muted">Parinti si nasi, cu text personalizat per invitat</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => { window.open(`/admin/invitatie-v2?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
+                    <button onClick={() => { window.open(`/admin/invitatie-personalisat-classic?guestId=${invitatiePicker.id}`, '_blank'); setInvitatiePicker(null); }}
                       className="flex-1 py-2 rounded-lg text-xs font-medium bg-background-soft hover:bg-border-light transition-colors cursor-pointer text-text-heading">
                       Privat
                     </button>
                     {invitatiePicker.slug && (
-                      <button onClick={() => { window.open(`/invitatie-v2/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
+                      <button onClick={() => { window.open(`/invitatie-personalisat-classic/${invitatiePicker.slug}`, '_blank'); setInvitatiePicker(null); }}
                         className="flex-1 py-2 rounded-lg text-xs font-medium bg-button/10 hover:bg-button/20 transition-colors cursor-pointer text-button">
                         Public
                       </button>
