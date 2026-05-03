@@ -50,6 +50,8 @@ interface WeddingSettings {
   petrecere_descriere: string | null;
   confirmare_pana_la: string | null;
   contact_info: string | null;
+  telefon_mireasa: string | null;
+  telefon_mire: string | null;
   color_main: string | null;
   color_second: string | null;
   color_button: string | null;
@@ -575,7 +577,7 @@ function InvitatieContent() {
             {confirmareDate && (
               <div>
                 <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted, lineHeight: 2 }}>
-                  VĂ RUGĂM SĂ NE CONFIRMAȚI PREZENȚA DUMNEAVOASTRĂ
+                  VĂ RUGĂM SĂ NE CONFIRMAȚI PREZENȚA
                 </p>
                 <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted }}>
                   PÂNĂ ÎN DATA DE {confirmareDate.toUpperCase()}.
@@ -583,17 +585,24 @@ function InvitatieContent() {
               </div>
             )}
 
-            {/* ─── Contact ─── */}
-            {settings.contact_info && (
-              <div style={{ marginTop: "0.15cm", width: "80%" }}>
+            {/* ─── Contact — phone numbers ─── */}
+            {(settings.telefon_mireasa || settings.telefon_mire) && (
+              <div style={{ marginTop: "0.15cm", paddingTop: "5px", width: "80%" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>
                   <SmallFlourish color={c.ornament} />
                 </div>
-                {settings.contact_info.split("\n").map((line, i) => (
-                  <p key={i} style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
-                    {line}
-                  </p>
-                ))}
+                <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm" }}>
+                  {settings.telefon_mireasa && (
+                    <p style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
+                      {mireasa}: {settings.telefon_mireasa}
+                    </p>
+                  )}
+                  {settings.telefon_mire && (
+                    <p style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 400, color: c.muted }}>
+                      {mire}: {settings.telefon_mire}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
           </div>

@@ -188,7 +188,7 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
   const ceremonieDateObj = settings.ceremonie_data ? new Date(settings.ceremonie_data) : null;
   const dayOfWeek = ceremonieDateObj
     ? ceremonieDateObj.toLocaleDateString("ro-RO", { weekday: "long" }).toUpperCase()
-    : "SAMBATA";
+    : "SÂMBĂTĂ";
   const dateFormatted = ceremonieDateObj
     ? `${String(ceremonieDateObj.getDate()).padStart(2, "0")}.${String(ceremonieDateObj.getMonth() + 1).padStart(2, "0")}`
     : "00.00";
@@ -281,18 +281,18 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
             <CornerOrnament color={c.ornament} style={{ bottom: -2, right: -2, transform: "scale(-1, -1)" }} />
 
             {/* 1. Monogram (large, central) */}
-            <div style={{ position: "relative", marginBottom: "0.2cm", marginTop: "0.1cm" }}>
-              <svg viewBox="0 0 160 160" style={{ width: 140, height: 140 }} xmlns="http://www.w3.org/2000/svg">
+            <div style={{ marginBottom: "0.2cm", marginTop: "0.1cm" }}>
+              <svg width="140" height="140" viewBox="0 0 160 160" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
                 <circle cx="80" cy="80" r="72" stroke={c.ornament} strokeWidth="0.5" fill="none" />
                 <circle cx="80" cy="80" r="68" stroke={c.ornament} strokeWidth="0.3" fill="none" />
                 <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={c.ornament} opacity="0.7" />
                 <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={c.ornament} opacity="0.7" />
+                <text x="80" y="80" textAnchor="middle" dominantBaseline="central" fontFamily={f.serif} fontSize="49" fontWeight="300" fill={c.primary}>
+                  <tspan>{initialMireasa}</tspan>
+                  <tspan dx="6" fontFamily={f.script} fontSize="27" fill={c.muted}>&amp;</tspan>
+                  <tspan dx="6">{initialMire}</tspan>
+                </text>
               </svg>
-              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", display: "flex", alignItems: "center", gap: "0.3cm" }}>
-                <span style={{ fontFamily: f.serif, fontSize: "2.69rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>{initialMireasa}</span>
-                <span style={{ fontFamily: f.script, fontSize: "1.49rem", color: c.muted }}>&amp;</span>
-                <span style={{ fontFamily: f.serif, fontSize: "2.69rem", fontWeight: 300, color: c.primary, letterSpacing: "0.05em" }}>{initialMire}</span>
-              </div>
             </div>
 
             {/* 2. Heart divider */}
@@ -308,7 +308,7 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
             {hasNasi && (
               <div style={{ textAlign: "center", marginBottom: "0.1cm" }}>
                 <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
-                  ALATURI DE NASII
+                  ALĂTURI DE NAȘII
                 </p>
                 <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
                   {nasiText}
@@ -319,52 +319,38 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
             {hasParinti && (
               <>
                 <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.05cm" }}>
-                  SI IMPREUNA CU PARINTII NOSTRI
+                  ȘI ÎMPREUNĂ CU PĂRINȚII
                 </p>
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.4cm", width: "100%", marginBottom: "0.1cm" }}>
-                  {(parintiMireasaNames || parintiMireasaFallback) && (
-                    <div style={{ textAlign: "center" }}>
-                      {parintiMireasaNames ? (
-                        <>
-                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                            {parintiMireasaNames}
-                          </p>
-                          {parintiMireasaFamilie && (
-                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                              {parintiMireasaFamilie}
-                            </p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                          {parintiMireasaFallback}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                  {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireNames || parintiMireFallback) && (
-                    <div style={{ width: "0.5px", height: "0.8cm", background: c.ornament, opacity: 0.4 }} />
-                  )}
-                  {(parintiMireNames || parintiMireFallback) && (
-                    <div style={{ textAlign: "center" }}>
-                      {parintiMireNames ? (
-                        <>
-                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                            {parintiMireNames}
-                          </p>
-                          {parintiMireFamilie && (
-                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                              {parintiMireFamilie}
-                            </p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                          {parintiMireFallback}
-                        </p>
-                      )}
-                    </div>
-                  )}
+                {/* Parents block rendered as SVG for reliable PNG separator alignment */}
+                <div style={{ width: "100%", display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>
+                  <svg width="340" height="50" viewBox="0 0 340 50" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
+                    {/* Parent 1 — Mireasa (centered at x=170 if alone, x=85 if both present) */}
+                    {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireasaNames ? (
+                      <>
+                        <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="18" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireasaNames}</text>
+                        {parintiMireasaFamilie && (
+                          <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="38" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireasaFamilie}</text>
+                        )}
+                      </>
+                    ) : (
+                      <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="28" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireasaFallback}</text>
+                    ))}
+                    {/* Separator (only when both parents present) */}
+                    {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireNames || parintiMireFallback) && (
+                      <line x1="170" y1="5" x2="170" y2="45" stroke={c.ornament} strokeWidth="0.5" strokeOpacity="0.4" />
+                    )}
+                    {/* Parent 2 — Mire (centered at x=170 if alone, x=255 if both present) */}
+                    {(parintiMireNames || parintiMireFallback) && (parintiMireNames ? (
+                      <>
+                        <text x={(parintiMireasaNames || parintiMireasaFallback) ? 255 : 170} y="18" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireNames}</text>
+                        {parintiMireFamilie && (
+                          <text x={(parintiMireasaNames || parintiMireasaFallback) ? 255 : 170} y="38" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireFamilie}</text>
+                        )}
+                      </>
+                    ) : (
+                      <text x={(parintiMireasaNames || parintiMireasaFallback) ? 255 : 170} y="28" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="400" fontStyle="italic" fill={c.secondary}>{parintiMireFallback}</text>
+                    ))}
+                  </svg>
                 </div>
               </>
             )}
@@ -375,7 +361,7 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
             </p>
 
             {/* "Sa fii/fiti alaturi de noi" */}
-            <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic" }}>
+            <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic", paddingBottom: "5px" }}>
               {getAlaturiLine(audience)}
             </p>
 
@@ -384,8 +370,8 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
               <Flourish width={180} color={c.ornament} />
             </div>
 
-            <p style={{ fontSize: "0.69rem", fontFamily: f.serif, fontWeight: 400, fontStyle: "italic", color: c.secondary, letterSpacing: "0.05em" }}>
-              la celebrarea casatoriei noastre
+            <p style={{ fontSize: "0.69rem", fontFamily: f.serif, fontWeight: 400, fontStyle: "italic", color: c.secondary, letterSpacing: "0.05em", paddingBottom: "5px" }}>
+              la celebrarea căsătoriei noastre
             </p>
 
             {/* Flourish */}
@@ -393,17 +379,15 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
               <Flourish width={180} color={c.ornament} />
             </div>
 
-            {/* 6. Date row */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.4cm" }}>
-              <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.3em", fontWeight: 600, color: c.primary }}>{dayOfWeek}</span>
-              <svg viewBox="0 0 4 20" style={{ width: 3, height: 16 }} xmlns="http://www.w3.org/2000/svg">
-                <line x1="2" y1="0" x2="2" y2="20" stroke={c.ornament} strokeWidth="0.8" />
+            {/* 6. Date row (rendered as SVG for reliable PNG alignment) */}
+            <div style={{ width: "100%", display: "flex", justifyContent: "center", paddingBottom: "5px" }}>
+              <svg width="240" height="20" viewBox="0 0 240 20" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
+                <text x="90" y="15" textAnchor="end" fontFamily={f.mont} fontSize="12" fontWeight="600" style={{ letterSpacing: "0.3em" }} fill={c.primary}>{dayOfWeek}</text>
+                <line x1="103" y1="5" x2="103" y2="17" stroke={c.ornament} strokeWidth="1" />
+                <text x="140" y="15" textAnchor="middle" fontFamily={f.mont} fontSize="12" fontWeight="600" style={{ letterSpacing: "0.2em" }} fill={c.primary}>{dateFormatted}</text>
+                <line x1="178" y1="5" x2="178" y2="17" stroke={c.ornament} strokeWidth="1" />
+                <text x="190" y="15" textAnchor="start" fontFamily={f.mont} fontSize="12" fontWeight="600" style={{ letterSpacing: "0.2em" }} fill={c.primary}>{year}</text>
               </svg>
-              <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{dateFormatted}</span>
-              <svg viewBox="0 0 4 20" style={{ width: 3, height: 16 }} xmlns="http://www.w3.org/2000/svg">
-                <line x1="2" y1="0" x2="2" y2="20" stroke={c.ornament} strokeWidth="0.8" />
-              </svg>
-              <span style={{ fontSize: "0.74rem", fontFamily: f.mont, letterSpacing: "0.2em", fontWeight: 600, color: c.primary }}>{year}</span>
             </div>
 
             {/* Events */}
@@ -452,7 +436,7 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
             </div>
 
             {/* Script Closing */}
-            <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "0.3cm" }}>
+            <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "0.3cm", paddingBottom: "5px" }}>
               {getAsteptamLineShort(audience)}
             </p>
 
@@ -460,17 +444,17 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
             {confirmareDate && (
               <div>
                 <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted, lineHeight: 2 }}>
-                  VA RUGAM SA NE CONFIRMATI PREZENTA DUMNEAVOASTRA
+                  VĂ RUGĂM SĂ NE CONFIRMAȚI PREZENȚA
                 </p>
                 <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted }}>
-                  PANA IN DATA DE {confirmareDate.toUpperCase()}.
+                  PÂNĂ ÎN DATA DE {confirmareDate.toUpperCase()}.
                 </p>
               </div>
             )}
 
             {/* Contact -- phone numbers */}
             {(settings.telefon_mireasa || settings.telefon_mire) && (
-              <div style={{ marginTop: "0.15cm", width: "80%" }}>
+              <div style={{ marginTop: "0.15cm", paddingTop: "5px", width: "80%" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>
                   <SmallFlourish color={c.ornament} />
                 </div>
