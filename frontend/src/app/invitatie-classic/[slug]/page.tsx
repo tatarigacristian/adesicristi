@@ -254,7 +254,7 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
               width: "15cm",
               minHeight: "21cm",
               background: c.bg,
-              border: `2px solid ${c.ornament}`,
+              border: `2px solid ${c.ornament}80`,
               padding: "0.6cm",
               position: "relative",
             }}
@@ -262,7 +262,7 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
           {/* --- Inner Border --- */}
           <div
             style={{
-              border: `1px solid ${c.ornament}`,
+              border: `1px solid ${c.ornament}66`,
               padding: "1.2cm 1.5cm",
               minHeight: "calc(21cm - 1.2cm)",
               fontFamily: f.serif,
