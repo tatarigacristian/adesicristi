@@ -112,6 +112,7 @@ function CardFront({
   const text = settings.color_text || "#344b30";
   const accent = settings.color_button || "#7f9f84";
   const muted = lightenHex(text, 45);
+  const main = settings.color_main || "#FDF8F7";
 
   return (
     <div className="card-face card-front">
@@ -171,6 +172,11 @@ function CardFront({
         <p className="card-date" style={{ fontSize: "0.35rem", marginTop: "0.1cm" }}>{dateDisplay}</p>
       </div>
       </div>
+      {/* Mask: hides the dashed crop marks where they overlap the solid border length, leaving only the corner overhang visible */}
+      <div style={{ position: "absolute", top: 9, left: 10, right: 10, height: 0, borderTop: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
+      <div style={{ position: "absolute", bottom: 9, left: 10, right: 10, height: 0, borderBottom: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
+      <div style={{ position: "absolute", left: 9, top: 10, bottom: 10, width: 0, borderLeft: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
+      <div style={{ position: "absolute", right: 9, top: 10, bottom: 10, width: 0, borderRight: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
     </div>
   );
 }
@@ -188,6 +194,7 @@ function CardBack({
   const mire = settings.nume_mire || "Cristi";
   const text = settings.color_text || "#344b30";
   const accent = settings.color_button || "#7f9f84";
+  const main = settings.color_main || "#FDF8F7";
 
   const guestNames = (() => {
     const childNames = guest.children && guest.children.length > 0 ? guest.children.map((c) => c.prenume) : [];
@@ -278,6 +285,11 @@ function CardBack({
         </div>
       </div>
       </div>
+      {/* Mask: hides the dashed crop marks where they overlap the solid border length, leaving only the corner overhang visible */}
+      <div style={{ position: "absolute", top: 9, left: 10, right: 10, height: 0, borderTop: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
+      <div style={{ position: "absolute", bottom: 9, left: 10, right: 10, height: 0, borderBottom: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
+      <div style={{ position: "absolute", left: 9, top: 10, bottom: 10, width: 0, borderLeft: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
+      <div style={{ position: "absolute", right: 9, top: 10, bottom: 10, width: 0, borderRight: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
     </div>
   );
 }

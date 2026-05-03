@@ -596,6 +596,11 @@ function InvitatieV2Content() {
             )}
           </div>
           </div>
+          {/* Mask: hides the dashed crop marks where they overlap the solid border length, leaving only the corner overhang visible */}
+          <div style={{ position: "absolute", top: 9, left: 10, right: 10, height: 0, borderTop: `1px solid ${c.bg}`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", bottom: 9, left: 10, right: 10, height: 0, borderBottom: `1px solid ${c.bg}`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", left: 9, top: 10, bottom: 10, width: 0, borderLeft: `1px solid ${c.bg}`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 9, top: 10, bottom: 10, width: 0, borderRight: `1px solid ${c.bg}`, pointerEvents: "none" }} />
         </div>
       </div>
     </div>
