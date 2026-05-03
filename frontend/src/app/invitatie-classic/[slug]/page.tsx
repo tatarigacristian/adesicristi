@@ -242,13 +242,13 @@ export default function PublicInvitatieV2Page({ params }: { params: Promise<{ sl
       <div className="inv-page">
         {/* --- Outer Card with crop marks for cutting guide --- */}
         <div
-          style={{ position: "relative", padding: "5px", background: "transparent" }}
+          style={{ position: "relative", padding: "10px", background: "transparent" }}
         >
-          {/* Crop marks: 4 dotted lines aligned with solid border, extending 5px beyond corners */}
-          <div style={{ position: "absolute", top: 5, left: 0, right: 0, height: 0, borderTop: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
-          <div style={{ position: "absolute", bottom: 5, left: 0, right: 0, height: 0, borderBottom: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
-          <div style={{ position: "absolute", left: 5, top: 0, bottom: 0, width: 0, borderLeft: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
-          <div style={{ position: "absolute", right: 5, top: 0, bottom: 0, width: 0, borderRight: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
+          {/* Crop marks: 4 dotted lines aligned with solid border, extending 10px beyond corners */}
+          <div style={{ position: "absolute", top: 9, left: 0, right: 0, height: 0, borderTop: `1px dashed ${c.ornament}4D`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", bottom: 9, left: 0, right: 0, height: 0, borderBottom: `1px dashed ${c.ornament}4D`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", left: 9, top: 0, bottom: 0, width: 0, borderLeft: `1px dashed ${c.ornament}4D`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 9, top: 0, bottom: 0, width: 0, borderRight: `1px dashed ${c.ornament}4D`, pointerEvents: "none" }} />
           <div
             style={{
               width: "15cm",

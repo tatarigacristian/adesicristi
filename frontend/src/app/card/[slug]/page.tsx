@@ -115,6 +115,7 @@ function CardFront({
 
   return (
     <div className="card-face card-front">
+      <div className="card-outer">
       <div className="card-inner" style={{ flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0.3cm 0.8cm", gap: 0 }}>
         <CornerOrnament position="top-left" color={accent} />
         <CornerOrnament position="top-right" color={accent} />
@@ -168,6 +169,7 @@ function CardFront({
 
         {/* Footer - date */}
         <p className="card-date" style={{ fontSize: "0.35rem", marginTop: "0.1cm" }}>{dateDisplay}</p>
+      </div>
       </div>
     </div>
   );
@@ -228,6 +230,7 @@ function CardBack({
 
   return (
     <div className="card-face card-back">
+      <div className="card-outer">
       <div className="card-inner" style={{ paddingBottom: "0.3cm" }}>
         <CornerOrnament position="top-left" color={accent} />
         <CornerOrnament position="top-right" color={accent} />
@@ -274,6 +277,7 @@ function CardBack({
           )}
         </div>
       </div>
+      </div>
     </div>
   );
 }
@@ -319,29 +323,61 @@ function buildStyles(s: WeddingSettings | null) {
     }
 
     .card-page-root .card-face {
-      width: 9cm;
-      height: 5.5cm;
-      background: ${bgCard};
-      border-radius: 4px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-      overflow: hidden;
+      width: calc(9cm + 20px);
+      height: calc(5.5cm + 20px);
+      padding: 10px;
+      box-sizing: border-box;
+      background: transparent;
       position: relative;
-      border: 0.5px solid ${button}60;
+    }
+
+    /* Crop marks: 2 pseudo-elements draw 4 dotted lines that intersect at the solid border corners and overhang 10px */
+    .card-page-root .card-face::before {
+      content: '';
+      position: absolute;
+      top: 9px;
+      bottom: 9px;
+      left: 0;
+      right: 0;
+      border-top: 1px dashed ${button}4D;
+      border-bottom: 1px dashed ${button}4D;
+      pointer-events: none;
+    }
+    .card-page-root .card-face::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 9px;
+      right: 9px;
+      border-left: 1px dashed ${button}4D;
+      border-right: 1px dashed ${button}4D;
+      pointer-events: none;
+    }
+
+    .card-page-root .card-outer {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      background: ${bgCard};
+      border: 0.8px solid ${button}80;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      position: relative;
+      z-index: 1;
     }
 
     .card-page-root .card-inner {
-      width: 100%;
-      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 0.5cm 0.7cm;
       position: relative;
-      border: 0.3px solid ${button}30;
+      border: 0.5px solid ${button}4D;
       margin: 4px;
       width: calc(100% - 8px);
       height: calc(100% - 8px);
+      box-sizing: border-box;
       border-radius: 2px;
     }
 
@@ -350,6 +386,7 @@ function buildStyles(s: WeddingSettings | null) {
       position: absolute;
       width: 22px;
       height: 22px;
+      opacity: 0.3;
     }
     .card-page-root .corner-ornament.top-left     { top: 2px; left: 2px; }
     .card-page-root .corner-ornament.top-right    { top: 2px; right: 2px; transform: scaleX(-1); }
