@@ -334,22 +334,30 @@ function InvitatieV2Content() {
           <button className="inv-btn inv-btn-secondary" onClick={() => window.close()}>Inchide</button>
         </div>
 
-        {/* ─── Outer Card ─── */}
+        {/* ─── Outer Card with crop marks for cutting guide ─── */}
         <div
           ref={cardRef}
-          style={{
-            width: "15cm",
-            minHeight: "21cm",
-            background: c.bg,
-            border: `1px solid ${c.ornament}`,
-            padding: "0.6cm",
-            position: "relative",
-          }}
+          style={{ position: "relative", padding: "5px", background: "transparent" }}
         >
+          {/* Crop marks: 4 dotted lines aligned with solid border, extending 5px beyond corners */}
+          <div style={{ position: "absolute", top: 5, left: 0, right: 0, height: 0, borderTop: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", bottom: 5, left: 0, right: 0, height: 0, borderBottom: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", left: 5, top: 0, bottom: 0, width: 0, borderLeft: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 5, top: 0, bottom: 0, width: 0, borderRight: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
+          <div
+            style={{
+              width: "15cm",
+              minHeight: "21cm",
+              background: c.bg,
+              border: `2px solid ${c.ornament}`,
+              padding: "0.6cm",
+              position: "relative",
+            }}
+          >
           {/* ─── Inner Border ─── */}
           <div
             style={{
-              border: `0.5px solid ${c.ornament}`,
+              border: `1px solid ${c.ornament}`,
               padding: "1.2cm 1.5cm",
               minHeight: "calc(21cm - 1.2cm)",
               fontFamily: f.serif,
@@ -576,6 +584,7 @@ function InvitatieV2Content() {
                 </div>
               </div>
             )}
+          </div>
           </div>
         </div>
       </div>

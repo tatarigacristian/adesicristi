@@ -257,7 +257,7 @@ function InvitatieContent() {
   const ceremonieDateObj = settings.ceremonie_data ? new Date(settings.ceremonie_data) : null;
   const dayOfWeek = ceremonieDateObj
     ? ceremonieDateObj.toLocaleDateString("ro-RO", { weekday: "long" }).toUpperCase()
-    : "SAMBATA";
+    : "SÂMBĂTĂ";
   const dateFormatted = ceremonieDateObj
     ? `${String(ceremonieDateObj.getDate()).padStart(2, "0")}.${String(ceremonieDateObj.getMonth() + 1).padStart(2, "0")}`
     : "00.00";
@@ -282,17 +282,17 @@ function InvitatieContent() {
 
   // Parents
   const parintiMireasa = settings.tata_mireasa_prenume
-    ? `${settings.mama_mireasa_prenume} si ${settings.tata_mireasa_prenume} ${settings.tata_mireasa_nume}`
+    ? `${settings.mama_mireasa_prenume} și ${settings.tata_mireasa_prenume} ${settings.tata_mireasa_nume}`
     : settings.parinti_mireasa;
   const parintiMire = settings.tata_mire_prenume
-    ? `${settings.mama_mire_prenume} si ${settings.tata_mire_prenume} ${settings.tata_mire_nume}`
+    ? `${settings.mama_mire_prenume} și ${settings.tata_mire_prenume} ${settings.tata_mire_nume}`
     : settings.parinti_mire;
 
   // Nasi
   const nasiText = settings.nas_prenume && settings.nasa_prenume
     ? settings.nasa_nume === settings.nas_nume
-      ? `${settings.nasa_prenume} si ${settings.nas_prenume} ${settings.nas_nume}`
-      : `${settings.nasa_prenume} ${settings.nasa_nume} si ${settings.nas_prenume} ${settings.nas_nume}`
+      ? `${settings.nasa_prenume} și ${settings.nas_prenume} ${settings.nas_nume}`
+      : `${settings.nasa_prenume} ${settings.nasa_nume} și ${settings.nas_prenume} ${settings.nas_nume}`
     : null;
 
   return (
@@ -336,22 +336,30 @@ function InvitatieContent() {
           <button className="inv-btn inv-btn-secondary" onClick={() => window.close()}>Inchide</button>
         </div>
 
-        {/* ─── Outer Card ─── */}
+        {/* ─── Outer Card with crop marks for cutting guide ─── */}
         <div
           ref={cardRef}
-          style={{
-            width: "15cm",
-            minHeight: "21cm",
-            background: c.bg,
-            border: `1px solid ${c.ornament}`,
-            padding: "0.6cm",
-            position: "relative",
-          }}
+          style={{ position: "relative", padding: "5px", background: "transparent" }}
         >
+          {/* Crop marks: 4 dotted lines aligned with solid border, extending 5px beyond corners */}
+          <div style={{ position: "absolute", top: 5, left: 0, right: 0, height: 0, borderTop: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", bottom: 5, left: 0, right: 0, height: 0, borderBottom: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", left: 5, top: 0, bottom: 0, width: 0, borderLeft: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 5, top: 0, bottom: 0, width: 0, borderRight: `1px dotted ${c.ornament}`, pointerEvents: "none" }} />
+          <div
+            style={{
+              width: "15cm",
+              minHeight: "21cm",
+              background: c.bg,
+              border: `2px solid ${c.ornament}`,
+              padding: "0.6cm",
+              position: "relative",
+            }}
+          >
           {/* ─── Inner Border ─── */}
           <div
             style={{
-              border: `0.5px solid ${c.ornament}`,
+              border: `1px solid ${c.ornament}`,
               padding: "1.2cm 1.5cm",
               minHeight: "calc(21cm - 1.2cm)",
               fontFamily: f.serif,
@@ -434,29 +442,54 @@ function InvitatieContent() {
               ))}
             </div>
 
-            {/* ─── Parents (side by side) ─── */}
+            {/* ─── Parents (single title, two columns) ─── */}
             {(parintiMireasa || parintiMire) && (
-              <div style={{ display: "flex", justifyContent: "center", gap: "1.2cm", marginTop: "0.2cm", width: "100%" }}>
-                {parintiMireasa && (
-                  <div style={{ textAlign: "center", flex: 1 }}>
-                    <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
-                      PĂRINȚII MIRESEI
-                    </p>
-                    <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                      {parintiMireasa}
-                    </p>
-                  </div>
-                )}
-                {parintiMire && (
-                  <div style={{ textAlign: "center", flex: 1 }}>
-                    <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
-                      PĂRINȚII MIRELUI
-                    </p>
-                    <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
-                      {parintiMire}
-                    </p>
-                  </div>
-                )}
+              <div style={{ marginTop: "0.2cm", width: "100%" }}>
+                <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.1cm", textAlign: "center" }}>
+                  ÎMPREUNĂ CU PĂRINȚII NOȘTRI
+                </p>
+                <div style={{ display: "flex", justifyContent: "center", gap: "1.2cm" }}>
+                  {parintiMireasa && (
+                    <div style={{ textAlign: "center", flex: 1 }}>
+                      {settings.tata_mireasa_prenume ? (
+                        <>
+                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                            {settings.mama_mireasa_prenume} și {settings.tata_mireasa_prenume}
+                          </p>
+                          {settings.tata_mireasa_nume && (
+                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                              {settings.tata_mireasa_nume}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                          {parintiMireasa}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {parintiMire && (
+                    <div style={{ textAlign: "center", flex: 1 }}>
+                      {settings.tata_mire_prenume ? (
+                        <>
+                          <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                            {settings.mama_mire_prenume} și {settings.tata_mire_prenume}
+                          </p>
+                          {settings.tata_mire_nume && (
+                            <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                              {settings.tata_mire_nume}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
+                          {parintiMire}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -464,7 +497,7 @@ function InvitatieContent() {
             {nasiText && (
               <div style={{ textAlign: "center", marginTop: "0.15cm" }}>
                 <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 400, color: c.muted, marginBottom: "0.08cm" }}>
-                  ALĂTURI DE NAȘII
+                  ȘI ALĂTURI DE NAȘII
                 </p>
                 <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 400, fontStyle: "italic", color: c.secondary }}>
                   {nasiText}
@@ -542,10 +575,10 @@ function InvitatieContent() {
             {confirmareDate && (
               <div>
                 <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted, lineHeight: 2 }}>
-                  VA RUGAM SA NE CONFIRMATI PREZENTA DUMNEAVOASTRA
+                  VĂ RUGĂM SĂ NE CONFIRMAȚI PREZENȚA DUMNEAVOASTRĂ
                 </p>
                 <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 400, color: c.muted }}>
-                  PANA IN DATA DE {confirmareDate.toUpperCase()}.
+                  PÂNĂ ÎN DATA DE {confirmareDate.toUpperCase()}.
                 </p>
               </div>
             )}
@@ -563,6 +596,7 @@ function InvitatieContent() {
                 ))}
               </div>
             )}
+          </div>
           </div>
         </div>
       </div>

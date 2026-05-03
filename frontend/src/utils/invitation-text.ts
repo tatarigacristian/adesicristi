@@ -59,9 +59,9 @@ export function getAsteptamLine(audience: InvitationAudience): string {
   return audience.hasPartner ? "Vă așteptăm cu drag!" : "Te așteptăm cu drag!";
 }
 
-/** Formă scurtă pentru design: "Te asteptam cu drag!" / "Va asteptam cu drag!" (fără diacritice pe a) */
+/** Formă scurtă pentru design: "Te așteptăm cu drag!" / "Vă așteptăm cu drag!" */
 export function getAsteptamLineShort(audience: InvitationAudience): string {
-  return audience.hasPartner ? "Va asteptam cu drag!" : "Te asteptam cu drag!";
+  return audience.hasPartner ? "Vă așteptăm cu drag!" : "Te așteptăm cu drag!";
 }
 
 /**
