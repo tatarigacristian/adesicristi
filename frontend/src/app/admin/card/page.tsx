@@ -79,8 +79,8 @@ function CornerOrnament({ position, color }: { position: CornerPos; color: strin
       <svg viewBox="0 0 80 80" style={{ width: "100%", height: "100%", display: "block" }} xmlns="http://www.w3.org/2000/svg">
         <path d="M2 2 L2 28 Q4 18, 12 12 Q18 8, 28 6 Q36 4, 40 2 Z" fill="none" stroke={color} strokeWidth="2" />
         <path d="M2 2 Q8 12, 16 18 Q22 24, 32 28" fill="none" stroke={color} strokeWidth="1.5" />
-        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke={color} strokeWidth="1" opacity="0.6" />
-        <circle cx="8" cy="8" r="3" fill={color} opacity="0.5" />
+        <path d="M2 6 Q10 10, 14 16 Q18 22, 24 24" fill="none" stroke={color} strokeWidth="1" />
+        <circle cx="8" cy="8" r="3" fill={color} />
       </svg>
     </div>
   );
@@ -126,10 +126,10 @@ function CardFront({
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
             <div style={{ width: 80, height: 80 }}>
               <svg width="80" height="80" viewBox="0 0 160 160" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
-                <circle cx="80" cy="80" r="72" stroke={accent} strokeWidth="1.5" fill="none" opacity="0.5" />
-                <circle cx="80" cy="80" r="68" stroke={accent} strokeWidth="1" fill="none" opacity="0.3" />
-                <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={accent} opacity="0.5" />
-                <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={accent} opacity="0.5" />
+                <circle cx="80" cy="80" r="72" stroke={accent} strokeWidth="1.5" fill="none" />
+                <circle cx="80" cy="80" r="68" stroke={accent} strokeWidth="1" fill="none" />
+                <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={accent} />
+                <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={accent} />
                 <text x="80" y="80" textAnchor="middle" dominantBaseline="central" fontFamily="var(--font-cormorant), 'Cormorant Garamond', serif" fontSize="44" fontWeight="300" fill={text}>
                   <tspan>{initialMireasa}</tspan>
                   <tspan dx="4" fontFamily="var(--font-script), 'Alex Brush', cursive" fontSize="26" fill={muted}>&amp;</tspan>
@@ -137,18 +137,18 @@ function CardFront({
                 </text>
               </svg>
             </div>
-            <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.1cm" }}>Ne căsătorim!</p>
+            <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.1cm", fontWeight: 600 }}>Ne căsătorim!</p>
           </div>
 
           {/* Vertical divider */}
-          <div style={{ width: 1, height: "60%", background: `linear-gradient(to bottom, transparent, ${accent}50, transparent)` }} />
+          <div style={{ width: 1, height: "60%", background: `linear-gradient(to bottom, transparent, ${accent}, transparent)` }} />
 
           {/* Right side - QR + label below */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
             <div className="card-qr">
               <img src={qrDataUrl} alt="QR Code" style={{ width: "2cm", height: "2cm" }} />
             </div>
-            <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.08cm" }}>
+            <p className="card-label" style={{ fontSize: "0.38rem", marginTop: "0.08cm", fontWeight: 600 }}>
               Scanați codul
             </p>
           </div>
@@ -157,22 +157,18 @@ function CardFront({
 
         {/* Heart icon centered */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: "0.1cm" }}>
-          <span style={{ display: "block", width: 30, height: 0.5, background: accent, opacity: 0.3 }} />
+          <span style={{ display: "block", width: 30, height: 1, background: `linear-gradient(to right, transparent, ${accent}, transparent)` }} />
           <svg viewBox="0 0 50 48" style={{ width: 12, height: 12 }} fill="none" stroke={accent} xmlns="http://www.w3.org/2000/svg">
-            <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill={accent} fillOpacity="0.15" />
+            <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill={accent} />
           </svg>
-          <span style={{ display: "block", width: 30, height: 0.5, background: accent, opacity: 0.3 }} />
+          <span style={{ display: "block", width: 30, height: 1, background: `linear-gradient(to right, transparent, ${accent}, transparent)` }} />
         </div>
 
         {/* Footer - date */}
-        <p className="card-date" style={{ fontSize: "0.35rem", marginTop: "0.1cm" }}>{dateDisplay}</p>
+        <p className="card-date" style={{ fontSize: "0.35rem", marginTop: "0.1cm", fontWeight: 600 }}>{dateDisplay}</p>
       </div>
       </div>
       {/* Mask: hides the dashed crop marks where they overlap the solid border length, leaving only the corner overhang visible */}
-      <div style={{ position: "absolute", top: 9, left: 10, right: 10, height: 0, borderTop: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
-      <div style={{ position: "absolute", bottom: 9, left: 10, right: 10, height: 0, borderBottom: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
-      <div style={{ position: "absolute", left: 9, top: 10, bottom: 10, width: 0, borderLeft: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
-      <div style={{ position: "absolute", right: 9, top: 10, bottom: 10, width: 0, borderRight: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
     </div>
   );
 }
@@ -245,11 +241,11 @@ function CardBack({
 
         {/* Heart divider */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: "3px" }}>
-          <span style={{ display: "block", width: 25, height: 0.5, background: accent, opacity: 0.3 }} />
+          <span style={{ display: "block", width: 25, height: 1, background: `linear-gradient(to right, transparent, ${accent}, transparent)` }} />
           <svg viewBox="0 0 50 48" style={{ width: 10, height: 10 }} fill="none" stroke={accent} xmlns="http://www.w3.org/2000/svg">
-            <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill={accent} fillOpacity="0.15" />
+            <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill={accent} />
           </svg>
-          <span style={{ display: "block", width: 25, height: 0.5, background: accent, opacity: 0.3 }} />
+          <span style={{ display: "block", width: 25, height: 1, background: `linear-gradient(to right, transparent, ${accent}, transparent)` }} />
         </div>
 
         <p className="card-greeting" style={{ marginTop: 0, lineHeight: 1 }}>
@@ -283,10 +279,6 @@ function CardBack({
       </div>
       </div>
       {/* Mask: hides the dashed crop marks where they overlap the solid border length, leaving only the corner overhang visible */}
-      <div style={{ position: "absolute", top: 9, left: 10, right: 10, height: 0, borderTop: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
-      <div style={{ position: "absolute", bottom: 9, left: 10, right: 10, height: 0, borderBottom: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
-      <div style={{ position: "absolute", left: 9, top: 10, bottom: 10, width: 0, borderLeft: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
-      <div style={{ position: "absolute", right: 9, top: 10, bottom: 10, width: 0, borderRight: `1px solid ${main}`, pointerEvents: "none", zIndex: 2 }} />
     </div>
   );
 }
@@ -372,36 +364,11 @@ function buildStyles(s: WeddingSettings | null) {
       position: relative;
     }
 
-    /* Crop marks: 2 pseudo-elements draw 4 dotted lines that intersect at the solid border corners and overhang 10px */
-    .card-page-root .card-face::before {
-      content: '';
-      position: absolute;
-      top: 9px;
-      bottom: 9px;
-      left: 0;
-      right: 0;
-      border-top: 1px dashed ${button}4D;
-      border-bottom: 1px dashed ${button}4D;
-      pointer-events: none;
-    }
-    .card-page-root .card-face::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 9px;
-      right: 9px;
-      border-left: 1px dashed ${button}4D;
-      border-right: 1px dashed ${button}4D;
-      pointer-events: none;
-    }
-
     .card-page-root .card-outer {
       width: 100%;
       height: 100%;
       box-sizing: border-box;
       background: ${bgCard};
-      border: 0.8px solid ${button}80;
       box-shadow: 0 4px 24px rgba(0,0,0,0.06);
       position: relative;
       z-index: 1;
@@ -414,7 +381,7 @@ function buildStyles(s: WeddingSettings | null) {
       justify-content: center;
       padding: 0.5cm 0.7cm;
       position: relative;
-      border: 0.5px solid ${button}4D;
+      border: 0.5px solid ${button};
       margin: 4px;
       width: calc(100% - 8px);
       height: calc(100% - 8px);
@@ -427,7 +394,6 @@ function buildStyles(s: WeddingSettings | null) {
       position: absolute;
       width: 22px;
       height: 22px;
-      opacity: 0.3;
     }
     .card-page-root .corner-ornament.top-left     { top: 2px; left: 2px; }
     .card-page-root .corner-ornament.top-right    { top: 2px; right: 2px; transform: scaleX(-1); }
@@ -441,7 +407,7 @@ function buildStyles(s: WeddingSettings | null) {
       letter-spacing: 0.3em;
       text-transform: uppercase;
       color: ${button};
-      font-weight: 500;
+      font-weight: 800;
       margin-bottom: 0.08cm;
     }
 
@@ -491,7 +457,7 @@ function buildStyles(s: WeddingSettings | null) {
       font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
       font-size: 0.5rem;
       color: ${text};
-      font-weight: 500;
+      font-weight: 800;
       margin-top: 0;
       margin-bottom: 0.05cm;
     }
@@ -499,7 +465,7 @@ function buildStyles(s: WeddingSettings | null) {
       font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
       font-size: 0.38rem;
       color: ${muted};
-      font-weight: 400;
+      font-weight: 700;
       font-style: italic;
       margin-bottom: 0.08cm;
     }
@@ -508,11 +474,10 @@ function buildStyles(s: WeddingSettings | null) {
       font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
       font-size: 0.42rem;
       color: ${lightenHex(text, 30)};
-      font-weight: 300;
+      font-weight: 600;
       font-style: italic;
       line-height: 1.6;
       text-align: center;
-      max-width: 7cm;
       margin-bottom: 10px;
     }
 
@@ -531,13 +496,14 @@ function buildStyles(s: WeddingSettings | null) {
     .card-page-root .card-event-time {
       font-family: var(--font-montserrat), 'Montserrat', sans-serif;
       font-size: 0.3rem;
-      font-weight: 500;
+      font-weight: 800;
       color: ${text};
       letter-spacing: 0.05em;
     }
     .card-page-root .card-event-address {
       font-family: var(--font-montserrat), 'Montserrat', sans-serif;
       font-size: 0.24rem;
+      font-weight: 700;
       color: ${muted};
       text-align: center;
       line-height: 1.3;
@@ -550,6 +516,7 @@ function buildStyles(s: WeddingSettings | null) {
     .card-page-root .card-back-names {
       font-family: var(--font-script), 'Alex Brush', cursive;
       font-size: 0.85rem;
+      font-weight: 700;
       color: ${text};
       margin: 0;
     }
