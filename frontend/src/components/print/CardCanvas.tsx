@@ -183,14 +183,14 @@ export function CardBack({ guest, partner, settings }: { guest: CardGuestData; p
         <CornerOrnament position="bottom-left" color={accent} />
         <CornerOrnament position="bottom-right" color={accent} />
         <p className="card-label" style={{ marginBottom: "10px" }}>Invitație</p>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: "0.2cm" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: "3px" }}>
           <span style={{ display: "block", width: 25, height: 0.5, background: accent, opacity: 0.3 }} />
           <svg viewBox="0 0 50 48" style={{ width: 10, height: 10 }} fill="none" stroke={accent} xmlns="http://www.w3.org/2000/svg">
             <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill={accent} fillOpacity="0.15" />
           </svg>
           <span style={{ display: "block", width: 25, height: 0.5, background: accent, opacity: 0.3 }} />
         </div>
-        <p className="card-greeting">{getGreetingShort(audience, guest.slug)} {guestNames},</p>
+        <p className="card-greeting" style={{ marginTop: 0, lineHeight: 1 }}>{getGreetingShort(audience, guest.slug)} {guestNames},</p>
         <p className="card-message">{introText}</p>
         <div className="card-events-row">
           {events.map((ev) => (
@@ -201,10 +201,10 @@ export function CardBack({ guest, partner, settings }: { guest: CardGuestData; p
             </div>
           ))}
         </div>
-        <div className="card-back-footer" style={{ marginTop: "auto" }}>
+        <div className="card-back-footer">
           <p className="card-back-names">{mireasa} & {mire}</p>
           {(settings.nas_prenume || settings.nasa_prenume) && (
-            <p className="card-nasi" style={{ marginBottom: 0, marginTop: "10px" }}>
+            <p className="card-nasi" style={{ marginBottom: 0, marginTop: "2px", lineHeight: 1 }}>
               împreună cu nașii {settings.nasa_prenume} & {settings.nas_prenume}{" "}
               {settings.nasa_nume === settings.nas_nume ? settings.nasa_nume : `${settings.nasa_nume} & ${settings.nas_nume}`}
             </p>
@@ -251,7 +251,7 @@ export function buildCardStyles(s: CardWeddingSettings | null): string {
     .card-page-root .card-guest-name { font-family: var(--font-cormorant), 'Cormorant Garamond', serif; font-size: 0.5rem; color: ${text}; font-weight: 500; letter-spacing: 0.08em; margin-bottom: 0.03cm; }
     .card-page-root .card-date { font-family: var(--font-montserrat), 'Montserrat', sans-serif; font-size: 0.33rem; color: ${muted}; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; }
     .card-page-root .card-back { background: transparent; }
-    .card-page-root .card-greeting { font-family: var(--font-cormorant), 'Cormorant Garamond', serif; font-size: 0.5rem; color: ${text}; font-weight: 500; margin-bottom: 0.05cm; }
+    .card-page-root .card-greeting { font-family: var(--font-cormorant), 'Cormorant Garamond', serif; font-size: 0.5rem; color: ${text}; font-weight: 500; margin-top: 0; margin-bottom: 0.05cm; }
     .card-page-root .card-nasi { font-family: var(--font-cormorant), 'Cormorant Garamond', serif; font-size: 0.38rem; color: ${muted}; font-weight: 400; font-style: italic; margin-bottom: 0.08cm; }
     .card-page-root .card-message { font-family: var(--font-cormorant), 'Cormorant Garamond', serif; font-size: 0.42rem; color: ${lightenHex(text, 30)}; font-weight: 300; font-style: italic; line-height: 1.6; text-align: center; max-width: 7cm; margin-bottom: 10px; }
     .card-page-root .card-events-row { display: flex; gap: 0.35cm; margin-bottom: 0.12cm; }
@@ -259,6 +259,6 @@ export function buildCardStyles(s: CardWeddingSettings | null): string {
     .card-page-root .card-event-time { font-family: var(--font-montserrat), 'Montserrat', sans-serif; font-size: 0.3rem; font-weight: 500; color: ${text}; letter-spacing: 0.05em; }
     .card-page-root .card-event-address { font-family: var(--font-montserrat), 'Montserrat', sans-serif; font-size: 0.24rem; color: ${muted}; text-align: center; line-height: 1.3; white-space: nowrap; }
     .card-page-root .card-back-footer { text-align: center; }
-    .card-page-root .card-back-names { font-family: var(--font-script), 'Alex Brush', cursive; font-size: 0.85rem; color: ${text}; }
+    .card-page-root .card-back-names { font-family: var(--font-script), 'Alex Brush', cursive; font-size: 0.85rem; color: ${text}; margin: 0; }
   `;
 }

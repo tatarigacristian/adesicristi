@@ -244,7 +244,7 @@ function CardBack({
         <p className="card-label" style={{ marginBottom: "10px" }}>Invitație</p>
 
         {/* Heart divider */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: "0.2cm" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: "3px" }}>
           <span style={{ display: "block", width: 25, height: 0.5, background: accent, opacity: 0.3 }} />
           <svg viewBox="0 0 50 48" style={{ width: 10, height: 10 }} fill="none" stroke={accent} xmlns="http://www.w3.org/2000/svg">
             <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill={accent} fillOpacity="0.15" />
@@ -252,7 +252,7 @@ function CardBack({
           <span style={{ display: "block", width: 25, height: 0.5, background: accent, opacity: 0.3 }} />
         </div>
 
-        <p className="card-greeting">
+        <p className="card-greeting" style={{ marginTop: 0, lineHeight: 1 }}>
           {getGreetingShort(audience, guest.slug)} {guestNames},
         </p>
 
@@ -269,10 +269,10 @@ function CardBack({
         </div>
 
         {/* Closing - positioned at bottom like date on front */}
-        <div className="card-back-footer" style={{ marginTop: "auto" }}>
+        <div className="card-back-footer">
           <p className="card-back-names">{mireasa} & {mire}</p>
           {(settings.nas_prenume || settings.nasa_prenume) && (
-            <p className="card-nasi" style={{ marginBottom: 0, marginTop: "10px" }}>
+            <p className="card-nasi" style={{ marginBottom: 0, marginTop: "2px", lineHeight: 1 }}>
               împreună cu nașii {settings.nasa_prenume} & {settings.nas_prenume}{" "}
               {settings.nasa_nume === settings.nas_nume
                 ? settings.nasa_nume
@@ -492,6 +492,7 @@ function buildStyles(s: WeddingSettings | null) {
       font-size: 0.5rem;
       color: ${text};
       font-weight: 500;
+      margin-top: 0;
       margin-bottom: 0.05cm;
     }
     .card-page-root .card-nasi {
@@ -550,6 +551,7 @@ function buildStyles(s: WeddingSettings | null) {
       font-family: var(--font-script), 'Alex Brush', cursive;
       font-size: 0.85rem;
       color: ${text};
+      margin: 0;
     }
 
     /* Print styles */
