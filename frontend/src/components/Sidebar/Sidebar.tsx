@@ -41,6 +41,29 @@ export default function Sidebar({ settings, hasGuest }: { settings?: WeddingSett
     return () => { swiper.off("slideChange", handleSlideChange); };
   }, [swiper, handleSlideChange]);
 
+  // Scroll-mode fallback: track active section via IntersectionObserver
+  useEffect(() => {
+    if (swiper) return;
+    const els = Array.from(document.querySelectorAll<HTMLElement>("[data-section]"));
+    if (els.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) {
+          const id = visible.target.getAttribute("data-section");
+          if (id) setActiveSection(id);
+        }
+      },
+      { threshold: [0.4, 0.6] },
+    );
+
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [swiper]);
+
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>, sectionId: string) => {
     e.preventDefault();
     slideTo(sectionId);

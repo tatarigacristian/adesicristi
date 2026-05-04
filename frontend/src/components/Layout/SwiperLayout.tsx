@@ -4,8 +4,9 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
-import { SwiperProvider } from "@/context/SwiperContext";
+import { SwiperProvider, SLIDE_IDS } from "@/context/SwiperContext";
 import { WeddingSettings } from "@/utils/settings";
+import { useShortViewport } from "@/hooks/useShortViewport";
 import Hero from "@/components/Hero/Hero";
 import Couple from "@/components/Couple/Couple";
 import Family from "@/components/Family/Family";
@@ -35,6 +36,7 @@ export default function SwiperLayout({
   settings: WeddingSettings | null;
   guest?: GuestData | null;
 }) {
+  const isShort = useShortViewport();
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const isAnimating = useRef(false);
@@ -45,6 +47,7 @@ export default function SwiperLayout({
 
   // Block wheel events during slide transition to prevent double-jump
   useEffect(() => {
+    if (isShort) return;
     if (!swiperInstance) return;
     const el = swiperInstance.el;
     if (!el) return;
@@ -69,20 +72,27 @@ export default function SwiperLayout({
       swiperInstance.off("slideChangeTransitionStart", onTransitionStart);
       swiperInstance.off("slideChangeTransitionEnd", onTransitionEnd);
     };
-  }, [swiperInstance]);
+  }, [swiperInstance, isShort]);
 
-  // Lock html scroll for Swiper pages only
+  // Lock html scroll for Swiper pages only (not in scroll mode)
   useEffect(() => {
+    if (isShort) {
+      document.body.classList.add("scroll-mode");
+      return () => {
+        document.body.classList.remove("scroll-mode");
+      };
+    }
     document.documentElement.classList.add("swiper-lock");
     return () => {
       document.documentElement.classList.remove("swiper-lock");
     };
-  }, []);
+  }, [isShort]);
 
   // iOS Chrome: vh/dvh get stuck after keyboard dismiss.
   // Use visualViewport.height but only update when keyboard is CLOSED
   // (height increases back to full), not when it opens (height shrinks).
   useEffect(() => {
+    if (isShort) return;
     const panel = panelRef.current;
     if (!panel) return;
 
@@ -112,7 +122,38 @@ export default function SwiperLayout({
     return () => {
       window.visualViewport?.removeEventListener("resize", onResize);
     };
-  }, [swiperInstance]);
+  }, [swiperInstance, isShort]);
+
+  if (isShort) {
+    return (
+      <SwiperProvider swiper={null}>
+        <MobileNav />
+        <div className="split-container">
+          <Sidebar settings={settings} hasGuest={!!guest} />
+          <main className="right-panel">
+            <div data-section={SLIDE_IDS[0]}>
+              <Hero guest={guest} settings={settings} />
+            </div>
+            <div data-section={SLIDE_IDS[1]}>
+              <Couple settings={settings} />
+            </div>
+            <div data-section={SLIDE_IDS[2]}>
+              <Family settings={settings} />
+            </div>
+            <div data-section={SLIDE_IDS[3]}>
+              <Locations settings={settings} />
+            </div>
+            <div data-section={SLIDE_IDS[4]}>
+              <RSVP guest={guest} settings={settings} />
+            </div>
+            <div data-section={SLIDE_IDS[5]}>
+              <Footer settings={settings} />
+            </div>
+          </main>
+        </div>
+      </SwiperProvider>
+    );
+  }
 
   return (
     <SwiperProvider swiper={swiperInstance}>

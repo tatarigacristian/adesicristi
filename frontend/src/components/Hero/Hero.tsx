@@ -13,6 +13,7 @@ import { Heart } from "@phosphor-icons/react";
 import ScrollIndicator from "@/components/Ornaments/ScrollIndicator";
 import SectionFooterNav from "@/components/Ornaments/SectionFooterNav";
 import { useSwiper } from "@/context/SwiperContext";
+import { useShortViewport } from "@/hooks/useShortViewport";
 
 interface GuestData {
   nume: string;
@@ -62,6 +63,7 @@ export default function Hero({
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const isShort = useShortViewport();
   const nestedRef = useRef<SwiperType | null>(null);
   const parentSwiper = useSwiper();
   const params = useParams();
@@ -159,6 +161,66 @@ export default function Hero({
       parentSwiper.off("slideChange", onParentSlideChange);
     };
   }, [parentSwiper, isMobile]);
+
+  if (isShort) {
+    return (
+      <section className="content-section bg-background relative">
+        <SectionCorners size="w-[35px] h-[35px] sm:w-[55px] sm:h-[55px]" offset={16} />
+        <div
+          className={`flex flex-col items-center text-center w-full max-w-lg mx-auto py-6 transition-opacity duration-1000 ease-out ${
+            isVisible ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <div className="relative w-40 h-40 mx-auto mb-1">
+            <svg viewBox="0 0 160 160" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="80" cy="80" r="72" className="stroke-button/40" strokeWidth="0.5" fill="none" />
+              <circle cx="80" cy="80" r="68" className="stroke-button/25" strokeWidth="0.3" fill="none" />
+              <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" className="fill-button/60" />
+              <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" className="fill-button/60" />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center gap-2">
+              <span className="serif-font text-[2.5rem] font-light text-text-heading tracking-wide">{initialMireasa}</span>
+              <span className="script-font text-2xl text-button/80 italic">&amp;</span>
+              <span className="serif-font text-[2.5rem] font-light text-text-heading tracking-wide">{initialMire}</span>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <div className="flex items-center justify-center gap-3">
+              <span className="block w-12 h-px bg-button/30" />
+              <Heart size={24} weight="fill" className="text-button/60" />
+              <span className="block w-12 h-px bg-button/30" />
+            </div>
+            <p className="serif-font text-xl text-text-heading font-light mt-2 tracking-wide">{dateDisplay}</p>
+          </div>
+
+          {guest && audience && (
+            <div className="mb-3 px-6">
+              <p className="serif-font text-base italic text-text-muted mb-1">
+                {getGreeting(audience, false, slug)}
+              </p>
+              <p className="serif-font text-xl text-text-heading font-light">
+                {formatGuestNames(guest)}
+              </p>
+            </div>
+          )}
+
+          <div className="px-6">
+            <p className="text-xs tracking-[0.4em] uppercase text-button mb-2 font-medium">
+              {audience ? getInvitationLine(audience) : "Cu drag vă invităm"}
+            </p>
+            <h2 className="serif-font text-2xl font-light italic text-text-heading leading-relaxed mb-4">
+              {audience ? getAlaturiLine(audience) : "Să fiți alături de noi"}
+            </h2>
+            <SmallFlourish className="mx-auto my-4" />
+            <p className="body-font text-[0.9rem] leading-[1.8] text-foreground mt-4 max-w-md mx-auto">
+              {guest ? personalizedText : defaultText}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="content-section bg-background relative overflow-hidden">

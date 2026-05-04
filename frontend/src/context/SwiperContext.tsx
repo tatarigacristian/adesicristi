@@ -19,10 +19,15 @@ export function useSwiper() {
 export function useSlideTo() {
   const swiper = useContext(SwiperContext);
   return (sectionId: string) => {
-    if (!swiper) return;
-    const index = SLIDE_IDS.indexOf(sectionId as typeof SLIDE_IDS[number]);
-    if (index >= 0) {
-      swiper.slideTo(index, 800);
+    if (swiper) {
+      const index = SLIDE_IDS.indexOf(sectionId as typeof SLIDE_IDS[number]);
+      if (index >= 0) {
+        swiper.slideTo(index, 800);
+      }
+      return;
     }
+    if (typeof document === "undefined") return;
+    const el = document.querySelector(`[data-section="${sectionId}"]`);
+    (el as HTMLElement | null)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 }

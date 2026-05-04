@@ -163,6 +163,30 @@ html.swiper-lock body {
   }
 }
 
+/* Scroll mode — applied when viewport height < 650px (no Swiper, body scrolls) */
+body.scroll-mode {
+  overflow: auto;
+}
+
+body.scroll-mode .right-panel {
+  overflow: visible;
+  height: auto !important;
+}
+
+body.scroll-mode .content-section {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+@supports (height: 100dvh) {
+  body.scroll-mode .content-section {
+    min-height: 100dvh;
+  }
+}
+
 /* Section layout wrappers (mobile-first: title → content → footer) */
 .section-header {
   flex-shrink: 0;

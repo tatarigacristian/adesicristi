@@ -32,5 +32,28 @@ export function useSlideActive(sectionId: typeof SLIDE_IDS[number]) {
     return () => { swiper.off("slideChangeTransitionEnd", handleChange); };
   }, [swiper, sectionIndex, handleChange]);
 
+  // Scroll-mode fallback: trigger show via IntersectionObserver
+  useEffect(() => {
+    if (swiper) return;
+    const el = document.querySelector(`[data-section="${sectionId}"]`);
+    if (!el) {
+      // No wrapper found — likely a non-scroll-mode render path. Show immediately.
+      setShow(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setShow(true);
+          }
+        }
+      },
+      { threshold: 0.15 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [swiper, sectionId]);
+
   return show;
 }
