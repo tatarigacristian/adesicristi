@@ -4,22 +4,17 @@ import { jsPDF } from "jspdf";
 const A4_W_MM = 210;
 const A4_H_MM = 297;
 
-// Convert CSS pixels (1px = 1/96 inch) to mm
-const PX_TO_MM = 25.4 / 96;
+// Card body: 9cm × 5.5cm landscape (no padding)
+const CARD_RAW_LANDSCAPE_W_MM = 90;
+const CARD_RAW_LANDSCAPE_H_MM = 55;
+const CARD_PORTRAIT_ASPECT = CARD_RAW_LANDSCAPE_H_MM / CARD_RAW_LANDSCAPE_W_MM; // ~0.611
 
-// Card body: 9cm × 5.5cm landscape, plus 10px padding on each side (cropmark area)
-const CARD_PAD_MM = 10 * PX_TO_MM;
-const CARD_RAW_LANDSCAPE_W_MM = 90 + 2 * CARD_PAD_MM; // ~95.29
-const CARD_RAW_LANDSCAPE_H_MM = 55 + 2 * CARD_PAD_MM; // ~60.29
-const CARD_PORTRAIT_ASPECT = CARD_RAW_LANDSCAPE_H_MM / CARD_RAW_LANDSCAPE_W_MM; // ~0.633
-
-// Maximize cards in 2×2 grid: constrained by A4 height with small vertical margin.
-const CARD_PAGE_V_MARGIN_MM = 5;
-const CARD_PORTRAIT_H_MM = (A4_H_MM - 2 * CARD_PAGE_V_MARGIN_MM) / 2; // 143.5
-const CARD_PORTRAIT_W_MM = CARD_PORTRAIT_H_MM * CARD_PORTRAIT_ASPECT; // ~90.79
+// Maximize cards in 2×2 grid: constrained by A4 height (cards touch top/bottom edges).
+const CARD_PORTRAIT_H_MM = A4_H_MM / 2; // 148.5
+const CARD_PORTRAIT_W_MM = CARD_PORTRAIT_H_MM * CARD_PORTRAIT_ASPECT; // ~93.96
 const CARDS_GRID_W_MM = 2 * CARD_PORTRAIT_W_MM;
-const CARDS_X0_MM = (A4_W_MM - CARDS_GRID_W_MM) / 2; // ~14.21
-const CARDS_Y0_MM = CARD_PAGE_V_MARGIN_MM;
+const CARDS_X0_MM = (A4_W_MM - CARDS_GRID_W_MM) / 2; // ~11.04
+const CARDS_Y0_MM = 0;
 
 // Front layout positions (col, row) for 4 cards
 const FRONT_POSITIONS: [number, number][] = [

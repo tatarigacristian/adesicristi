@@ -228,8 +228,8 @@ export function buildCardStyles(s: CardWeddingSettings | null): string {
     .card-page-root { font-family: var(--font-montserrat), 'Montserrat', sans-serif; }
     .card-page-root .print-page { display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; gap: 2rem; }
     .card-page-root .cards-container { display: flex; gap: 2.5rem; flex-wrap: wrap; justify-content: center; }
-    .card-page-root .card-face { width: calc(9cm + 20px); height: calc(5.5cm + 20px); padding: 10px; box-sizing: border-box; background: transparent; position: relative; }
-    .card-page-root .card-outer { width: 100%; height: 100%; box-sizing: border-box; background: ${main}; box-shadow: 0 4px 24px rgba(0,0,0,0.06); position: relative; z-index: 1; }
+    .card-page-root .card-face { width: 9cm; height: 5.5cm; padding: 0; box-sizing: border-box; background: transparent; position: relative; }
+    .card-page-root .card-outer { width: 100%; height: 100%; box-sizing: border-box; background: ${main}; position: relative; z-index: 1; }
     .card-page-root .card-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.5cm 0.7cm; position: relative; border: 0.5px solid ${button}; margin: 4px; width: calc(100% - 8px); height: calc(100% - 8px); box-sizing: border-box; border-radius: 2px; }
     .card-page-root .corner-ornament { position: absolute; width: 22px; height: 22px; }
     .card-page-root .corner-ornament.top-left { top: 2px; left: 2px; }
