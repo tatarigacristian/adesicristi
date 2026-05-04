@@ -93,8 +93,14 @@ export default function PrintPage() {
     return m;
   }, [allGuests]);
 
-  const available = useMemo(() => allGuests.filter((g) => !selectedIds.has(g.id)), [allGuests, selectedIds]);
-  const selected = useMemo(() => allGuests.filter((g) => selectedIds.has(g.id)), [allGuests, selectedIds]);
+  // Filter out partner rows (they show inline with their main guest, who carries the personalized message)
+  const mainGuests = useMemo(() => {
+    const partnerIds = new Set(allGuests.filter((g) => g.partner_id && g.plus_one).map((g) => g.partner_id));
+    return allGuests.filter((g) => !partnerIds.has(g.id));
+  }, [allGuests]);
+
+  const available = useMemo(() => mainGuests.filter((g) => !selectedIds.has(g.id)), [mainGuests, selectedIds]);
+  const selected = useMemo(() => mainGuests.filter((g) => selectedIds.has(g.id)), [mainGuests, selectedIds]);
 
   const matches = (g: GuestRecord, q: string) => {
     if (!q.trim()) return true;
