@@ -9,6 +9,7 @@ import { Printer, Users, MagnifyingGlass, ArrowSquareRight, ArrowSquareLeft, War
 
 import { safeToPng } from "@/utils/safari-png";
 import { sanitizeForFilename } from "@/utils/slug-sanitize";
+import { buildCardPdf, buildPersonalisatClassicPdf } from "@/utils/print-pdf";
 import { CardFront, CardBack, buildCardStyles, type CardGuestData, type CardPartnerData, type CardWeddingSettings } from "@/components/print/CardCanvas";
 import { PersonalisatClassicCard, type PCGuestData, type PCPartnerData, type PCWeddingSettings } from "@/components/print/PersonalisatClassicCanvas";
 
@@ -16,6 +17,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://adesicristi.vercel.app";
 
 type DesignKey = "card" | "classic_personalizat";
+type FormatKey = "png" | "pdf";
 
 interface GuestRecord {
   id: number;
@@ -51,6 +53,7 @@ export default function PrintPage() {
   const [loading, setLoading] = useState(true);
 
   const [design, setDesign] = useState<DesignKey>("card");
+  const [format, setFormat] = useState<FormatKey>("png");
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [searchAvail, setSearchAvail] = useState("");
   const [searchSel, setSearchSel] = useState("");
@@ -131,7 +134,9 @@ export default function PrintPage() {
     setDone(null);
     setProgress({ current: 0, total: selected.length });
 
-    const zip = new JSZip();
+    const zip = format === "png" ? new JSZip() : null;
+    const cardPairs: { frontPng: string; backPng: string }[] = [];
+    const pcPngs: string[] = [];
     const failed: string[] = [];
 
     for (let i = 0; i < selected.length; i++) {
@@ -163,15 +168,23 @@ export default function PrintPage() {
           if (!front || !back) throw new Error("Card faces not rendered");
           const frontPng = await safeToPng(front);
           const backPng = await safeToPng(back);
-          const folder = zip.folder(`${slug}_card`);
-          if (!folder) throw new Error("Could not create zip folder");
-          folder.file(`${slug}_card_fata.png`, await dataUrlToUint8(frontPng));
-          folder.file(`${slug}_card_verso.png`, await dataUrlToUint8(backPng));
+          if (zip) {
+            const folder = zip.folder(`${slug}_card`);
+            if (!folder) throw new Error("Could not create zip folder");
+            folder.file(`${slug}_card_fata.png`, await dataUrlToUint8(frontPng));
+            folder.file(`${slug}_card_verso.png`, await dataUrlToUint8(backPng));
+          } else {
+            cardPairs.push({ frontPng, backPng });
+          }
         } else {
           const root = renderRef.current.querySelector<HTMLElement>(".pc-root");
           if (!root) throw new Error("Invitation not rendered");
           const png = await safeToPng(root);
-          zip.file(`${slug}_classic_personalizat.png`, await dataUrlToUint8(png));
+          if (zip) {
+            zip.file(`${slug}_classic_personalizat.png`, await dataUrlToUint8(png));
+          } else {
+            pcPngs.push(png);
+          }
         }
       } catch (err) {
         failed.push(`${guest.prenume} ${guest.nume}${err instanceof Error ? ` (${err.message})` : ""}`);
@@ -182,17 +195,28 @@ export default function PrintPage() {
     }
 
     try {
-      const blob = await zip.generateAsync({ type: "blob" });
-      const filename = `print_${design}_${nowStamp()}.zip`;
-      saveAs(blob, filename);
-      setDone(`Arhiva ${filename} a fost generată${failed.length ? ` (${failed.length} erori)` : ""}.`);
+      const stamp = nowStamp();
+      if (zip) {
+        const blob = await zip.generateAsync({ type: "blob" });
+        const filename = `print_${design}_${stamp}.zip`;
+        saveAs(blob, filename);
+        setDone(`Arhiva ${filename} a fost generată${failed.length ? ` (${failed.length} erori)` : ""}.`);
+      } else {
+        const pdfOptions = { backgroundColor: settings.color_main || "#FDF8F7" };
+        const blob = design === "card"
+          ? await buildCardPdf(cardPairs, pdfOptions)
+          : await buildPersonalisatClassicPdf(pcPngs, pdfOptions);
+        const filename = `print_${design}_${stamp}.pdf`;
+        saveAs(blob, filename);
+        setDone(`Fișierul ${filename} a fost generat${failed.length ? ` (${failed.length} erori)` : ""}.`);
+      }
     } catch (err) {
-      failed.push(`ZIP generation failed: ${err instanceof Error ? err.message : String(err)}`);
+      failed.push(`${format.toUpperCase()} generation failed: ${err instanceof Error ? err.message : String(err)}`);
     }
 
     setErrors(failed);
     setPrinting(false);
-  }, [settings, selected, printing, design, partnerById]);
+  }, [settings, selected, printing, design, format, partnerById]);
 
   if (loading) return <div className="p-8 text-text-muted">Se încarcă...</div>;
   if (!settings) return <div className="p-8 text-text-muted">Setările nu au fost încărcate.</div>;
@@ -204,18 +228,40 @@ export default function PrintPage() {
         <h1 className="text-xl font-semibold text-text-heading">Print invitații</h1>
       </div>
 
-      {/* Design selector */}
-      <div className="family-card mb-4">
-        <label className="block text-xs text-text-muted mb-2 tracking-wide uppercase">Design</label>
-        <select
-          value={design}
-          onChange={(e) => setDesign(e.target.value as DesignKey)}
-          disabled={printing}
-          className="w-full sm:w-72 border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent"
-        >
-          <option value="card">Card (față + verso)</option>
-          <option value="classic_personalizat">Classic Personalizat</option>
-        </select>
+      {/* Design + format selectors */}
+      <div className="family-card mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs text-text-muted mb-2 tracking-wide uppercase">Design</label>
+          <select
+            value={design}
+            onChange={(e) => setDesign(e.target.value as DesignKey)}
+            disabled={printing}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent"
+          >
+            <option value="card">Card (față + verso)</option>
+            <option value="classic_personalizat">Classic Personalizat</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs text-text-muted mb-2 tracking-wide uppercase">Format</label>
+          <div className="flex gap-2">
+            {(["png", "pdf"] as FormatKey[]).map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setFormat(f)}
+                disabled={printing}
+                className={`flex-1 px-3 py-2 rounded-lg text-sm border transition-colors cursor-pointer disabled:opacity-50 ${
+                  format === f
+                    ? "border-button bg-button text-white"
+                    : "border-gray-300 bg-white text-text-heading hover:border-button"
+                }`}
+              >
+                {f.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Two sections */}
