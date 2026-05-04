@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import QRCode from "qrcode";
@@ -141,8 +141,11 @@ export default function PrintPage() {
           qrDataUrl = await QRCode.toDataURL(url, { width: 512, margin: 2, color: { dark: qrColor, light: "#ffffff" } });
         }
 
-        setRenderTarget({ guest, partner, qrDataUrl });
-        // Wait for DOM commit + fonts settle
+        // Force a synchronous unmount of the previous guest's render before
+        // mounting the next one. The two-step (null → guest) plus flushSync
+        // guarantees React has committed a fresh DOM tree before we capture.
+        flushSync(() => { setRenderTarget(null); });
+        flushSync(() => { setRenderTarget({ guest, partner, qrDataUrl }); });
         await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
         await new Promise((r) => setTimeout(r, 250));
 
@@ -342,7 +345,7 @@ export default function PrintPage() {
       {typeof window !== "undefined" && createPortal(
         <div ref={renderRef} style={{ position: "fixed", left: -10000, top: 0, pointerEvents: "none", zIndex: -1 }} aria-hidden>
           {renderTarget && design === "card" && (
-            <div className="card-page-root">
+            <div key={`card-${renderTarget.guest.id}`} className="card-page-root">
               <style>{buildCardStyles(settings)}</style>
               <div className="cards-container" lang="ro" style={{ background: settings.color_main || "#FDF8F7", padding: 5, fontSynthesis: "none", textRendering: "geometricPrecision" }}>
                 <CardFront guest={renderTarget.guest as CardGuestData} partner={renderTarget.partner as CardPartnerData | null} settings={settings as CardWeddingSettings} qrDataUrl={renderTarget.qrDataUrl} />
@@ -351,7 +354,7 @@ export default function PrintPage() {
             </div>
           )}
           {renderTarget && design === "classic_personalizat" && (
-            <div className="pc-root" lang="ro" style={{ fontSynthesis: "none", textRendering: "geometricPrecision" }}>
+            <div key={`pc-${renderTarget.guest.id}`} className="pc-root" lang="ro" style={{ fontSynthesis: "none", textRendering: "geometricPrecision" }}>
               <PersonalisatClassicCard guest={renderTarget.guest as PCGuestData} partner={renderTarget.partner as PCPartnerData | null} settings={settings as PCWeddingSettings} />
             </div>
           )}
