@@ -99,11 +99,12 @@ export function CardFront({ guest, partner, settings, qrDataUrl }: { guest: Card
   return (
     <div className="card-face card-front">
       <div className="card-outer">
-      <div className="card-inner" style={{ display: "grid", placeContent: "center", justifyItems: "center", padding: "0.3cm 0.8cm", gap: 0 }}>
+      <div className="card-inner" style={{ padding: "0.3cm 0.8cm" }}>
         <CornerOrnament position="top-left" color={accent} />
         <CornerOrnament position="top-right" color={accent} />
         <CornerOrnament position="bottom-left" color={accent} />
         <CornerOrnament position="bottom-right" color={accent} />
+        <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, margin: "auto", height: "fit-content", display: "flex", flexDirection: "column", alignItems: "center", paddingLeft: "0.8cm", paddingRight: "0.8cm", boxSizing: "border-box" }}>
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%", gap: "0.5cm" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
             <div style={{ width: 80, height: 80 }}>
@@ -137,6 +138,7 @@ export function CardFront({ guest, partner, settings, qrDataUrl }: { guest: Card
           <span style={{ display: "block", width: 30, height: 1, background: `linear-gradient(to right, transparent, ${accent}, transparent)` }} />
         </div>
         <p className="card-date" style={{ fontSize: "0.35rem", marginTop: "0.1cm", fontWeight: 600 }}>{dateDisplay}</p>
+        </div>
       </div>
       </div>
     </div>
