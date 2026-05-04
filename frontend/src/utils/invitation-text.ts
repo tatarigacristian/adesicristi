@@ -59,9 +59,9 @@ export function getAsteptamLine(audience: InvitationAudience): string {
   return audience.hasPartner ? "Vă așteptăm cu drag!" : "Te așteptăm cu drag!";
 }
 
-/** Formă scurtă pentru design: "Te așteptăm cu drag!" / "Vă așteptăm cu drag!" */
-export function getAsteptamLineShort(audience: InvitationAudience): string {
-  return audience.hasPartner ? "Vă așteptăm cu drag!" : "Te așteptăm cu drag!";
+/** Formă scurtă pentru invitațiile classic — întotdeauna plural formal. */
+export function getAsteptamLineShort(_audience: InvitationAudience): string {
+  return "Vă așteptăm cu drag!";
 }
 
 /**

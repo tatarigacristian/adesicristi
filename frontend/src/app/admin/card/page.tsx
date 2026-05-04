@@ -113,14 +113,14 @@ function CardFront({
   return (
     <div className="card-face card-front">
       <div className="card-outer">
-      <div className="card-inner" style={{ flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0.3cm 0.8cm", gap: 0 }}>
+      <div className="card-inner" style={{ display: "grid", placeContent: "center", justifyItems: "center", padding: "0.3cm 0.8cm", gap: 0 }}>
         <CornerOrnament position="top-left" color={accent} />
         <CornerOrnament position="top-right" color={accent} />
         <CornerOrnament position="bottom-left" color={accent} />
         <CornerOrnament position="bottom-right" color={accent} />
 
         {/* Row: monogram + divider + QR */}
-        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%", flex: 1, gap: "0.5cm" }}>
+        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%", gap: "0.5cm" }}>
 
           {/* Left side - Monogram + text */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
@@ -368,7 +368,7 @@ function buildStyles(s: WeddingSettings | null) {
       width: 100%;
       height: 100%;
       box-sizing: border-box;
-      background: ${bgCard};
+      background: ${main};
       box-shadow: 0 4px 24px rgba(0,0,0,0.06);
       position: relative;
       z-index: 1;
@@ -450,7 +450,7 @@ function buildStyles(s: WeddingSettings | null) {
 
     /* Back card */
     .card-page-root .card-back {
-      background: ${bgCard};
+      background: transparent;
     }
 
     .card-page-root .card-greeting {

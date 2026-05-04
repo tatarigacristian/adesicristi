@@ -99,12 +99,12 @@ export function CardFront({ guest, partner, settings, qrDataUrl }: { guest: Card
   return (
     <div className="card-face card-front">
       <div className="card-outer">
-      <div className="card-inner" style={{ flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0.3cm 0.8cm", gap: 0 }}>
+      <div className="card-inner" style={{ display: "grid", placeContent: "center", justifyItems: "center", padding: "0.3cm 0.8cm", gap: 0 }}>
         <CornerOrnament position="top-left" color={accent} />
         <CornerOrnament position="top-right" color={accent} />
         <CornerOrnament position="bottom-left" color={accent} />
         <CornerOrnament position="bottom-right" color={accent} />
-        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%", flex: 1, gap: "0.5cm" }}>
+        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%", gap: "0.5cm" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
             <div style={{ width: 80, height: 80 }}>
               <svg width="80" height="80" viewBox="0 0 160 160" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
@@ -227,7 +227,7 @@ export function buildCardStyles(s: CardWeddingSettings | null): string {
     .card-page-root .print-page { display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; gap: 2rem; }
     .card-page-root .cards-container { display: flex; gap: 2.5rem; flex-wrap: wrap; justify-content: center; }
     .card-page-root .card-face { width: calc(9cm + 20px); height: calc(5.5cm + 20px); padding: 10px; box-sizing: border-box; background: transparent; position: relative; }
-    .card-page-root .card-outer { width: 100%; height: 100%; box-sizing: border-box; background: ${bgCard}; box-shadow: 0 4px 24px rgba(0,0,0,0.06); position: relative; z-index: 1; }
+    .card-page-root .card-outer { width: 100%; height: 100%; box-sizing: border-box; background: ${main}; box-shadow: 0 4px 24px rgba(0,0,0,0.06); position: relative; z-index: 1; }
     .card-page-root .card-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.5cm 0.7cm; position: relative; border: 0.5px solid ${button}; margin: 4px; width: calc(100% - 8px); height: calc(100% - 8px); box-sizing: border-box; border-radius: 2px; }
     .card-page-root .corner-ornament { position: absolute; width: 22px; height: 22px; }
     .card-page-root .corner-ornament.top-left { top: 2px; left: 2px; }
