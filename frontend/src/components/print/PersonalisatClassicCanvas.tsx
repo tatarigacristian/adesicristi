@@ -137,22 +137,22 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
 
   return (
     <div style={{ position: "relative", padding: "10px", background: "transparent", fontFamily: "'Montserrat', sans-serif" }}>
-      <div style={{ width: "15cm", minHeight: "30cm", background: c.bg, padding: "0.6cm", position: "relative" }}>
-        <div style={{ border: `1px solid ${c.ornament}`, padding: "1.6cm 1.5cm", minHeight: "calc(30cm - 1.2cm)", fontFamily: f.serif, color: c.primary, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.3cm", position: "relative" }}>
+      <div style={{ width: "15cm", minHeight: "30cm", background: c.bg, padding: "0.3cm", position: "relative" }}>
+        <div style={{ border: `1px solid ${c.ornament}`, padding: "1cm 1.1cm", minHeight: "calc(30cm - 0.6cm)", fontFamily: f.serif, color: c.primary, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.3cm", position: "relative" }}>
           <CornerOrnament color={c.ornament} style={{ top: -2, left: -2 }} />
           <CornerOrnament color={c.ornament} style={{ top: -2, right: -2, transform: "scaleX(-1)" }} />
           <CornerOrnament color={c.ornament} style={{ bottom: -2, left: -2, transform: "scaleY(-1)" }} />
           <CornerOrnament color={c.ornament} style={{ bottom: -2, right: -2, transform: "scale(-1, -1)" }} />
           <div style={{ marginBottom: "0.2cm", marginTop: "0.1cm" }}>
             <svg width="200" height="200" viewBox="0 0 160 160" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
-              <circle cx="80" cy="80" r="72" stroke={c.ornament} strokeWidth="0.5" fill="none" />
-              <circle cx="80" cy="80" r="68" stroke={c.ornament} strokeWidth="0.3" fill="none" />
-              <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={c.ornament} />
-              <path d="M80 154 Q74 154, 68 150 Q64 147, 68 144 Q72 146, 76 149 Q78 151, 80 152 Q82 151, 84 149 Q88 146, 92 144 Q96 147, 92 150 Q86 154, 80 154Z" fill={c.ornament} />
-              <text x="80" y="80" textAnchor="middle" dominantBaseline="central" fontFamily={f.serif} fontSize="49" fontWeight="600" fill={c.primary}>
+              <circle cx="80" cy="80" r="72" stroke={c.ornament} strokeWidth="0.6" fill="none" />
+              <circle cx="80" cy="80" r="64" stroke={c.ornament} strokeWidth="0.4" fill="none" />
+              <path d="M80 4 Q72 4, 64 9 Q58 13, 64 17 Q70 14, 76 10 Q78 8, 80 7 Q82 8, 84 10 Q90 14, 96 17 Q102 13, 96 9 Q88 4, 80 4Z" fill={c.ornament} />
+              <path d="M80 156 Q72 156, 64 151 Q58 147, 64 143 Q70 146, 76 150 Q78 152, 80 153 Q82 152, 84 150 Q90 146, 96 143 Q102 147, 96 151 Q88 156, 80 156Z" fill={c.ornament} />
+              <text x="80" y="80" textAnchor="middle" dominantBaseline="central" fontFamily={f.serif} fontSize="44" fontWeight="500" fill={c.primary}>
                 <tspan>{initialMireasa}</tspan>
-                <tspan dx="6" fontFamily={f.script} fontSize="27" fill={c.muted}>&amp;</tspan>
-                <tspan dx="6">{initialMire}</tspan>
+                <tspan dx="4" fontFamily={f.script} fontSize="38" fontWeight="400" fill={c.muted}>&amp;</tspan>
+                <tspan dx="4">{initialMire}</tspan>
               </text>
             </svg>
           </div>
