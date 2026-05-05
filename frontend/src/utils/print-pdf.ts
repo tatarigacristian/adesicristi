@@ -24,9 +24,11 @@ const FRONT_POSITIONS: [number, number][] = [
   [1, 1], // BR
 ];
 
-// Pre-mirror columns so that after the printer's long-edge duplex flip swaps
-// left/right within each row, each card's back lands on its own front.
-const BACK_FOR_FRONT_INDEX = [1, 0, 3, 2];
+// Back page is rendered as a whole rotated 180° vs the front:
+// columns swap AND rows swap (TL↔BR, TR↔BL). Combined with the back image
+// being rotated -90° (instead of +90°), the whole verso page appears upside
+// down, which is what compensates for this printer's duplex behavior.
+const BACK_FOR_FRONT_INDEX = [2, 3, 0, 1];
 
 // PC invitation (15cm × 21cm) rotated 90° = 21cm × 15cm landscape, ratio 21/15 = 1.4
 const PC_RATIO = 21 / 15;
@@ -96,7 +98,7 @@ export async function buildCardPdf(pairs: CardPair[], options: PdfBuildOptions =
     const rotated = await Promise.all(
       slice.map(async (p) => ({
         front: await rotatePngDataUrl(p.frontPng, 90),
-        back: await rotatePngDataUrl(p.backPng, 90),
+        back: await rotatePngDataUrl(p.backPng, -90),
       })),
     );
 
@@ -110,7 +112,7 @@ export async function buildCardPdf(pairs: CardPair[], options: PdfBuildOptions =
       doc.addImage(rotated[i].front, "PNG", x, y, CARD_PORTRAIT_W_MM, CARD_PORTRAIT_H_MM, undefined, "FAST");
     }
 
-    // ── Back page (columns pre-mirrored to compensate for duplex flip)
+    // ── Back page (whole page rotated 180° vs front)
     doc.addPage();
     fillPageBackground(doc, options.backgroundColor);
     for (let i = 0; i < rotated.length; i++) {
