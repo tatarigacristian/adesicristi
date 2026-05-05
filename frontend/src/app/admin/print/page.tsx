@@ -16,7 +16,7 @@ import { PersonalisatClassicCard, type PCGuestData, type PCPartnerData, type PCW
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://adesicristi.vercel.app";
 
-type DesignKey = "card" | "classic_personalizat";
+type DesignKey = "card" | "classic_personalizat" | "classic";
 type FormatKey = "png" | "pdf";
 
 interface GuestRecord {
@@ -57,6 +57,7 @@ export default function PrintPage() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [searchAvail, setSearchAvail] = useState("");
   const [searchSel, setSearchSel] = useState("");
+  const [classicCount, setClassicCount] = useState(1);
 
   const [printing, setPrinting] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
@@ -128,17 +129,59 @@ export default function PrintPage() {
   }
 
   const handlePrint = useCallback(async () => {
-    if (!settings || selected.length === 0 || printing) return;
+    if (!settings || printing) return;
+    if (design === "classic") {
+      if (classicCount < 1) return;
+    } else if (selected.length === 0) {
+      return;
+    }
     setPrinting(true);
     setErrors([]);
     setDone(null);
-    setProgress({ current: 0, total: selected.length });
 
     const zip = format === "png" ? new JSZip() : null;
     const cardPairs: { frontPng: string; backPng: string }[] = [];
     const pcPngs: string[] = [];
     const failed: string[] = [];
 
+    if (design === "classic") {
+      setProgress({ current: 0, total: 1 });
+      try {
+        const fakeGuest: GuestRecord = { id: 0, nume: "", prenume: "", plus_one: true, intro_short: null, intro_long: null, slug: null, partner_id: null, sex: null };
+        flushSync(() => { setRenderTarget(null); });
+        flushSync(() => { setRenderTarget({ guest: fakeGuest, partner: null, qrDataUrl: "" }); });
+        await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+        await new Promise((r) => setTimeout(r, 250));
+
+        const root = renderRef.current?.querySelector<HTMLElement>(".pc-root");
+        if (!root) throw new Error("Invitation not rendered");
+        const png = await safeToPng(root);
+
+        const stamp = nowStamp();
+        if (format === "png") {
+          const blob = await (await fetch(png)).blob();
+          saveAs(blob, `print_classic_${stamp}.png`);
+          setDone(`Fișierul print_classic_${stamp}.png a fost generat.`);
+        } else {
+          for (let i = 0; i < classicCount; i++) pcPngs.push(png);
+          const pdfOptions = { backgroundColor: settings.color_main || "#FDF8F7" };
+          const blob = await buildPersonalisatClassicPdf(pcPngs, pdfOptions);
+          const filename = `print_classic_${stamp}.pdf`;
+          saveAs(blob, filename);
+          setDone(`Fișierul ${filename} a fost generat (${classicCount} invitații).`);
+        }
+        setProgress({ current: 1, total: 1 });
+      } catch (err) {
+        failed.push(`Classic generation failed: ${err instanceof Error ? err.message : String(err)}`);
+      } finally {
+        setRenderTarget(null);
+      }
+      setErrors(failed);
+      setPrinting(false);
+      return;
+    }
+
+    setProgress({ current: 0, total: selected.length });
     for (let i = 0; i < selected.length; i++) {
       const guest = selected[i];
       const partner = guest.partner_id ? partnerById.get(guest.partner_id) ?? null : null;
@@ -216,7 +259,7 @@ export default function PrintPage() {
 
     setErrors(failed);
     setPrinting(false);
-  }, [settings, selected, printing, design, format, partnerById]);
+  }, [settings, selected, printing, design, format, partnerById, classicCount]);
 
   if (loading) return <div className="p-8 text-text-muted">Se încarcă...</div>;
   if (!settings) return <div className="p-8 text-text-muted">Setările nu au fost încărcate.</div>;
@@ -240,6 +283,7 @@ export default function PrintPage() {
           >
             <option value="card">Card (față + verso)</option>
             <option value="classic_personalizat">Classic Personalizat</option>
+            <option value="classic">Classic (general)</option>
           </select>
         </div>
         <div>
@@ -264,7 +308,27 @@ export default function PrintPage() {
         </div>
       </div>
 
+      {/* Classic generic: just a copy count */}
+      {design === "classic" && (
+        <div className="family-card">
+          <label className="block text-xs text-text-muted mb-2 tracking-wide uppercase">Număr invitații</label>
+          <input
+            type="number"
+            min={1}
+            max={500}
+            value={classicCount}
+            onChange={(e) => setClassicCount(Math.max(1, Math.min(500, parseInt(e.target.value || "1", 10) || 1)))}
+            disabled={printing}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent"
+          />
+          <p className="mt-2 text-xs text-text-muted">
+            Cardul classic se generează identic, în versiune plural (fără nume), și se așază tot 3 pe pagina A4.
+          </p>
+        </div>
+      )}
+
       {/* Two sections */}
+      {design !== "classic" && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Available */}
         <div className="family-card">
@@ -354,18 +418,23 @@ export default function PrintPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Print bar */}
       <div className="family-card mt-4 sticky bottom-2 z-10 bg-white">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <p className="text-sm text-text-heading">
-            <strong>{selected.length}</strong> invitați selectați
+            {design === "classic" ? (
+              <><strong>{classicCount}</strong> invitații</>
+            ) : (
+              <><strong>{selected.length}</strong> invitați selectați</>
+            )}
             {printing && <span className="ml-3 text-text-muted">{progress.current}/{progress.total} generate...</span>}
           </p>
-          <button onClick={handlePrint} disabled={printing || selected.length === 0}
+          <button onClick={handlePrint} disabled={printing || (design === "classic" ? classicCount < 1 : selected.length === 0)}
             className="bg-button text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-button-hover transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-2">
             <Printer size={16} weight="duotone" />
-            {printing ? "Se generează..." : `Print ${selected.length} invitați`}
+            {printing ? "Se generează..." : design === "classic" ? `Print ${classicCount} invitații` : `Print ${selected.length} invitați`}
           </button>
         </div>
         {printing && progress.total > 0 && (
@@ -405,9 +474,9 @@ export default function PrintPage() {
               </div>
             </div>
           )}
-          {renderTarget && design === "classic_personalizat" && (
-            <div key={`pc-${renderTarget.guest.id}`} className="pc-root" lang="ro" style={{ fontSynthesis: "none", textRendering: "geometricPrecision" }}>
-              <PersonalisatClassicCard guest={renderTarget.guest as PCGuestData} partner={renderTarget.partner as PCPartnerData | null} settings={settings as PCWeddingSettings} />
+          {renderTarget && (design === "classic_personalizat" || design === "classic") && (
+            <div key={`pc-${design}-${renderTarget.guest.id}`} className="pc-root" lang="ro" style={{ fontSynthesis: "none", textRendering: "geometricPrecision" }}>
+              <PersonalisatClassicCard guest={renderTarget.guest as PCGuestData} partner={renderTarget.partner as PCPartnerData | null} settings={settings as PCWeddingSettings} generic={design === "classic"} />
             </div>
           )}
         </div>,

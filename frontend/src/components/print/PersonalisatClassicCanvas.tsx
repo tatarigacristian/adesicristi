@@ -104,7 +104,7 @@ function SmallFlourish({ color }: { color: string }) {
   );
 }
 
-export function PersonalisatClassicCard({ guest, partner, settings }: { guest: PCGuestData; partner: PCPartnerData | null; settings: PCWeddingSettings }) {
+export function PersonalisatClassicCard({ guest, partner, settings, generic = false }: { guest: PCGuestData; partner: PCPartnerData | null; settings: PCWeddingSettings; generic?: boolean }) {
   const mireasa = settings.nume_mireasa || "Ade";
   const mire = settings.nume_mire || "Cristi";
   const initialMireasa = mireasa.charAt(0).toUpperCase();
@@ -117,7 +117,9 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
   const confirmareDate = settings.confirmare_pana_la ? new Date(settings.confirmare_pana_la).toLocaleDateString("ro-RO", { day: "numeric", month: "long" }) : "";
 
   const c = buildPalette(settings);
-  const audience = getInvitationAudience(!!partner || !!(guest.children && guest.children.length > 0), guest.sex ?? null);
+  const audience = generic
+    ? getInvitationAudience(true, null)
+    : getInvitationAudience(!!partner || !!(guest.children && guest.children.length > 0), guest.sex ?? null);
   const f = { mont: "'Montserrat', sans-serif" as const, serif: "'Cormorant Garamond', serif" as const, script: "'Alex Brush', cursive" as const, upper: "uppercase" as const };
 
   const parintiMireasaNames = settings.tata_mireasa_prenume ? `${settings.mama_mireasa_prenume} și ${settings.tata_mireasa_prenume}` : null;
@@ -165,20 +167,22 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
           </div>
           <div style={{ textAlign: "center", marginBottom: "0.15cm" }}>
             <p style={{ fontFamily: f.serif, fontSize: "1.81rem", fontWeight: 700, color: c.primary, letterSpacing: "0.03em", margin: 0 }}>
-              {getGreeting(audience, true, guest.slug)},
+              {getGreeting(audience, true, guest.slug)}{generic ? "" : ","}
             </p>
-            <p style={{ fontFamily: f.serif, fontSize: "1.81rem", fontWeight: 700, color: c.primary, letterSpacing: "0.03em", margin: 0 }}>
-              {(() => {
-                const childNames = guest.children && guest.children.length > 0 ? guest.children.map((cc) => cc.prenume) : [];
-                if (partner) {
-                  const same = guest.nume === partner.nume;
-                  const allNames = [guest.prenume, partner.prenume, ...childNames];
-                  const last = allNames.pop()!;
-                  return same ? `${allNames.join(", ")} și ${last} ${guest.nume}` : `${allNames.join(", ")} și ${last}`;
-                }
-                return `${guest.prenume} ${guest.nume}`;
-              })()}
-            </p>
+            {!generic && (
+              <p style={{ fontFamily: f.serif, fontSize: "1.81rem", fontWeight: 700, color: c.primary, letterSpacing: "0.03em", margin: 0 }}>
+                {(() => {
+                  const childNames = guest.children && guest.children.length > 0 ? guest.children.map((cc) => cc.prenume) : [];
+                  if (partner) {
+                    const same = guest.nume === partner.nume;
+                    const allNames = [guest.prenume, partner.prenume, ...childNames];
+                    const last = allNames.pop()!;
+                    return same ? `${allNames.join(", ")} și ${last} ${guest.nume}` : `${allNames.join(", ")} și ${last}`;
+                  }
+                  return `${guest.prenume} ${guest.nume}`;
+                })()}
+              </p>
+            )}
           </div>
           {(hasNasi || hasParinti) && (
             <div style={{ textAlign: "center", marginBottom: "0.1cm", width: "100%" }}>
@@ -219,11 +223,13 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
             </div>
           )}
           <p style={{ fontFamily: f.serif, fontSize: "1.81rem", fontWeight: 700, color: c.primary, letterSpacing: "0.03em", marginTop: "0.2cm", margin: "0.2cm 0 0 0" }}>{getAlaturiLine(audience)}</p>
-          <div>
-            {(guest.intro_short || getDefaultIntroShort(audience)).split("\n").filter((l) => l.trim()).map((line, i) => (
-              <p key={i} style={{ fontSize: "1.4rem", fontFamily: f.serif, fontWeight: 600, fontStyle: "italic", color: c.secondary, letterSpacing: "0.02em", margin: 0, lineHeight: 1.4 }}>{line}</p>
-            ))}
-          </div>
+          {!generic && (
+            <div>
+              {(guest.intro_short || getDefaultIntroShort(audience)).split("\n").filter((l) => l.trim()).map((line, i) => (
+                <p key={i} style={{ fontSize: "1.4rem", fontFamily: f.serif, fontWeight: 600, fontStyle: "italic", color: c.secondary, letterSpacing: "0.02em", margin: 0, lineHeight: 1.4 }}>{line}</p>
+              ))}
+            </div>
+          )}
           <div style={{ marginBottom: "0.1cm", marginTop: "0.1cm" }}><Flourish width={252} color={c.ornament} /></div>
           <div style={{ width: "100%", display: "flex", justifyContent: "center", paddingBottom: "5px" }}>
             <svg width="336" height="28" viewBox="0 0 240 20" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
