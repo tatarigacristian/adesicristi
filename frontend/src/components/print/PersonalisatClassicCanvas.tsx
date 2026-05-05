@@ -1,7 +1,7 @@
 "use client";
 
 import { Church, Bus, Champagne } from "@phosphor-icons/react";
-import { getInvitationAudience, getGreeting, getInvitationLineUpper, getAlaturiLine, getAsteptamLineShort, getDefaultIntroShort } from "@/utils/invitation-text";
+import { getInvitationAudience, getGreeting, getAlaturiLine, getDefaultIntroShort } from "@/utils/invitation-text";
 
 export interface PCGuestData {
   id: number;
@@ -114,7 +114,7 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
   const dayOfWeek = ceremonieDateObj ? ceremonieDateObj.toLocaleDateString("ro-RO", { weekday: "long" }).toUpperCase() : "SÂMBĂTĂ";
   const dateFormatted = ceremonieDateObj ? `${String(ceremonieDateObj.getDate()).padStart(2, "0")}.${String(ceremonieDateObj.getMonth() + 1).padStart(2, "0")}` : "00.00";
   const year = ceremonieDateObj ? ceremonieDateObj.getFullYear().toString() : "2026";
-  const confirmareDate = settings.confirmare_pana_la ? new Date(settings.confirmare_pana_la).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" }) : "";
+  const confirmareDate = settings.confirmare_pana_la ? new Date(settings.confirmare_pana_la).toLocaleDateString("ro-RO", { day: "numeric", month: "long" }) : "";
 
   const c = buildPalette(settings);
   const audience = getInvitationAudience(!!partner || !!(guest.children && guest.children.length > 0), guest.sex ?? null);
@@ -138,7 +138,7 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
   return (
     <div style={{ position: "relative", padding: "10px", background: "transparent", fontFamily: "'Montserrat', sans-serif" }}>
       <div style={{ width: "15cm", minHeight: "30cm", background: c.bg, padding: "0.3cm", position: "relative" }}>
-        <div style={{ border: `1px solid ${c.ornament}`, padding: "1cm 1.1cm", minHeight: "calc(30cm - 0.6cm)", fontFamily: f.serif, color: c.primary, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.3cm", position: "relative" }}>
+        <div style={{ border: `1px solid ${c.ornament}`, padding: "1cm 0.6cm", minHeight: "calc(30cm - 0.6cm)", fontFamily: f.serif, color: c.primary, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.3cm", position: "relative" }}>
           <CornerOrnament color={c.ornament} style={{ top: -2, left: -2 }} />
           <CornerOrnament color={c.ornament} style={{ top: -2, right: -2, transform: "scaleX(-1)" }} />
           <CornerOrnament color={c.ornament} style={{ bottom: -2, left: -2, transform: "scaleY(-1)" }} />
@@ -180,49 +180,51 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
               })()}
             </p>
           </div>
-          {hasNasi && (
-            <div style={{ textAlign: "center", marginBottom: "0.1cm" }}>
-              <p style={{ fontSize: "0.85rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 700, color: c.muted, marginBottom: "0.05cm" }}>ALĂTURI DE NAȘII</p>
-              <p style={{ fontFamily: f.serif, fontSize: "1.25rem", fontWeight: 700, fontStyle: "italic", color: c.secondary }}>{nasiText}</p>
+          {(hasNasi || hasParinti) && (
+            <div style={{ textAlign: "center", marginBottom: "0.1cm", width: "100%" }}>
+              <p style={{ fontSize: "0.85rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 700, color: c.muted, marginBottom: "0.15cm" }}>
+                {hasNasi && hasParinti ? "ALĂTURI DE NAȘI ȘI PĂRINȚI" : hasNasi ? "ALĂTURI DE NAȘII" : "ÎMPREUNĂ CU PĂRINȚII"}
+              </p>
+              {hasNasi && (
+                <p style={{ fontFamily: f.serif, fontSize: "1.25rem", fontWeight: 700, fontStyle: "italic", color: c.secondary, margin: "0 0 0.15cm 0" }}>{nasiText}</p>
+              )}
+              {hasParinti && (
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "stretch", gap: "0.6cm", fontFamily: f.serif, fontSize: "1.1rem", fontWeight: 700, fontStyle: "italic", color: c.secondary }}>
+                  {(parintiMireasaNames || parintiMireasaFallback) && (
+                    <div style={{ flex: "0 1 auto", textAlign: "center" }}>
+                      {parintiMireasaNames ? (
+                        <>
+                          <div>{parintiMireasaNames}</div>
+                          {parintiMireasaFamilie && <div>{parintiMireasaFamilie}</div>}
+                        </>
+                      ) : (
+                        <div>{parintiMireasaFallback}</div>
+                      )}
+                    </div>
+                  )}
+                  {(parintiMireNames || parintiMireFallback) && (
+                    <div style={{ flex: "0 1 auto", textAlign: "center" }}>
+                      {parintiMireNames ? (
+                        <>
+                          <div>{parintiMireNames}</div>
+                          {parintiMireFamilie && <div>{parintiMireFamilie}</div>}
+                        </>
+                      ) : (
+                        <div>{parintiMireFallback}</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
-          {hasParinti && (
-            <>
-              <p style={{ fontSize: "0.85rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 700, color: c.muted, marginBottom: "0.05cm" }}>ȘI ÎMPREUNĂ CU PĂRINȚII</p>
-              <div style={{ width: "100%", display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>
-                <svg width="476" height="70" viewBox="0 0 340 50" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
-                  {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireasaNames ? (
-                    <>
-                      <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="18" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="700" fontStyle="italic" fill={c.secondary}>{parintiMireasaNames}</text>
-                      {parintiMireasaFamilie && <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="38" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="700" fontStyle="italic" fill={c.secondary}>{parintiMireasaFamilie}</text>}
-                    </>
-                  ) : (
-                    <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="28" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="700" fontStyle="italic" fill={c.secondary}>{parintiMireasaFallback}</text>
-                  ))}
-                  {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireNames || parintiMireFallback) && (
-                    <line x1="170" y1="5" x2="170" y2="45" stroke={c.ornament} strokeWidth="1" />
-                  )}
-                  {(parintiMireNames || parintiMireFallback) && (parintiMireNames ? (
-                    <>
-                      <text x={(parintiMireasaNames || parintiMireasaFallback) ? 255 : 170} y="18" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="700" fontStyle="italic" fill={c.secondary}>{parintiMireNames}</text>
-                      {parintiMireFamilie && <text x={(parintiMireasaNames || parintiMireasaFallback) ? 255 : 170} y="38" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="700" fontStyle="italic" fill={c.secondary}>{parintiMireFamilie}</text>}
-                    </>
-                  ) : (
-                    <text x={(parintiMireasaNames || parintiMireasaFallback) ? 255 : 170} y="28" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="700" fontStyle="italic" fill={c.secondary}>{parintiMireFallback}</text>
-                  ))}
-                </svg>
-              </div>
-            </>
-          )}
-          <p style={{ fontSize: "0.92rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 800, color: c.ornament, marginTop: "0.1cm" }}>{getInvitationLineUpper(audience)}</p>
-          <p style={{ fontFamily: f.script, fontSize: "2.37rem", color: c.primary, fontStyle: "italic" }}>{getAlaturiLine(audience)}</p>
-          <div style={{ marginTop: "0.1cm" }}><Flourish width={252} color={c.ornament} /></div>
+          <p style={{ fontFamily: f.serif, fontSize: "1.81rem", fontWeight: 700, color: c.primary, letterSpacing: "0.03em", marginTop: "0.2cm", margin: "0.2cm 0 0 0" }}>{getAlaturiLine(audience)}</p>
           <div>
             {(guest.intro_short || getDefaultIntroShort(audience)).split("\n").filter((l) => l.trim()).map((line, i) => (
-              <p key={i} style={{ fontSize: "1rem", fontFamily: f.serif, fontWeight: 700, fontStyle: "italic", color: c.secondary, letterSpacing: "0.05em", margin: 0 }}>{line}</p>
+              <p key={i} style={{ fontSize: "1.4rem", fontFamily: f.serif, fontWeight: 600, fontStyle: "italic", color: c.secondary, letterSpacing: "0.02em", margin: 0, lineHeight: 1.4 }}>{line}</p>
             ))}
           </div>
-          <div style={{ marginBottom: "0.1cm" }}><Flourish width={252} color={c.ornament} /></div>
+          <div style={{ marginBottom: "0.1cm", marginTop: "0.1cm" }}><Flourish width={252} color={c.ornament} /></div>
           <div style={{ width: "100%", display: "flex", justifyContent: "center", paddingBottom: "5px" }}>
             <svg width="336" height="28" viewBox="0 0 240 20" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
               <text x="90" y="15" textAnchor="end" fontFamily={f.mont} fontSize="12" fontWeight="900" style={{ letterSpacing: "0.3em" }} fill={c.primary}>{dayOfWeek}</text>
@@ -232,35 +234,33 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
               <text x="190" y="15" textAnchor="start" fontFamily={f.mont} fontSize="12" fontWeight="900" style={{ letterSpacing: "0.2em" }} fill={c.primary}>{year}</text>
             </svg>
           </div>
-          <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm", marginTop: "0.2cm", width: "100%" }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm", marginTop: "0.3cm", width: "100%" }}>
             {settings.ceremonie_ora && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
-                <Church size={26} weight="duotone" color={c.muted} />
-                <p style={{ fontSize: "1rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>ora {settings.ceremonie_ora}</p>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.1cm" }}>
+                <Church size={44} weight="duotone" color={c.muted} />
+                <p style={{ fontSize: "1.2rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.08cm" }}>ora {settings.ceremonie_ora}</p>
                 {settings.ceremonie_adresa && <p style={{ fontSize: "0.82rem", fontFamily: f.mont, fontWeight: 600, color: c.muted, textAlign: "center" }}>{settings.ceremonie_adresa}</p>}
               </div>
             )}
             {settings.transport_ora && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
-                <Bus size={26} weight="duotone" color={c.muted} />
-                <p style={{ fontSize: "1rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>ora {settings.transport_ora}</p>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.1cm" }}>
+                <Bus size={44} weight="duotone" color={c.muted} />
+                <p style={{ fontSize: "1.2rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.08cm" }}>ora {settings.transport_ora}</p>
                 {settings.transport_adresa && <p style={{ fontSize: "0.82rem", fontFamily: f.mont, fontWeight: 600, color: c.muted, textAlign: "center" }}>{settings.transport_adresa}</p>}
               </div>
             )}
             {settings.petrecere_ora && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
-                <Champagne size={26} weight="duotone" color={c.muted} />
-                <p style={{ fontSize: "1rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>ora {settings.petrecere_ora}</p>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.1cm" }}>
+                <Champagne size={44} weight="duotone" color={c.muted} />
+                <p style={{ fontSize: "1.2rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.08cm" }}>ora {settings.petrecere_ora}</p>
                 {settings.petrecere_adresa && <p style={{ fontSize: "0.82rem", fontFamily: f.mont, fontWeight: 600, color: c.muted, textAlign: "center" }}>{settings.petrecere_adresa}</p>}
               </div>
             )}
           </div>
-          <p style={{ fontFamily: f.script, fontSize: "2.23rem", color: c.primary, marginTop: "0.3cm", paddingBottom: "5px" }}>{getAsteptamLineShort(audience)}</p>
           {confirmareDate && (
-            <div>
-              <p style={{ fontSize: "0.82rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 700, color: c.muted, lineHeight: 2 }}>VĂ RUGĂM SĂ NE CONFIRMAȚI PREZENȚA</p>
-              <p style={{ fontSize: "0.82rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 700, color: c.muted }}>PÂNĂ LA DATA DE {confirmareDate.toUpperCase()}.</p>
-            </div>
+            <p style={{ fontSize: "0.7rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 700, color: c.muted, marginTop: "0.3cm" }}>
+              {audience.hasPartner ? "Vă rugăm să confirmați" : "Te rugăm să confirmi"} până la {confirmareDate}
+            </p>
           )}
           {(settings.telefon_mireasa || settings.telefon_mire) && (
             <div style={{ marginTop: "0.15cm", paddingTop: "5px", width: "80%" }}>

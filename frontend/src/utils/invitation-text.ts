@@ -46,10 +46,10 @@ export function getInvitationLineUpper(audience: InvitationAudience): string {
 }
 
 /**
- * "Să fii alături de noi" / "Să fiți alături de noi"
+ * "Te așteptăm alături de noi" / "Vă așteptăm alături de noi"
  */
 export function getAlaturiLine(audience: InvitationAudience): string {
-  return audience.hasPartner ? "Să fiți alături de noi" : "Să fii alături de noi";
+  return audience.hasPartner ? "Vă așteptăm alături de noi" : "Te așteptăm alături de noi";
 }
 
 /**
