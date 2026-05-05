@@ -30,14 +30,14 @@ const FRONT_POSITIONS: [number, number][] = [
 // down, which is what compensates for this printer's duplex behavior.
 const BACK_FOR_FRONT_INDEX = [2, 3, 0, 1];
 
-// PC invitation (15cm × 21cm) rotated 90° = 21cm × 15cm landscape, ratio 21/15 = 1.4
-const PC_RATIO = 21 / 15;
-const PC_TOP_BOTTOM_MARGIN_MM = 5;
-const PC_AVAILABLE_H_MM = A4_H_MM - 2 * PC_TOP_BOTTOM_MARGIN_MM; // 287
+// PC invitation (15cm × 30cm) rotated 90° = 30cm × 15cm landscape, ratio 30/15 = 2
+const PC_RATIO = 30 / 15;
+const PC_TOP_BOTTOM_MARGIN_MM = 0;
+const PC_AVAILABLE_H_MM = A4_H_MM - 2 * PC_TOP_BOTTOM_MARGIN_MM; // 297
 const PC_PER_PAGE = 3;
-const PC_H_MM = PC_AVAILABLE_H_MM / PC_PER_PAGE; // ~95.67
-const PC_W_MM = PC_H_MM * PC_RATIO; // ~133.93
-const PC_X_MM = (A4_W_MM - PC_W_MM) / 2; // ~38.04
+const PC_H_MM = PC_AVAILABLE_H_MM / PC_PER_PAGE; // 99
+const PC_W_MM = PC_H_MM * PC_RATIO; // 198
+const PC_X_MM = (A4_W_MM - PC_W_MM) / 2; // 6
 
 function loadImage(dataUrl: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {

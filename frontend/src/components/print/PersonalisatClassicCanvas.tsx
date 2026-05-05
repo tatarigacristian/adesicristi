@@ -95,7 +95,7 @@ function Flourish({ width = 200, color }: { width?: number; color: string }) {
 
 function SmallFlourish({ color }: { color: string }) {
   return (
-    <svg viewBox="0 0 200 12" style={{ width: 120, height: 7 }} xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 200 12" style={{ width: 168, height: 10 }} xmlns="http://www.w3.org/2000/svg">
       <line x1="0" y1="6" x2="70" y2="6" stroke={color} strokeWidth="0.4" />
       <line x1="130" y1="6" x2="200" y2="6" stroke={color} strokeWidth="0.4" />
       <path d="M80 6 Q90 1, 100 6 Q110 11, 120 6" fill="none" stroke={color} strokeWidth="0.6" />
@@ -137,14 +137,14 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
 
   return (
     <div style={{ position: "relative", padding: "10px", background: "transparent", fontFamily: "'Montserrat', sans-serif" }}>
-      <div style={{ width: "15cm", minHeight: "21cm", background: c.bg, padding: "0.6cm", position: "relative" }}>
-        <div style={{ border: `1px solid ${c.ornament}`, padding: "1.2cm 1.5cm", minHeight: "calc(21cm - 1.2cm)", fontFamily: f.serif, color: c.primary, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.2cm", position: "relative" }}>
+      <div style={{ width: "15cm", minHeight: "30cm", background: c.bg, padding: "0.6cm", position: "relative" }}>
+        <div style={{ border: `1px solid ${c.ornament}`, padding: "1.6cm 1.5cm", minHeight: "calc(30cm - 1.2cm)", fontFamily: f.serif, color: c.primary, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.3cm", position: "relative" }}>
           <CornerOrnament color={c.ornament} style={{ top: -2, left: -2 }} />
           <CornerOrnament color={c.ornament} style={{ top: -2, right: -2, transform: "scaleX(-1)" }} />
           <CornerOrnament color={c.ornament} style={{ bottom: -2, left: -2, transform: "scaleY(-1)" }} />
           <CornerOrnament color={c.ornament} style={{ bottom: -2, right: -2, transform: "scale(-1, -1)" }} />
           <div style={{ marginBottom: "0.2cm", marginTop: "0.1cm" }}>
-            <svg width="140" height="140" viewBox="0 0 160 160" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
+            <svg width="200" height="200" viewBox="0 0 160 160" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
               <circle cx="80" cy="80" r="72" stroke={c.ornament} strokeWidth="0.5" fill="none" />
               <circle cx="80" cy="80" r="68" stroke={c.ornament} strokeWidth="0.3" fill="none" />
               <path d="M80 6 Q74 6, 68 10 Q64 13, 68 16 Q72 14, 76 11 Q78 9, 80 8 Q82 9, 84 11 Q88 14, 92 16 Q96 13, 92 10 Q86 6, 80 6Z" fill={c.ornament} />
@@ -158,16 +158,16 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: "0.15cm" }}>
             <span style={{ display: "block", width: 40, height: 1, background: `linear-gradient(to right, transparent, ${c.ornament}, transparent)` }} />
-            <svg viewBox="0 0 50 48" style={{ width: 14, height: 14 }} fill="none" stroke={c.ornament} xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 50 48" style={{ width: 20, height: 20 }} fill="none" stroke={c.ornament} xmlns="http://www.w3.org/2000/svg">
               <path d="M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z" strokeWidth="1.2" fill={c.ornament} />
             </svg>
             <span style={{ display: "block", width: 40, height: 1, background: `linear-gradient(to right, transparent, ${c.ornament}, transparent)` }} />
           </div>
           <div style={{ textAlign: "center", marginBottom: "0.15cm" }}>
-            <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 700, color: c.primary, letterSpacing: "0.03em", margin: 0 }}>
+            <p style={{ fontFamily: f.serif, fontSize: "1.81rem", fontWeight: 700, color: c.primary, letterSpacing: "0.03em", margin: 0 }}>
               {getGreeting(audience, true, guest.slug)},
             </p>
-            <p style={{ fontFamily: f.serif, fontSize: "1.29rem", fontWeight: 700, color: c.primary, letterSpacing: "0.03em", margin: 0 }}>
+            <p style={{ fontFamily: f.serif, fontSize: "1.81rem", fontWeight: 700, color: c.primary, letterSpacing: "0.03em", margin: 0 }}>
               {(() => {
                 const childNames = guest.children && guest.children.length > 0 ? guest.children.map((cc) => cc.prenume) : [];
                 if (partner) {
@@ -182,15 +182,15 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
           </div>
           {hasNasi && (
             <div style={{ textAlign: "center", marginBottom: "0.1cm" }}>
-              <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 700, color: c.muted, marginBottom: "0.05cm" }}>ALĂTURI DE NAȘII</p>
-              <p style={{ fontFamily: f.serif, fontSize: "0.89rem", fontWeight: 700, fontStyle: "italic", color: c.secondary }}>{nasiText}</p>
+              <p style={{ fontSize: "0.85rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 700, color: c.muted, marginBottom: "0.05cm" }}>ALĂTURI DE NAȘII</p>
+              <p style={{ fontFamily: f.serif, fontSize: "1.25rem", fontWeight: 700, fontStyle: "italic", color: c.secondary }}>{nasiText}</p>
             </div>
           )}
           {hasParinti && (
             <>
-              <p style={{ fontSize: "0.59rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 700, color: c.muted, marginBottom: "0.05cm" }}>ȘI ÎMPREUNĂ CU PĂRINȚII</p>
+              <p style={{ fontSize: "0.85rem", fontFamily: f.mont, letterSpacing: "0.2em", textTransform: f.upper, fontWeight: 700, color: c.muted, marginBottom: "0.05cm" }}>ȘI ÎMPREUNĂ CU PĂRINȚII</p>
               <div style={{ width: "100%", display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}>
-                <svg width="340" height="50" viewBox="0 0 340 50" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
+                <svg width="476" height="70" viewBox="0 0 340 50" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
                   {(parintiMireasaNames || parintiMireasaFallback) && (parintiMireasaNames ? (
                     <>
                       <text x={(parintiMireNames || parintiMireFallback) ? 85 : 170} y="18" textAnchor="middle" fontFamily={f.serif} fontSize="14" fontWeight="700" fontStyle="italic" fill={c.secondary}>{parintiMireasaNames}</text>
@@ -214,17 +214,17 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
               </div>
             </>
           )}
-          <p style={{ fontSize: "0.64rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 800, color: c.ornament, marginTop: "0.1cm" }}>{getInvitationLineUpper(audience)}</p>
-          <p style={{ fontFamily: f.script, fontSize: "1.69rem", color: c.primary, fontStyle: "italic" }}>{getAlaturiLine(audience)}</p>
-          <div style={{ marginTop: "0.1cm" }}><Flourish width={180} color={c.ornament} /></div>
+          <p style={{ fontSize: "0.92rem", fontFamily: f.mont, letterSpacing: "0.25em", textTransform: f.upper, fontWeight: 800, color: c.ornament, marginTop: "0.1cm" }}>{getInvitationLineUpper(audience)}</p>
+          <p style={{ fontFamily: f.script, fontSize: "2.37rem", color: c.primary, fontStyle: "italic" }}>{getAlaturiLine(audience)}</p>
+          <div style={{ marginTop: "0.1cm" }}><Flourish width={252} color={c.ornament} /></div>
           <div>
             {(guest.intro_short || getDefaultIntroShort(audience)).split("\n").filter((l) => l.trim()).map((line, i) => (
-              <p key={i} style={{ fontSize: "0.69rem", fontFamily: f.serif, fontWeight: 700, fontStyle: "italic", color: c.secondary, letterSpacing: "0.05em", margin: 0 }}>{line}</p>
+              <p key={i} style={{ fontSize: "1rem", fontFamily: f.serif, fontWeight: 700, fontStyle: "italic", color: c.secondary, letterSpacing: "0.05em", margin: 0 }}>{line}</p>
             ))}
           </div>
-          <div style={{ marginBottom: "0.1cm" }}><Flourish width={180} color={c.ornament} /></div>
+          <div style={{ marginBottom: "0.1cm" }}><Flourish width={252} color={c.ornament} /></div>
           <div style={{ width: "100%", display: "flex", justifyContent: "center", paddingBottom: "5px" }}>
-            <svg width="240" height="20" viewBox="0 0 240 20" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
+            <svg width="336" height="28" viewBox="0 0 240 20" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", overflow: "visible" }}>
               <text x="90" y="15" textAnchor="end" fontFamily={f.mont} fontSize="12" fontWeight="900" style={{ letterSpacing: "0.3em" }} fill={c.primary}>{dayOfWeek}</text>
               <line x1="103" y1="5" x2="103" y2="17" stroke={c.ornament} strokeWidth="1" />
               <text x="140" y="15" textAnchor="middle" fontFamily={f.mont} fontSize="12" fontWeight="900" style={{ letterSpacing: "0.2em" }} fill={c.primary}>{dateFormatted}</text>
@@ -235,39 +235,39 @@ export function PersonalisatClassicCard({ guest, partner, settings }: { guest: P
           <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm", marginTop: "0.2cm", width: "100%" }}>
             {settings.ceremonie_ora && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
-                <Church size={18} weight="duotone" color={c.muted} />
-                <p style={{ fontSize: "0.69rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>ora {settings.ceremonie_ora}</p>
-                {settings.ceremonie_adresa && <p style={{ fontSize: "0.57rem", fontFamily: f.mont, fontWeight: 600, color: c.muted, textAlign: "center" }}>{settings.ceremonie_adresa}</p>}
+                <Church size={26} weight="duotone" color={c.muted} />
+                <p style={{ fontSize: "1rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>ora {settings.ceremonie_ora}</p>
+                {settings.ceremonie_adresa && <p style={{ fontSize: "0.82rem", fontFamily: f.mont, fontWeight: 600, color: c.muted, textAlign: "center" }}>{settings.ceremonie_adresa}</p>}
               </div>
             )}
             {settings.transport_ora && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
-                <Bus size={18} weight="duotone" color={c.muted} />
-                <p style={{ fontSize: "0.69rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>ora {settings.transport_ora}</p>
-                {settings.transport_adresa && <p style={{ fontSize: "0.57rem", fontFamily: f.mont, fontWeight: 600, color: c.muted, textAlign: "center" }}>{settings.transport_adresa}</p>}
+                <Bus size={26} weight="duotone" color={c.muted} />
+                <p style={{ fontSize: "1rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>ora {settings.transport_ora}</p>
+                {settings.transport_adresa && <p style={{ fontSize: "0.82rem", fontFamily: f.mont, fontWeight: 600, color: c.muted, textAlign: "center" }}>{settings.transport_adresa}</p>}
               </div>
             )}
             {settings.petrecere_ora && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: "0.06cm" }}>
-                <Champagne size={18} weight="duotone" color={c.muted} />
-                <p style={{ fontSize: "0.69rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>ora {settings.petrecere_ora}</p>
-                {settings.petrecere_adresa && <p style={{ fontSize: "0.57rem", fontFamily: f.mont, fontWeight: 600, color: c.muted, textAlign: "center" }}>{settings.petrecere_adresa}</p>}
+                <Champagne size={26} weight="duotone" color={c.muted} />
+                <p style={{ fontSize: "1rem", fontFamily: f.mont, fontWeight: 800, color: c.primary, letterSpacing: "0.05em", marginTop: "0.04cm" }}>ora {settings.petrecere_ora}</p>
+                {settings.petrecere_adresa && <p style={{ fontSize: "0.82rem", fontFamily: f.mont, fontWeight: 600, color: c.muted, textAlign: "center" }}>{settings.petrecere_adresa}</p>}
               </div>
             )}
           </div>
-          <p style={{ fontFamily: f.script, fontSize: "1.59rem", color: c.primary, marginTop: "0.3cm", paddingBottom: "5px" }}>{getAsteptamLineShort(audience)}</p>
+          <p style={{ fontFamily: f.script, fontSize: "2.23rem", color: c.primary, marginTop: "0.3cm", paddingBottom: "5px" }}>{getAsteptamLineShort(audience)}</p>
           {confirmareDate && (
             <div>
-              <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 700, color: c.muted, lineHeight: 2 }}>VĂ RUGĂM SĂ NE CONFIRMAȚI PREZENȚA</p>
-              <p style={{ fontSize: "0.57rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 700, color: c.muted }}>PÂNĂ LA DATA DE {confirmareDate.toUpperCase()}.</p>
+              <p style={{ fontSize: "0.82rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 700, color: c.muted, lineHeight: 2 }}>VĂ RUGĂM SĂ NE CONFIRMAȚI PREZENȚA</p>
+              <p style={{ fontSize: "0.82rem", fontFamily: f.mont, letterSpacing: "0.15em", textTransform: f.upper, fontWeight: 700, color: c.muted }}>PÂNĂ LA DATA DE {confirmareDate.toUpperCase()}.</p>
             </div>
           )}
           {(settings.telefon_mireasa || settings.telefon_mire) && (
             <div style={{ marginTop: "0.15cm", paddingTop: "5px", width: "80%" }}>
               <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.1cm" }}><SmallFlourish color={c.ornament} /></div>
               <div style={{ display: "flex", justifyContent: "center", gap: "0.6cm" }}>
-                {settings.telefon_mireasa && <p style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 700, color: c.muted }}>{mireasa}: {settings.telefon_mireasa}</p>}
-                {settings.telefon_mire && <p style={{ fontSize: "0.54rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 700, color: c.muted }}>{mire}: {settings.telefon_mire}</p>}
+                {settings.telefon_mireasa && <p style={{ fontSize: "0.78rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 700, color: c.muted }}>{mireasa}: {settings.telefon_mireasa}</p>}
+                {settings.telefon_mire && <p style={{ fontSize: "0.78rem", fontFamily: f.mont, letterSpacing: "0.1em", fontWeight: 700, color: c.muted }}>{mire}: {settings.telefon_mire}</p>}
               </div>
             </div>
           )}
