@@ -24,8 +24,8 @@ const FRONT_POSITIONS: [number, number][] = [
   [1, 1], // BR
 ];
 
-// Long-edge duplex flip mirrors columns within rows: 0↔1, 2↔3
-const BACK_FOR_FRONT_INDEX = [1, 0, 3, 2];
+// Same order on front and back (no mirror for duplex flip)
+const BACK_FOR_FRONT_INDEX = [0, 1, 2, 3];
 
 // PC invitation (15cm × 21cm) rotated 90° = 21cm × 15cm landscape, ratio 21/15 = 1.4
 const PC_RATIO = 21 / 15;
@@ -109,7 +109,7 @@ export async function buildCardPdf(pairs: CardPair[], options: PdfBuildOptions =
       doc.addImage(rotated[i].front, "PNG", x, y, CARD_PORTRAIT_W_MM, CARD_PORTRAIT_H_MM, undefined, "FAST");
     }
 
-    // ── Back page (long-edge duplex flip → mirror columns within rows)
+    // ── Back page (same order as front)
     doc.addPage();
     fillPageBackground(doc, options.backgroundColor);
     for (let i = 0; i < rotated.length; i++) {
