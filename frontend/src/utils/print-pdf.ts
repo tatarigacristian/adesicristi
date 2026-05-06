@@ -1,20 +1,20 @@
 import { jsPDF } from "jspdf";
 
-// A4 portrait dimensions in mm
-const A4_W_MM = 210;
-const A4_H_MM = 297;
+// A4 dimensions in mm
+const A4_SHORT_MM = 210;
+const A4_LONG_MM = 297;
 
 // Card body: 9cm × 5.5cm landscape (no padding)
-const CARD_RAW_LANDSCAPE_W_MM = 90;
-const CARD_RAW_LANDSCAPE_H_MM = 55;
-const CARD_PORTRAIT_ASPECT = CARD_RAW_LANDSCAPE_H_MM / CARD_RAW_LANDSCAPE_W_MM; // ~0.611
+const CARD_RAW_W_MM = 90;
+const CARD_RAW_H_MM = 55;
+const CARD_ASPECT = CARD_RAW_H_MM / CARD_RAW_W_MM; // ~0.611
 
-// Maximize cards in 2×2 grid: constrained by A4 height (cards touch top/bottom edges).
-const CARD_PORTRAIT_H_MM = A4_H_MM / 2; // 148.5
-const CARD_PORTRAIT_W_MM = CARD_PORTRAIT_H_MM * CARD_PORTRAIT_ASPECT; // ~93.96
-const CARDS_GRID_W_MM = 2 * CARD_PORTRAIT_W_MM;
-const CARDS_X0_MM = (A4_W_MM - CARDS_GRID_W_MM) / 2; // ~11.04
-const CARDS_Y0_MM = 0;
+// 2×2 grid on landscape A4: width-constrained (cards touch left/right edges).
+const CARD_W_MM = A4_LONG_MM / 2; // 148.5
+const CARD_H_MM = CARD_W_MM * CARD_ASPECT; // ~90.75
+const CARDS_GRID_H_MM = 2 * CARD_H_MM; // ~181.5
+const CARDS_X0_MM = 0;
+const CARDS_Y0_MM = (A4_SHORT_MM - CARDS_GRID_H_MM) / 2; // ~14.25
 
 // Front layout positions (col, row) for 4 cards
 const FRONT_POSITIONS: [number, number][] = [
@@ -24,20 +24,20 @@ const FRONT_POSITIONS: [number, number][] = [
   [1, 1], // BR
 ];
 
-// Back page is rendered as a whole rotated 180° vs the front:
-// columns swap AND rows swap (TL↔BR, TR↔BL). Combined with the back image
-// being rotated -90° (instead of +90°), the whole verso page appears upside
-// down, which is what compensates for this printer's duplex behavior.
-const BACK_FOR_FRONT_INDEX = [2, 3, 0, 1];
+// Back page swaps columns (TL↔TR, BL↔BR) so each card's verso lines up with
+// its front after the xerox's duplex flip. PDF reading order on back: 2,1,4,3.
+const BACK_FOR_FRONT_INDEX = [1, 0, 3, 2];
 
 // PC invitation (15cm × 30cm) rotated 90° = 30cm × 15cm landscape, ratio 30/15 = 2
 const PC_RATIO = 30 / 15;
 const PC_TOP_BOTTOM_MARGIN_MM = 0;
-const PC_AVAILABLE_H_MM = A4_H_MM - 2 * PC_TOP_BOTTOM_MARGIN_MM; // 297
+const PC_PAGE_W_MM = A4_SHORT_MM;
+const PC_PAGE_H_MM = A4_LONG_MM;
+const PC_AVAILABLE_H_MM = PC_PAGE_H_MM - 2 * PC_TOP_BOTTOM_MARGIN_MM; // 297
 const PC_PER_PAGE = 3;
 const PC_H_MM = PC_AVAILABLE_H_MM / PC_PER_PAGE; // 99
 const PC_W_MM = PC_H_MM * PC_RATIO; // 198
-const PC_X_MM = (A4_W_MM - PC_W_MM) / 2; // 6
+const PC_X_MM = (PC_PAGE_W_MM - PC_W_MM) / 2; // 6
 
 function loadImage(dataUrl: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -48,11 +48,16 @@ function loadImage(dataUrl: string): Promise<HTMLImageElement> {
   });
 }
 
-async function rotatePngDataUrl(dataUrl: string, degrees: 90 | -90): Promise<string> {
+async function rotatePngDataUrl(dataUrl: string, degrees: 90 | -90 | 180): Promise<string> {
   const img = await loadImage(dataUrl);
   const canvas = document.createElement("canvas");
-  canvas.width = img.height;
-  canvas.height = img.width;
+  if (degrees === 180) {
+    canvas.width = img.width;
+    canvas.height = img.height;
+  } else {
+    canvas.width = img.height;
+    canvas.height = img.width;
+  }
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas 2D context unavailable");
   ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -70,11 +75,19 @@ function parseHexColor(hex: string): [number, number, number] {
   return [r, g, b];
 }
 
-function fillPageBackground(doc: jsPDF, hex: string | undefined) {
+function fillPageBackground(doc: jsPDF, hex: string | undefined, w: number, h: number) {
   if (!hex) return;
   const [r, g, b] = parseHexColor(hex);
   doc.setFillColor(r, g, b);
-  doc.rect(0, 0, A4_W_MM, A4_H_MM, "F");
+  doc.rect(0, 0, w, h, "F");
+}
+
+function drawCardIndex(doc: jsPDF, x: number, y: number, row: number, label: number) {
+  const labelX = x + CARD_W_MM / 2;
+  const labelY = row === 0 ? y - 2 : y + CARD_H_MM + 5;
+  doc.setFontSize(6);
+  doc.setTextColor(140, 140, 140);
+  doc.text(`${label}`, labelX, labelY, { align: "center" });
 }
 
 export interface CardPair {
@@ -87,7 +100,7 @@ export interface PdfBuildOptions {
 }
 
 export async function buildCardPdf(pairs: CardPair[], options: PdfBuildOptions = {}): Promise<Blob> {
-  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
+  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "landscape", compress: true });
 
   const numBatches = Math.ceil(pairs.length / 4);
 
@@ -95,32 +108,32 @@ export async function buildCardPdf(pairs: CardPair[], options: PdfBuildOptions =
     const start = batch * 4;
     const slice = pairs.slice(start, start + 4);
 
-    const rotated = await Promise.all(
-      slice.map(async (p) => ({
-        front: await rotatePngDataUrl(p.frontPng, 90),
-        back: await rotatePngDataUrl(p.backPng, -90),
-      })),
-    );
+    const rotated = slice.map((p) => ({
+      front: p.frontPng,
+      back: p.backPng,
+    }));
 
     // ── Front page
     if (batch > 0) doc.addPage();
-    fillPageBackground(doc, options.backgroundColor);
+    fillPageBackground(doc, options.backgroundColor, A4_LONG_MM, A4_SHORT_MM);
     for (let i = 0; i < rotated.length; i++) {
       const [col, row] = FRONT_POSITIONS[i];
-      const x = CARDS_X0_MM + col * CARD_PORTRAIT_W_MM;
-      const y = CARDS_Y0_MM + row * CARD_PORTRAIT_H_MM;
-      doc.addImage(rotated[i].front, "PNG", x, y, CARD_PORTRAIT_W_MM, CARD_PORTRAIT_H_MM, undefined, "FAST");
+      const x = CARDS_X0_MM + col * CARD_W_MM;
+      const y = CARDS_Y0_MM + row * CARD_H_MM;
+      doc.addImage(rotated[i].front, "PNG", x, y, CARD_W_MM, CARD_H_MM, undefined, "FAST");
+      drawCardIndex(doc, x, y, row, i + 1);
     }
 
-    // ── Back page (whole page rotated 180° vs front)
+    // ── Back page (positions swap rows so each card's verso lines up with its front)
     doc.addPage();
-    fillPageBackground(doc, options.backgroundColor);
+    fillPageBackground(doc, options.backgroundColor, A4_LONG_MM, A4_SHORT_MM);
     for (let i = 0; i < rotated.length; i++) {
       const backIdx = BACK_FOR_FRONT_INDEX[i];
       const [col, row] = FRONT_POSITIONS[backIdx];
-      const x = CARDS_X0_MM + col * CARD_PORTRAIT_W_MM;
-      const y = CARDS_Y0_MM + row * CARD_PORTRAIT_H_MM;
-      doc.addImage(rotated[i].back, "PNG", x, y, CARD_PORTRAIT_W_MM, CARD_PORTRAIT_H_MM, undefined, "FAST");
+      const x = CARDS_X0_MM + col * CARD_W_MM;
+      const y = CARDS_Y0_MM + row * CARD_H_MM;
+      doc.addImage(rotated[i].back, "PNG", x, y, CARD_W_MM, CARD_H_MM, undefined, "FAST");
+      drawCardIndex(doc, x, y, row, i + 1);
     }
   }
 
@@ -134,7 +147,7 @@ export async function buildPersonalisatClassicPdf(invitationPngs: string[], opti
 
   for (let pageIdx = 0; pageIdx < numPages; pageIdx++) {
     if (pageIdx > 0) doc.addPage();
-    fillPageBackground(doc, options.backgroundColor);
+    fillPageBackground(doc, options.backgroundColor, PC_PAGE_W_MM, PC_PAGE_H_MM);
 
     const start = pageIdx * PC_PER_PAGE;
     const slice = invitationPngs.slice(start, start + PC_PER_PAGE);
