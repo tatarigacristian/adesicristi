@@ -411,6 +411,14 @@ function InvitatieV2Content() {
                       ? `${allNames.join(", ")} și ${last} ${guest.nume}`
                       : `${allNames.join(", ")} și ${last}`;
                   }
+                  if (guest.children && guest.children.length > 0) {
+                    const allSameNume = guest.children.every((c) => c.nume === guest.nume);
+                    const allNames = [guest.prenume, ...childNames];
+                    const last = allNames.pop()!;
+                    return allSameNume
+                      ? `${allNames.join(", ")} și ${last} ${guest.nume}`
+                      : `${allNames.join(", ")} și ${last}`;
+                  }
                   return `${guest.prenume} ${guest.nume}`;
                 })()}
               </p>
