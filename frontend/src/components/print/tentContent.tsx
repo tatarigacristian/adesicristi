@@ -89,12 +89,9 @@ export function MenuCard({ items, colors }: { items: MenuItem[]; colors: TentCol
   return (
     <CardShell title="Meniu" colors={colors}>
       {grouped.map((group, idx) => {
-        const parts = group.items.flatMap((item) => {
-          const out: string[] = [];
-          if (isRealTitle(item.titlu)) out.push(item.titlu);
-          out.push(...splitLines(item.descriere));
-          return out;
-        });
+        // Afișăm doar descrierile preparatelor; titlul itemului (de regulă
+        // numele categoriei) ar dubla header-ul de secțiune.
+        const parts = group.items.flatMap((item) => splitLines(item.descriere));
         return (
           <div key={group.cat} style={{ marginBottom: idx === grouped.length - 1 ? 0 : 10 }}>
             <p style={labelStyle(colors)}>{CATEGORY_LABELS[group.cat]}</p>
