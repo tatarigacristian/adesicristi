@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { safeToPng } from "@/utils/safari-png";
 import { buildEnvelopePdf } from "@/utils/print-pdf";
-import { FilePdf, Image as ImageIcon, Scissors } from "@phosphor-icons/react";
+import { FilePdf, Image as ImageIcon } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
@@ -44,11 +44,13 @@ function buildPalette(settings: WeddingSettings) {
   };
 }
 
-/* ─── Net geometry (mm, viewBox 0 0 250 231 — landscape DL) ───
-   FACE   : x 15..235, y 55..165  (220 × 110 finished = DL)
-   TOP flap (seal) : y 0..55,  folds down to the back to close
-   BOTTOM flap     : y 165..231, folds up to form the back panel
-   SIDE flaps      : x 0..15 and 235..250, fold in (glued under bottom flap)   */
+/* ─── Net geometry (mm, viewBox 0 0 210 297 — A4 PORTRAIT sheet) ───
+   3 EQUAL horizontal sections. Top & bottom fold over the middle → the finished
+   envelope is read in LANDSCAPE (≈ 198 × 95) and holds the gift money. The top and
+   bottom sections are drawn ROTATED 180° so they read upright once folded over.
+   SUS    (rotit 180°): y 6..101   — monogramă „A & C" + „Vă mulțumim că ați fost alături de noi"
+   MIJLOC (normal)    : y 101..196 — „Familia" + linie de completat
+   JOS    (rotit 180°): y 196..291 — inimioara (sigiliul) */
 const F = {
   serif: "'Cormorant Garamond', serif",
   script: "'Alex Brush', cursive",
@@ -61,76 +63,54 @@ const FONTS_IMPORT =
 const HEART_PATH =
   "M25,42 C25,42 4,29 4,15 C4,7 11,3 18,7 C21,9 25,14 25,14 C25,14 29,9 32,7 C39,3 46,7 46,15 C46,29 25,42 25,42 Z";
 
-/* Outer cut contour, clockwise from the seal-flap tip */
-const CONTOUR =
-  "M118,8 L132,8 L235,55 L248,63 L248,157 L235,165 L228,231 L22,231 L15,165 L2,157 L2,63 L15,55 Z";
-
 interface NetProps {
   c: ReturnType<typeof buildPalette>;
   iM: string;
   iC: string;
-  dateStr: string;
 }
 
 /* The full envelope net, rendered as a single SVG (shapes + text) so html2canvas
    captures it consistently — same reason the cards use SVG <text> for the monogram. */
-function EnvelopeNet({ c, iM, iC, dateStr }: NetProps) {
-  const cut = c.ornament;
-  const fold = c.ornament;
+function EnvelopeNet({ c, iM, iC }: NetProps) {
   return (
     <svg
-      width={500}
-      height={462}
-      viewBox="0 0 250 231"
+      width={420}
+      height={594}
+      viewBox="0 0 210 297"
       xmlns="http://www.w3.org/2000/svg"
       style={{ display: "block" }}
     >
-      {/* 1 ─ paper fill (everything inside the cut line is the envelope paper color) */}
-      <path d={CONTOUR} fill={c.bg} stroke="none" />
+      {/* paper fill — full bleed: the colour fills the whole A4 page */}
+      <rect x={0} y={0} width={210} height={297} fill={c.bg} />
 
-      {/* 2 ─ subtle inner frame on the face */}
-      <rect x={21} y={61} width={208} height={98} rx={2} fill="none" stroke={c.ornament} strokeWidth={0.3} opacity={0.5} />
+      {/* ── SUS section: printed UPSIDE-DOWN (180°) so it reads after folding down.
+            On this flat sheet: monogram bottom-left, thank-you top-right (as asked). ── */}
+      {/* monogram — centered */}
+      <g transform="rotate(180 105 63)">
+        <circle cx={105} cy={63} r={20} fill="none" stroke={c.ornament} strokeWidth={0.6} />
+        <circle cx={105} cy={63} r={17} fill="none" stroke={c.ornament} strokeWidth={0.35} />
+        <text x={105} y={68} textAnchor="middle" fontFamily={F.serif} fontSize={13.5} fontWeight={600} fill={c.primary}>
+          <tspan>{iM}</tspan>
+          <tspan dx={1.9} fontFamily={F.script} fontSize={8.5} fill={c.ornament}>&amp;</tspan>
+          <tspan dx={1.9}>{iC}</tspan>
+        </text>
+      </g>
+      {/* thank-you — centered, two lines (raised for more gap from the monogram) */}
+      <g transform="rotate(180 105 21)">
+        <text x={105} y={15} textAnchor="middle" fontFamily={F.serif} fontSize={8} fontStyle="italic" fill={c.primary}>Vă mulțumim</text>
+        <text x={105} y={27} textAnchor="middle" fontFamily={F.serif} fontSize={8} fontStyle="italic" fill={c.primary}>că ați fost alături de noi</text>
+      </g>
 
-      {/* 3 ─ seal-flap ornament (a small heart, drawn upside-down so it reads
-              upright on the back once the flap is folded down) */}
-      <g transform="rotate(180 125 30)">
-        <g transform="translate(125 30) scale(0.13) translate(-25 -24)">
-          <path d={HEART_PATH} fill={c.ornament} opacity={0.85} />
+      {/* ── MIJLOC: front face — „Familia ____" (upright) ── */}
+      <text x={105} y={132} textAnchor="middle" fontFamily={F.serif} fontSize={18} fontWeight={500} fill={c.primary}>Familia</text>
+      <line x1={62} y1={176} x2={148} y2={176} stroke={c.ornament} strokeWidth={0.5} opacity={0.85} />
+
+      {/* ── JOS: heart alone, centered. ROTATED 180° (reads upright once folded up). ── */}
+      <g transform="rotate(180 105 247.5)">
+        <g transform="translate(105 247.5) scale(0.32) translate(-25 -22)">
+          <path d={HEART_PATH} fill={c.ornament} opacity={0.9} />
         </g>
       </g>
-
-      {/* 5 ─ FACE decoration (front of the finished envelope) */}
-      {/* monogram — initials sized to sit inside the inner circle (Ø28); baseline
-          placed explicitly (no dominant-baseline) so it centers identically in the
-          browser and in html2canvas/PDF */}
-      <circle cx={125} cy={84} r={16} fill="none" stroke={c.ornament} strokeWidth={0.45} />
-      <circle cx={125} cy={84} r={14} fill="none" stroke={c.ornament} strokeWidth={0.28} />
-      <text x={125} y={87.4} textAnchor="middle" fontFamily={F.serif} fontSize={10} fontWeight={600} fill={c.primary}>
-        <tspan>{iM}</tspan>
-        <tspan dx={1.2} fontFamily={F.script} fontSize={6} fill={c.ornament}>&amp;</tspan>
-        <tspan dx={1.2}>{iC}</tspan>
-      </text>
-
-      {/* date — moved up into the spot the heart used to occupy */}
-      <text x={125} y={117} textAnchor="middle" fontFamily={F.mont} fontSize={4.5} fontWeight={600} letterSpacing={1} fill={c.secondary}>{dateStr}</text>
-
-      {/* thank-you message */}
-      <text x={125} y={132} textAnchor="middle" fontFamily={F.serif} fontSize={6.2} fontStyle="italic" fill={c.primary}>Mulțumim că ați fost alături de noi</text>
-
-      {/* "din partea" — label and writing line on the same baseline (fill-in field) */}
-      <text x={68} y={151} textAnchor="start" fontFamily={F.mont} fontSize={3} fontWeight={600} letterSpacing={0.6} fill={c.muted}>DIN PARTEA</text>
-      <line x1={102} y1={151} x2={182} y2={151} stroke={c.ornament} strokeWidth={0.3} opacity={0.7} />
-
-      {/* 6 ─ fold lines (dashed) — the four edges of the face, kept barely visible */}
-      <g stroke={fold} strokeWidth={0.25} strokeDasharray="1.5 2.5" opacity={0.15} fill="none">
-        <line x1={15} y1={55} x2={235} y2={55} />
-        <line x1={15} y1={165} x2={235} y2={165} />
-        <line x1={15} y1={55} x2={15} y2={165} />
-        <line x1={235} y1={55} x2={235} y2={165} />
-      </g>
-
-      {/* 7 ─ cut contour (solid, on top so it stays crisp) */}
-      <path d={CONTOUR} fill="none" stroke={cut} strokeWidth={0.6} strokeLinejoin="round" />
     </svg>
   );
 }
@@ -204,17 +184,13 @@ export default function PlicBaniPage() {
   const mire = safe.nume_mire || "Cristi";
   const iM = mireasa.charAt(0).toUpperCase();
   const iC = mire.charAt(0).toUpperCase();
-  const dObj = safe.ceremonie_data ? new Date(safe.ceremonie_data) : null;
-  const dateStr = dObj
-    ? `${String(dObj.getDate()).padStart(2, "0")}.${String(dObj.getMonth() + 1).padStart(2, "0")}.${dObj.getFullYear()}`
-    : "04.07.2026";
 
-  // Live finished dimensions (must mirror buildEnvelopePdf).
-  const NET_W = 250, NET_H = 231, MARGIN = 6;
-  const page = format === "a3" ? { w: 420, h: 297 } : { w: 297, h: 210 };
-  const scale = Math.min((page.w - 2 * MARGIN) / NET_W, (page.h - 2 * MARGIN) / NET_H, 1);
-  const finishedW = Math.round(220 * scale);
-  const finishedH = Math.round(110 * scale);
+  // Live finished dimensions (must mirror buildEnvelopePdf). Full-bleed A4 sheet
+  // folded in 3 horizontal sections → finished envelope is landscape (full page
+  // width × one third of the height).
+  const page = format === "a3" ? { w: 297, h: 420 } : { w: 210, h: 297 };
+  const finishedW = page.w;
+  const finishedH = Math.round(page.h / 3);
 
   return (
     <div style={{ fontFamily: F.mont }}>
@@ -229,15 +205,16 @@ export default function PlicBaniPage() {
 
       <h1 className="script-font text-3xl text-text-heading mb-1">Plic de dar</h1>
       <p className="text-sm text-text-muted mb-6">
-        Template desfășurat de plic DL, în culorile site-ului. Descarcă, taie pe conturul continuu, pliază pe liniile punctate și lipește.
+        Template pe A4 portret, full-bleed (culoarea umple toată pagina), în 3 secțiuni orizontale. Sus (monogramă + „Vă mulțumim...") și jos (inimioara) sunt
+        rotite 180°, ca să se citească drept după ce se pliază peste mijloc („Familia ____"). Plicul finit se citește în landscape și ține banii. Pliază pe liniile punctate și lipește.
       </p>
 
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center", marginBottom: "1.5rem" }}>
         <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.8rem", color: c.secondary }}>
           Format hârtie:
           <select className="plic-select" value={format} onChange={(e) => setFormat(e.target.value as "a4" | "a3")}>
-            <option value="a4">A4 (încape pe o pagină)</option>
-            <option value="a3">A3 (plic la dimensiune DL reală)</option>
+            <option value="a4">A4 portret (încape pe o pagină)</option>
+            <option value="a3">A3 (plic mai mare)</option>
           </select>
         </label>
         <button className="plic-btn" onClick={handleDownloadPdf} disabled={busy}>
@@ -248,7 +225,7 @@ export default function PlicBaniPage() {
         </button>
         <span style={{ fontSize: "0.75rem", color: c.muted }}>
           Plic finit: <strong>{finishedW} × {finishedH} mm</strong>
-          {format === "a3" ? " (DL real)" : " (~A4)"}
+          {format === "a3" ? " (A3, landscape)" : " (landscape)"}
         </span>
       </div>
 
@@ -256,35 +233,22 @@ export default function PlicBaniPage() {
         {/* Preview */}
         <div style={{ overflowX: "auto", padding: "1rem", background: "#fff", borderRadius: 12, border: `1px solid ${lighten(c.ornament, 40)}`, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
           <div ref={netRef} style={{ display: "inline-block", background: "transparent" }}>
-            <EnvelopeNet c={c} iM={iM} iC={iC} dateStr={dateStr} />
+            <EnvelopeNet c={c} iM={iM} iC={iC} />
           </div>
         </div>
 
         {/* Legend + instructions */}
         <div style={{ flex: "1 1 220px", minWidth: 220, fontSize: "0.82rem", color: c.secondary, lineHeight: 1.7 }}>
-          <p style={{ fontWeight: 700, color: c.primary, marginBottom: 8, fontFamily: F.mont, letterSpacing: "0.05em", textTransform: "uppercase", fontSize: "0.72rem" }}>Legendă</p>
-          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1.25rem 0" }}>
-            <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Scissors size={15} weight="bold" color={c.ornament} />
-              <span><strong>Linie continuă</strong> — taie</span>
-            </li>
-            <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ width: 18, borderTop: `1px dashed ${c.ornament}`, opacity: 0.5 }} />
-              <span><strong>Linie punctată fină</strong> — pliază</span>
-            </li>
-          </ul>
-
           <p style={{ fontWeight: 700, color: c.primary, marginBottom: 8, fontFamily: F.mont, letterSpacing: "0.05em", textTransform: "uppercase", fontSize: "0.72rem" }}>Asamblare</p>
           <ol style={{ paddingLeft: "1.1rem", margin: 0 }}>
-            <li>Taie plicul pe conturul continuu.</li>
-            <li>Pliază cele 2 clape laterale spre interior.</li>
-            <li>Aplică lipici pe clapele laterale și pliază clapa de jos peste ele — se formează buzunarul.</li>
-            <li>Introdu darul în plic.</li>
-            <li>Pliază clapa de sus și închide cu lipici sau autocolant.</li>
+            <li>Tipărește pagina întreagă (full-bleed) și, la nevoie, taie marginea albă lăsată de imprimantă.</li>
+            <li>Pliază secțiunea de jos (inimioara) în sus, peste mijloc — inimioara se va citi drept.</li>
+            <li>Pune banii de dar.</li>
+            <li>Pliază secțiunea de sus (monogramă + „Vă mulțumim") în jos, peste mijloc, și lipește marginile laterale — textul se va citi drept.</li>
           </ol>
 
           <p style={{ marginTop: "1.25rem", fontSize: "0.72rem", color: c.muted }}>
-            Recomandare: tipărește pe carton (160–250 g/m²) pentru un plic rigid. Fața decorată (monogramă, dată, mesaj) rămâne în exterior; clapele sunt ascunse pe spate.
+            Plicul finit se ține în landscape: pe față rămâne „Familia ____", iar deasupra/dedesubt monograma, mesajul și inimioara (de aceea sus și jos sunt tipărite rotite 180°). Recomandare: tipărește pe carton (160–250 g/m²).
           </p>
         </div>
       </div>

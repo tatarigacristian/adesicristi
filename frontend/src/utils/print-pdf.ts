@@ -141,11 +141,9 @@ export async function buildCardPdf(pairs: CardPair[], options: PdfBuildOptions =
 }
 
 // ─── Money envelope (plic de dar) ───────────────────────────────
-// Unfolded DL envelope net (landscape): side flaps + top seal flap + bottom flap.
-// Net bounding box in mm (see /admin/plic-bani SVG, same viewBox).
-const ENV_NET_W_MM = 250;
-const ENV_NET_H_MM = 231;
-const ENV_MARGIN_MM = 6;
+// A4 PORTRAIT net (see /admin/plic-bani SVG, viewBox 210×297, A4 ratio): 3
+// horizontal sections; top & bottom fold over the middle into a landscape
+// envelope. Printed FULL-BLEED — the paper colour fills the whole page.
 
 export interface EnvelopePdfOptions {
   format?: "a4" | "a3";
@@ -153,23 +151,13 @@ export interface EnvelopePdfOptions {
 
 export async function buildEnvelopePdf(netPng: string, options: EnvelopePdfOptions = {}): Promise<Blob> {
   const format = options.format ?? "a4";
-  const doc = new jsPDF({ unit: "mm", format, orientation: "landscape", compress: true });
+  const doc = new jsPDF({ unit: "mm", format, orientation: "portrait", compress: true });
 
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
-  const usableW = pageW - 2 * ENV_MARGIN_MM;
-  const usableH = pageH - 2 * ENV_MARGIN_MM;
 
-  // Fit the net inside the page; never upscale beyond true DL (scale ≤ 1).
-  const scale = Math.min(usableW / ENV_NET_W_MM, usableH / ENV_NET_H_MM, 1);
-  const w = ENV_NET_W_MM * scale;
-  const h = ENV_NET_H_MM * scale;
-  const x = (pageW - w) / 2;
-  const y = (pageH - h) / 2;
-
-  // No page fill — the net PNG carries its own paper color, so the surrounding
-  // sheet stays white (less ink, clean cut edges show the colored envelope only).
-  doc.addImage(netPng, "PNG", x, y, w, h, undefined, "FAST");
+  // Full bleed: the net (A4 ratio) fills the entire page, colour edge to edge.
+  doc.addImage(netPng, "PNG", 0, 0, pageW, pageH, undefined, "FAST");
 
   return doc.output("blob");
 }
