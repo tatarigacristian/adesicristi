@@ -140,6 +140,58 @@ export async function buildCardPdf(pairs: CardPair[], options: PdfBuildOptions =
   return doc.output("blob");
 }
 
+// ─── Money envelope (plic de dar) ───────────────────────────────
+// Unfolded DL envelope net (landscape): side flaps + top seal flap + bottom flap.
+// Net bounding box in mm (see /admin/plic-bani SVG, same viewBox).
+const ENV_NET_W_MM = 250;
+const ENV_NET_H_MM = 231;
+const ENV_MARGIN_MM = 6;
+
+export interface EnvelopePdfOptions {
+  format?: "a4" | "a3";
+}
+
+export async function buildEnvelopePdf(netPng: string, options: EnvelopePdfOptions = {}): Promise<Blob> {
+  const format = options.format ?? "a4";
+  const doc = new jsPDF({ unit: "mm", format, orientation: "landscape", compress: true });
+
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const usableW = pageW - 2 * ENV_MARGIN_MM;
+  const usableH = pageH - 2 * ENV_MARGIN_MM;
+
+  // Fit the net inside the page; never upscale beyond true DL (scale ≤ 1).
+  const scale = Math.min(usableW / ENV_NET_W_MM, usableH / ENV_NET_H_MM, 1);
+  const w = ENV_NET_W_MM * scale;
+  const h = ENV_NET_H_MM * scale;
+  const x = (pageW - w) / 2;
+  const y = (pageH - h) / 2;
+
+  // No page fill — the net PNG carries its own paper color, so the surrounding
+  // sheet stays white (less ink, clean cut edges show the colored envelope only).
+  doc.addImage(netPng, "PNG", x, y, w, h, undefined, "FAST");
+
+  return doc.output("blob");
+}
+
+// ─── Cort de masă (table tent) ──────────────────────────────────────
+// Foaie A4 portret la dimensiune reală (full-bleed). Se tipărește la 100%,
+// se îndoaie la mijloc pe orizontală și stă în picioare pe masă.
+export async function buildTentPdf(sheetPng: string): Promise<Blob> {
+  return buildA4Pdf([sheetPng]);
+}
+
+// Una sau mai multe foi A4 portret full-bleed, câte o pagină per PNG.
+// Folosit pentru: toate mesele (paginate) și meniu+bar față-verso (2 pagini).
+export async function buildA4Pdf(sheetPngs: string[]): Promise<Blob> {
+  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
+  sheetPngs.forEach((png, i) => {
+    if (i > 0) doc.addPage();
+    doc.addImage(png, "PNG", 0, 0, A4_SHORT_MM, A4_LONG_MM, undefined, "FAST");
+  });
+  return doc.output("blob");
+}
+
 export async function buildPersonalisatClassicPdf(invitationPngs: string[], options: PdfBuildOptions = {}): Promise<Blob> {
   const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
 
