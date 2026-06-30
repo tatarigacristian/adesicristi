@@ -22,7 +22,7 @@ export interface BarItem {
 const CATEGORY_LABELS: Record<MenuItem["categorie"], string> = {
   aperitiv: "Aperitive",
   fel_principal: "Fel principal",
-  fel_secundar: "Fel secundar",
+  fel_secundar: "Gustare caldă",
   desert: "Desert",
 };
 const CATEGORY_ORDER: MenuItem["categorie"][] = ["aperitiv", "fel_principal", "fel_secundar", "desert"];

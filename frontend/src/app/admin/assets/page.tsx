@@ -72,7 +72,7 @@ const BAR_CATEGORY_LABELS: Record<BarItem["categorie"], string> = {
 const MENU_CATEGORY_LABELS: Record<MenuItem["categorie"], string> = {
   aperitiv: "Aperitiv",
   fel_principal: "Fel principal",
-  fel_secundar: "Fel secundar",
+  fel_secundar: "Gustare caldă",
   desert: "Desert",
 };
 
