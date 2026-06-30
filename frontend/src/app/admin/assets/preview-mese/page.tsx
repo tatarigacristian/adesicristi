@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { safeToPng } from "@/utils/safari-png";
 import { buildA4Pdf } from "@/utils/print-pdf";
+import { getNumberFontDataUri } from "@/utils/embed-font";
 import {
   TentA4Sheet,
   MasaFace,
@@ -33,6 +34,7 @@ function PreviewMeseContent() {
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [fontUri, setFontUri] = useState<string | null>(null);
   const [groupIdx, setGroupIdx] = useState(() => Math.floor((Math.max(1, initialTable) - 1) / 2));
   const visibleRef = useRef<HTMLDivElement>(null);
   const groupRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -48,6 +50,7 @@ function PreviewMeseContent() {
         setLoading(false);
       }
     })();
+    getNumberFontDataUri().then(setFontUri);
   }, []);
 
   if (loading) return <p className="text-sm text-text-muted text-center py-8">Se incarca...</p>;
@@ -73,8 +76,8 @@ function PreviewMeseContent() {
       const n = group[i];
       if (!n) return null;
       return {
-        front: <MasaFace number={n} colors={colors} numeMireasa={settings.nume_mireasa} numeMire={settings.nume_mire} />,
-        back: <MasaFace number={n} colors={colors} numeMireasa={settings.nume_mireasa} numeMire={settings.nume_mire} rotated />,
+        front: <MasaFace number={n} colors={colors} numeMireasa={settings.nume_mireasa} numeMire={settings.nume_mire} fontUri={fontUri} />,
+        back: <MasaFace number={n} colors={colors} numeMireasa={settings.nume_mireasa} numeMire={settings.nume_mire} rotated fontUri={fontUri} />,
         frontJustify: "center",
       };
     });
@@ -82,6 +85,13 @@ function PreviewMeseContent() {
   const downloadAllPdf = async () => {
     setSaving(true);
     try {
+      // Asigură fontul încorporat înainte de captură (altfel numărul ar ieși cu
+      // font de rezervă). Dacă tocmai s-a încărcat, lasă DOM-ul să se re-randeze.
+      const f = await getNumberFontDataUri();
+      if (f && f !== fontUri) {
+        setFontUri(f);
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      }
       const pngs: string[] = [];
       for (let gi = 0; gi < groups.length; gi++) {
         const el = groupRefs.current[gi];

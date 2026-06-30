@@ -118,30 +118,42 @@ export function MasaFace({
   numeMireasa,
   numeMire,
   rotated = false,
+  fontUri = null,
 }: {
   number: number;
   colors: TentColors;
   numeMireasa: string;
   numeMire: string;
   rotated?: boolean;
+  fontUri?: string | null;
 }) {
   const { text, ornament } = colors;
-  const W = 180;
-  const H = 330;
-  const cx = W / 2;
-  const ovalCy = 128;
+  // Ovalul + numărul ca SVG: `dominant-baseline="central"` centrează cifra
+  // fiabil (browserul rasterizează SVG-ul corect; textul HTML era așezat ~37px
+  // prea jos de html2canvas). Fontul Montserrat 700 e încorporat ca data-URI
+  // (fontUri) fiindcă SVG-ul rasterizat n-are acces la fonturile paginii.
+  // „Ade & Cristi" rămâne HTML, jos. Spatele rotit 180° via CSS.
   return (
-    <svg width={W * 0.92} viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
-      <g transform={rotated ? `rotate(180 ${cx} 165)` : undefined}>
-        <ellipse cx={cx} cy={ovalCy} rx={57} ry={66} fill="none" stroke={ornament} strokeWidth="2" />
-        <text x={cx} y={ovalCy} textAnchor="middle" dominantBaseline="central" fontFamily={FONT_SANS} fontSize="62" fontWeight="700" fill={text}>
-          {number}
-        </text>
-        <text x={cx} y={302} textAnchor="middle" fontFamily={FONT_SCRIPT} fontSize="29" fill={ornament}>
-          {numeMireasa || "Ade"} &amp; {numeMire || "Cristi"}
-        </text>
-      </g>
-    </svg>
+    <div style={{ position: "absolute", inset: 14, transform: rotated ? "rotate(180deg)" : undefined }}>
+      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width={124} height={124} viewBox="0 0 124 124" style={{ display: "block" }} xmlns="http://www.w3.org/2000/svg">
+          {fontUri && (
+            <defs>
+              <style>{`@font-face{font-family:'masanum';src:url(${fontUri}) format('woff2');font-weight:700;}`}</style>
+            </defs>
+          )}
+          <circle cx="62" cy="62" r="60" fill="none" stroke={ornament} strokeWidth="2" />
+          <text x="62" y="62" textAnchor="middle" dominantBaseline="central" fontFamily="'masanum', 'Montserrat', sans-serif" fontSize="60" fontWeight="700" fill={text}>
+            {number}
+          </text>
+        </svg>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 20, textAlign: "center" }}>
+        <span style={{ fontFamily: FONT_SCRIPT, fontSize: 30, color: ornament, lineHeight: 1 }}>
+          {numeMireasa || "Ade"} & {numeMire || "Cristi"}
+        </span>
+      </div>
+    </div>
   );
 }
 
