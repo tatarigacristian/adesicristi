@@ -263,19 +263,18 @@ export const TentA4Sheet = forwardRef<HTMLDivElement, { colors: TentColors; tent
   }
 );
 
-// ─── Foaia A4 cu 4 carduri plate (meniu/bar) — 2×2, fără pliere ────────
-// Se printează față-verso (meniu pe o față, bar pe verso), se taie în 4 și
-// se pune câte un card în farfurie.
+// ─── Foaia A4 cu 2 carduri plate (meniu/bar) — 2 coloane una lângă alta ─
+// Cele 2 carduri sunt așezate orizontal (2 coloane egale, full-height minus
+// CARD_PAD_Y sus/jos). Se printează față-verso (meniu pe o față, bar pe verso),
+// se taie în 2 coloane și se pune câte un card în farfurie. Cardurile fiind
+// copii identice, fețele se aliniază automat la duplex indiferent de ordine.
+const FLAT_CARD_COLS = 2;
+const CARD_PAD_Y = 100; // px padding sus/jos pe foaie (în spațiul 540×764)
+
 export const FlatCardSheet = forwardRef<HTMLDivElement, { colors: TentColors; card: React.ReactNode }>(
   function FlatCardSheet({ colors, card }, ref) {
-    const CW = SHEET_W / 2;
-    const CH = SHEET_H / 2;
-    const positions: [number, number][] = [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [1, 1],
-    ];
+    const CW = SHEET_W / FLAT_CARD_COLS;
+    const CH = SHEET_H - 2 * CARD_PAD_Y;
     return (
       <div
         ref={ref}
@@ -289,8 +288,8 @@ export const FlatCardSheet = forwardRef<HTMLDivElement, { colors: TentColors; ca
           overflow: "hidden",
         }}
       >
-        {positions.map(([c, r], i) => (
-          <div key={i} style={{ position: "absolute", left: c * CW, top: r * CH, width: CW, height: CH }}>
+        {Array.from({ length: FLAT_CARD_COLS }).map((_, i) => (
+          <div key={i} style={{ position: "absolute", left: i * CW, top: CARD_PAD_Y, width: CW, height: CH }}>
             {/* cadru subțire */}
             <div style={{ position: "absolute", inset: 8, border: `1px solid ${lighten(colors.ornament, 22)}`, pointerEvents: "none" }} />
             {/* aria cardului (înălțime explicită — html2canvas nu rezolvă bine
@@ -300,9 +299,10 @@ export const FlatCardSheet = forwardRef<HTMLDivElement, { colors: TentColors; ca
           </div>
         ))}
 
-        {/* Ghidaje de tăiere — aproape invizibile */}
-        <div style={{ position: "absolute", top: 0, left: CW, height: SHEET_H, borderLeft: `1px dashed ${lighten(colors.ornament, 76)}` }} />
-        <div style={{ position: "absolute", left: 0, top: CH, width: SHEET_W, borderTop: `1px dashed ${lighten(colors.ornament, 76)}` }} />
+        {/* Ghidaje de tăiere verticale între coloane — aproape invizibile */}
+        {Array.from({ length: FLAT_CARD_COLS - 1 }).map((_, i) => (
+          <div key={`cut-${i}`} style={{ position: "absolute", top: 0, left: (i + 1) * CW, height: SHEET_H, borderLeft: `1px dashed ${lighten(colors.ornament, 76)}` }} />
+        ))}
       </div>
     );
   }

@@ -118,8 +118,8 @@ function PreviewBarContent() {
       </div>
 
       <p className="text-[0.7rem] text-text-muted/80 text-center mb-5 max-w-md mx-auto leading-relaxed">
-        4 carduri pe foaie A4 (2×2). Se printeaza fata-verso: meniul pe o fata, barul pe verso.
-        Se taie in 4 si se pune cate un card in farfurie. PDF-ul are pagina 1 = meniu, pagina 2 = bar.
+        2 carduri pe foaie A4 (2 coloane, 100px padding sus/jos). Se printeaza fata-verso: meniul pe o fata,
+        barul pe verso. Se taie in 2 coloane si se pune cate un card in farfurie. PDF-ul are pagina 1 = meniu, pagina 2 = bar.
       </p>
 
       {/* Preview — verso cu barul */}
