@@ -40,9 +40,11 @@ const QrSheet = forwardRef<HTMLDivElement, QrSheetProps>(function QrSheet({ colo
         <div key={i} style={{ position: "absolute", left: c * CW, top: r * CH, width: CW, height: CH }}>
           {/* conținut — centrare orizontală prin text-align + inline-block (fiabil în html2canvas) */}
           <div style={{ position: "absolute", inset: 0, boxSizing: "border-box", paddingTop: 30, textAlign: "center" }}>
-            <div style={{ fontFamily: FONT_SCRIPT, fontSize: 22, fontWeight: 700, color: colors.ornament, lineHeight: 1 }}>{names}</div>
+            {/* lineHeight generos ca descenderele fontului script să încapă în cutia
+                liniei — altfel html2canvas le lipește de codul QR în PDF */}
+            <div style={{ fontFamily: FONT_SCRIPT, fontSize: 22, fontWeight: 700, color: colors.ornament, lineHeight: 1.5 }}>{names}</div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={qrDataUrl} alt="" style={{ width: 112, height: 112, display: "inline-block", marginTop: 12, marginBottom: 12 }} />
+            <img src={qrDataUrl} alt="" style={{ width: 112, height: 112, display: "inline-block", marginTop: 16, marginBottom: 12 }} />
             <div style={{ fontFamily: FONT_SANS, fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: colors.muted, lineHeight: 1.4 }}>
               Scanează pentru
               <br />
