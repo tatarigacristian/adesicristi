@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MicrophoneStage, Champagne, MusicNotes, CookingPot, ForkKnife, Cake, type Icon } from "@phosphor-icons/react";
+import { MicrophoneStage, Champagne, MusicNotes, CookingPot, ForkKnife, Cake, Clock, Martini, type Icon } from "@phosphor-icons/react";
 import { WeddingSettings, applyThemeColors, getCoupleNames } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
@@ -40,11 +40,11 @@ const MENU_CAT: { key: MenuItem["categorie"]; label: string }[] = [
 ];
 const BAR_ORDER: Record<BarItem["categorie"], number> = { alcoolic: 0, non_alcoolic: 1 };
 
-const TABS = [
-  { key: "program", label: "Program" },
-  { key: "meniu", label: "Meniu" },
-  { key: "bar", label: "Bar" },
-] as const;
+const TABS: { key: "program" | "meniu" | "bar"; label: string; Icon: Icon }[] = [
+  { key: "program", label: "Program", Icon: Clock },
+  { key: "meniu", label: "Meniu", Icon: ForkKnife },
+  { key: "bar", label: "Bar", Icon: Martini },
+];
 type TabKey = (typeof TABS)[number]["key"];
 
 function splitLines(s: string | null): string[] {
@@ -146,19 +146,21 @@ export default function ProgramPage() {
         <div className="flex items-center justify-center gap-6 mb-10" role="tablist">
           {TABS.map((t) => {
             const active = tab === t.key;
+            const TabIcon = t.Icon;
             return (
               <button
                 key={t.key}
                 role="tab"
                 aria-selected={active}
                 onClick={() => setTab(t.key)}
-                className={`pb-1.5 text-xs uppercase tracking-[0.2em] border-b-2 transition-colors cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 pb-1.5 text-xs uppercase tracking-[0.2em] border-b-2 transition-colors cursor-pointer ${
                   active
                     ? "text-text-heading border-accent"
                     : "text-text-muted border-transparent hover:text-text-heading"
                 }`}
                 style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}
               >
+                <TabIcon size={15} weight="fill" className={active ? "text-accent-rose" : ""} />
                 {t.label}
               </button>
             );
