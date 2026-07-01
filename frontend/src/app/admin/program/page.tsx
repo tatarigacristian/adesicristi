@@ -24,18 +24,18 @@ function ProgramFormModal({
 }: {
   editItem: ProgramItem | null;
   onClose: () => void;
-  onSave: (data: { titlu: string; ora: string; descriere: string; iconita: string; ordine: number }) => void;
+  onSave: (data: { titlu: string; ora: string; descriere: string; iconita: string }) => void;
   saving: boolean;
 }) {
   const [titlu, setTitlu] = useState(editItem?.titlu ?? "");
-  const [ora, setOra] = useState(editItem?.ora ?? "");
+  // ora vine din DB ca "HH:MM:SS" (TIME); input-ul type=time folosește "HH:MM".
+  const [ora, setOra] = useState((editItem?.ora ?? "").slice(0, 5));
   const [descriere, setDescriere] = useState(editItem?.descriere ?? "");
   const [iconita, setIconita] = useState(editItem?.iconita ?? "star");
-  const [ordine, setOrdine] = useState(editItem?.ordine ?? 0);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onSave({ titlu, ora, descriere, iconita, ordine });
+    onSave({ titlu, ora, descriere, iconita });
   }
 
   return (
@@ -50,7 +50,7 @@ function ProgramFormModal({
           <div className="px-5 overflow-y-auto flex-1 space-y-3">
             <div>
               <label className="block text-xs text-text-muted mb-1">Ora</label>
-              <input type="text" value={ora} onChange={(e) => setOra(e.target.value)} required placeholder="ex. 19:00"
+              <input type="time" value={ora} onChange={(e) => setOra(e.target.value)} required
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
             </div>
             <div>
@@ -75,11 +75,6 @@ function ProgramFormModal({
                   </button>
                 ))}
               </div>
-            </div>
-            <div>
-              <label className="block text-xs text-text-muted mb-1">Ordine (0 = primul)</label>
-              <input type="number" value={ordine} onChange={(e) => setOrdine(Number(e.target.value))} min="0"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-accent transition-colors" />
             </div>
           </div>
           <div className="p-5 pt-3 border-t border-border-light flex gap-3">
@@ -115,7 +110,7 @@ export default function AdminProgramPage() {
 
   useEffect(() => { if (token) load(); }, [token, load]);
 
-  const handleSave = useCallback(async (data: { titlu: string; ora: string; descriere: string; iconita: string; ordine: number }) => {
+  const handleSave = useCallback(async (data: { titlu: string; ora: string; descriere: string; iconita: string }) => {
     setSaving(true);
     try {
       const method = editItem ? "PUT" : "POST";

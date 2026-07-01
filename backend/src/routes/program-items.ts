@@ -16,7 +16,8 @@ export async function programItemRoutes(fastify: FastifyInstance) {
   fastify.get('/api/admin/program-items', { preHandler: authenticate }, async () => {
     const pool = getPool();
     const [rows] = await pool.execute<RowDataPacket[]>(
-      'SELECT * FROM program_items ORDER BY ordine ASC, id ASC'
+      // Cronologic, cu momentele de după miezul nopții (< 06:00) la final.
+      "SELECT * FROM program_items ORDER BY (ora < '06:00:00'), ora ASC, id ASC"
     );
     return rows;
   });
@@ -25,7 +26,8 @@ export async function programItemRoutes(fastify: FastifyInstance) {
   fastify.get('/api/program-items', async () => {
     const pool = getPool();
     const [rows] = await pool.execute<RowDataPacket[]>(
-      'SELECT * FROM program_items ORDER BY ordine ASC, id ASC'
+      // Cronologic, cu momentele de după miezul nopții (< 06:00) la final.
+      "SELECT * FROM program_items ORDER BY (ora < '06:00:00'), ora ASC, id ASC"
     );
     return rows;
   });

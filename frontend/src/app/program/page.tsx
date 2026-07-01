@@ -200,7 +200,7 @@ export default function ProgramPage() {
                       className="text-accent-rose font-semibold text-base leading-none mb-1"
                       style={{ fontFamily: "var(--font-sans)", fontVariantNumeric: "tabular-nums", letterSpacing: "0.05em" }}
                     >
-                      {item.ora}
+                      {(item.ora || "").slice(0, 5)}
                     </div>
                     <div className="serif-font text-2xl text-text-heading leading-snug">{item.titlu}</div>
                     {item.descriere && item.descriere.trim() && (
