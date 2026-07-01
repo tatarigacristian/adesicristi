@@ -1,22 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MicrophoneStage, Champagne, MusicNotes, CookingPot, ForkKnife, Cake, Clock, Martini, type Icon } from "@phosphor-icons/react";
+import { ForkKnife, Clock, Martini, type Icon } from "@phosphor-icons/react";
+import { programIcon } from "@/utils/program-icons";
 import { WeddingSettings, applyThemeColors, getCoupleNames } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
 
-// Programul serii. Editabil aici (sursă unică — pagina admin doar generează QR-uri
-// care trimit către această pagină).
-const PROGRAM: { time: string; label: string; Icon: Icon }[] = [
-  { time: "19:00", label: "Invitat special Marej", Icon: MicrophoneStage },
-  { time: "20:00", label: "Aperitiv", Icon: Champagne },
-  { time: "20:30", label: "Primul dans", Icon: MusicNotes },
-  { time: "22:00", label: "Gustare caldă", Icon: CookingPot },
-  { time: "00:00", label: "Fel principal", Icon: ForkKnife },
-  { time: "01:00", label: "Prezentare tort & artificii", Icon: Cake },
-];
-
+interface ProgramItem {
+  id: number;
+  titlu: string;
+  ora: string;
+  descriere: string | null;
+  iconita: string;
+  ordine: number;
+}
 interface MenuItem {
   id: number;
   titlu: string;
@@ -92,6 +90,7 @@ function ListSection({ title, lines, boldName = false }: { title: string; lines:
 
 export default function ProgramPage() {
   const [settings, setSettings] = useState<WeddingSettings | null>(null);
+  const [programItems, setProgramItems] = useState<ProgramItem[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [barItems, setBarItems] = useState<BarItem[]>([]);
   const [tab, setTab] = useState<TabKey>("program");
@@ -100,8 +99,9 @@ export default function ProgramPage() {
   useEffect(() => {
     (async () => {
       try {
-        const [sRes, mRes, bRes] = await Promise.all([
+        const [sRes, pRes, mRes, bRes] = await Promise.all([
           fetch(`${API_URL}/api/wedding-settings`),
+          fetch(`${API_URL}/api/program-items`),
           fetch(`${API_URL}/api/menu-items`),
           fetch(`${API_URL}/api/bar-items`),
         ]);
@@ -112,6 +112,7 @@ export default function ProgramPage() {
         } else {
           applyThemeColors(null);
         }
+        if (pRes.ok) setProgramItems(await pRes.json());
         if (mRes.ok) setMenuItems(await mRes.json());
         if (bRes.ok) setBarItems(await bRes.json());
       } catch {
@@ -181,11 +182,11 @@ export default function ProgramPage() {
         {/* Program */}
         {tab === "program" && (
           <ol className="relative">
-            {PROGRAM.map((item, i) => {
-              const ItemIcon = item.Icon;
+            {programItems.map((item, i) => {
+              const ItemIcon = programIcon(item.iconita);
               return (
-                <li key={i} className="relative pl-16 pb-9 last:pb-0">
-                  {i < PROGRAM.length - 1 && (
+                <li key={item.id} className="relative pl-16 pb-9 last:pb-0">
+                  {i < programItems.length - 1 && (
                     <span className="absolute left-6 -translate-x-1/2 top-[52px] -bottom-1 w-px bg-border-light" aria-hidden />
                   )}
                   <span
@@ -199,13 +200,19 @@ export default function ProgramPage() {
                       className="text-accent-rose font-semibold text-base leading-none mb-1"
                       style={{ fontFamily: "var(--font-sans)", fontVariantNumeric: "tabular-nums", letterSpacing: "0.05em" }}
                     >
-                      {item.time}
+                      {item.ora}
                     </div>
-                    <div className="serif-font text-2xl text-text-heading leading-snug">{item.label}</div>
+                    <div className="serif-font text-2xl text-text-heading leading-snug">{item.titlu}</div>
+                    {item.descriere && item.descriere.trim() && (
+                      <div className="serif-font text-base text-text-muted leading-snug mt-1">{item.descriere}</div>
+                    )}
                   </div>
                 </li>
               );
             })}
+            {programItems.length === 0 && (
+              <p className="serif-font text-lg text-text-muted italic text-center">Programul va fi disponibil în curând.</p>
+            )}
           </ol>
         )}
 

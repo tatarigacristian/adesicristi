@@ -11,6 +11,7 @@ import { serviceRoutes } from './routes/services.js';
 import { invitationLogRoutes } from './routes/invitation-logs.js';
 import { barItemRoutes } from './routes/bar-items.js';
 import { menuItemRoutes } from './routes/menu-items.js';
+import { programItemRoutes } from './routes/program-items.js';
 import { dbDumpRoutes } from './routes/db-dump.js';
 import { runMigrations } from './db/migrate.js';
 
@@ -40,6 +41,7 @@ async function start() {
   await fastify.register(invitationLogRoutes);
   await fastify.register(barItemRoutes);
   await fastify.register(menuItemRoutes);
+  await fastify.register(programItemRoutes);
   await fastify.register(dbDumpRoutes);
 
   fastify.get('/api/health', async () => {
