@@ -206,7 +206,7 @@ export default function PlicBaniPage() {
       <h1 className="script-font text-3xl text-text-heading mb-1">Plic de dar</h1>
       <p className="text-sm text-text-muted mb-6">
         Template pe A4 portret, full-bleed (culoarea umple toată pagina), în 3 secțiuni orizontale. Sus (monogramă + „Vă mulțumim...") și jos (inimioara) sunt
-        rotite 180°, ca să se citească drept după ce se pliază peste mijloc („Familia ____"). Plicul finit se citește în landscape și ține banii. Pliază pe liniile punctate și lipește.
+        rotite 180°, ca să se citească drept după ce se pliază peste mijloc („Familia ____"). Plicul finit se citește în landscape și ține banii. Pliază în trei și lipește.
       </p>
 
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center", marginBottom: "1.5rem" }}>
