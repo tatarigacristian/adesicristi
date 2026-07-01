@@ -58,8 +58,9 @@ function isRealTitle(t: string | null): boolean {
   return v.length > 0 && v !== ".";
 }
 
-/* O secțiune de listă (categorie meniu / subcategorie bar): titlu mic + rânduri. */
-function ListSection({ title, lines }: { title: string; lines: string[] }) {
+/* O secțiune de listă (categorie meniu / subcategorie bar): titlu mic + rânduri.
+   `boldName` — la bar, numele băuturii (partea cu MAJUSCULE dinaintea „–") e negru. */
+function ListSection({ title, lines, boldName = false }: { title: string; lines: string[]; boldName?: boolean }) {
   return (
     <div className="mb-9 last:mb-0">
       <h3
@@ -69,11 +70,21 @@ function ListSection({ title, lines }: { title: string; lines: string[] }) {
         {title}
       </h3>
       <ul className="space-y-3">
-        {lines.map((line, i) => (
-          <li key={i} className="serif-font text-lg text-text-heading leading-snug text-left">
-            {line}
-          </li>
-        ))}
+        {lines.map((line, i) => {
+          const dash = boldName ? line.indexOf("–") : -1;
+          return (
+            <li key={i} className="serif-font text-lg text-text-heading leading-snug text-left">
+              {dash !== -1 ? (
+                <>
+                  <span className="text-black font-medium">{line.slice(0, dash).trim()}</span>{" "}
+                  {line.slice(dash)}
+                </>
+              ) : (
+                line
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
@@ -224,7 +235,7 @@ export default function ProgramPage() {
                 : item.categorie === "alcoolic"
                   ? "Băuturi alcoolice"
                   : "Băuturi non-alcoolice";
-              return <ListSection key={item.id} title={title} lines={lines} />;
+              return <ListSection key={item.id} title={title} lines={lines} boldName />;
             })}
             {sortedBar.length === 0 && (
               <p className="serif-font text-lg text-text-muted italic text-center">Barul va fi disponibil în curând.</p>
