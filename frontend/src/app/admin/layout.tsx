@@ -73,7 +73,7 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
 
 // ─── Sidebar Nav Items ───────────────────────────────────
 
-import { SquaresFour, UsersThree, CheckCircle, GridFour, Wallet, Package, Gear, List, ArrowClockwise, SignOut, Printer, Envelope } from "@phosphor-icons/react";
+import { SquaresFour, UsersThree, CheckCircle, GridFour, Wallet, Package, Gear, List, ArrowClockwise, SignOut, Printer, Envelope, QrCode } from "@phosphor-icons/react";
 
 const NAV_ITEMS: { href: string; label: string; icon: React.ReactNode }[] = [
   { href: "/admin/dashboard", label: "Panou de comanda", icon: <SquaresFour size={18} weight="duotone" /> },
@@ -84,6 +84,7 @@ const NAV_ITEMS: { href: string; label: string; icon: React.ReactNode }[] = [
   { href: "/admin/assets", label: "Resurse", icon: <Package size={18} weight="duotone" /> },
   { href: "/admin/print", label: "Print", icon: <Printer size={18} weight="duotone" /> },
   { href: "/admin/plic-bani", label: "Plic de dar", icon: <Envelope size={18} weight="duotone" /> },
+  { href: "/admin/program-qr", label: "Program QR", icon: <QrCode size={18} weight="duotone" /> },
   { href: "/admin/setari", label: "Setari", icon: <Gear size={18} weight="duotone" /> },
 ];
 
