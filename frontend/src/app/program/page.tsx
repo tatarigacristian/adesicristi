@@ -173,7 +173,7 @@ export default function ProgramPage() {
               return (
                 <li key={i} className="relative pl-16 pb-9 last:pb-0">
                   {i < PROGRAM.length - 1 && (
-                    <span className="absolute left-[23px] top-[52px] -bottom-1 w-px bg-border-light" aria-hidden />
+                    <span className="absolute left-6 -translate-x-1/2 top-[52px] -bottom-1 w-px bg-border-light" aria-hidden />
                   )}
                   <span
                     className="absolute left-0 top-0 w-12 h-12 rounded-full border border-accent bg-background-soft flex items-center justify-center"
