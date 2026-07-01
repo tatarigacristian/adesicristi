@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ForkKnife, Clock, Martini, type Icon } from "@phosphor-icons/react";
+import { ForkKnife, Clock, Martini, Camera, WhatsappLogo, Images, type Icon } from "@phosphor-icons/react";
 import { programIcon } from "@/utils/program-icons";
 import { WeddingSettings, applyThemeColors, getCoupleNames } from "@/utils/settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3011";
+const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/EhQzj1aSv9T3RvHnOqqz0n?s=hd&p=i&mlu=1&amv=1";
+const GOOGLE_PHOTOS_URL = "https://photos.app.goo.gl/LbNvnEwdqSGP8hcXA";
 
 interface ProgramItem {
   id: number;
@@ -38,10 +40,11 @@ const MENU_CAT: { key: MenuItem["categorie"]; label: string }[] = [
 ];
 const BAR_ORDER: Record<BarItem["categorie"], number> = { alcoolic: 0, non_alcoolic: 1 };
 
-const TABS: { key: "program" | "meniu" | "bar"; label: string; Icon: Icon }[] = [
+const TABS: { key: "program" | "meniu" | "bar" | "poze"; label: string; Icon: Icon }[] = [
   { key: "program", label: "Program", Icon: Clock },
   { key: "meniu", label: "Meniu", Icon: ForkKnife },
   { key: "bar", label: "Bar", Icon: Martini },
+  { key: "poze", label: "Poze", Icon: Camera },
 ];
 type TabKey = (typeof TABS)[number]["key"];
 
@@ -155,7 +158,7 @@ export default function ProgramPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center justify-center gap-6 mb-10" role="tablist">
+        <div className="grid grid-cols-4 gap-2 mb-10" role="tablist">
           {TABS.map((t) => {
             const active = tab === t.key;
             const TabIcon = t.Icon;
@@ -165,15 +168,15 @@ export default function ProgramPage() {
                 role="tab"
                 aria-selected={active}
                 onClick={() => setTab(t.key)}
-                className={`inline-flex items-center gap-1.5 pb-1.5 text-xs uppercase tracking-[0.2em] border-b-2 transition-colors cursor-pointer ${
+                className={`flex flex-col items-center justify-center gap-1.5 rounded-xl py-3 px-1 border transition-colors cursor-pointer ${
                   active
-                    ? "text-text-heading border-accent"
-                    : "text-text-muted border-transparent hover:text-text-heading"
+                    ? "bg-accent border-accent text-white shadow-sm"
+                    : "bg-accent/10 border-transparent text-text-muted hover:bg-accent/20 hover:text-text-heading"
                 }`}
                 style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}
               >
-                <TabIcon size={15} weight="fill" className={active ? "text-accent-rose" : ""} />
-                {t.label}
+                <TabIcon size={20} weight="fill" className={active ? "text-white" : "text-accent-rose"} />
+                <span className="text-[0.62rem] uppercase tracking-[0.08em]">{t.label}</span>
               </button>
             );
           })}
@@ -247,6 +250,55 @@ export default function ProgramPage() {
             {sortedBar.length === 0 && (
               <p className="serif-font text-lg text-text-muted italic text-center">Barul va fi disponibil în curând.</p>
             )}
+          </div>
+        )}
+
+        {/* Poze */}
+        {tab === "poze" && (
+          <div className="text-center">
+            <span
+              className="w-14 h-14 rounded-full border border-accent bg-background-soft flex items-center justify-center mx-auto mb-6"
+              aria-hidden
+            >
+              <Camera size={28} weight="fill" className="text-accent-rose" />
+            </span>
+            <h3 className="serif-font text-2xl text-text-heading leading-snug mb-3">
+              Ajută-ne să adunăm amintirile
+            </h3>
+            <p className="serif-font text-lg text-text-muted leading-relaxed mb-8">
+              Adună-ți pozele și clipurile din ziua nunții în cele două locuri de mai jos —
+              alege cum îți e mai comod.
+            </p>
+
+            {/* Google Photos — galeria la calitate maximă */}
+            <a
+              href={GOOGLE_PHOTOS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2.5 w-full rounded-full bg-accent text-white px-6 py-4 text-xs uppercase tracking-[0.2em] transition-opacity hover:opacity-90"
+              style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}
+            >
+              <Images size={22} weight="fill" />
+              Albumul de poze
+            </a>
+            <p className="text-sm text-text-muted leading-relaxed mt-3 mb-8">
+              Vezi și adaugă toate pozele într-un singur loc, la calitate maximă.
+            </p>
+
+            {/* WhatsApp — poze rapide + discuții */}
+            <a
+              href={WHATSAPP_GROUP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-center gap-2.5 w-full rounded-full border border-accent text-text-heading px-6 py-4 text-xs uppercase tracking-[0.2em] transition-colors hover:bg-accent hover:text-white"
+              style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}
+            >
+              <WhatsappLogo size={22} weight="fill" className="text-accent-rose group-hover:text-white" />
+              Grupul de WhatsApp
+            </a>
+            <p className="text-sm text-text-muted leading-relaxed mt-3">
+              Pentru poze rapide și povești împreună.
+            </p>
           </div>
         )}
       </div>
