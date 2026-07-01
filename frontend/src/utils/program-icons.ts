@@ -1,7 +1,9 @@
 import {
+  Church, Bank, HandsPraying, Certificate, Diamond, Bell, Bird, MapPin,
   MicrophoneStage, Champagne, Cheers, Wine, Martini, Coffee,
   MusicNotes, DiscoBall, ForkKnife, CookingPot, Cake, Heart,
-  Star, Clock, Confetti, Sparkle, Fire, Camera, Gift, Flower, Balloon, Car,
+  Star, Clock, Confetti, Sparkle, Fire, Camera, Gift, Flower, Balloon,
+  Butterfly, Van, Car, SunHorizon, MoonStars,
   type Icon,
 } from "@phosphor-icons/react";
 
@@ -9,6 +11,16 @@ import {
 // (coloana `iconita`); componenta Phosphor e rezolvată aici. Folosit atât de
 // pagina publică /program, cât și de selectorul din admin.
 export const PROGRAM_ICONS: { key: string; label: string; Icon: Icon }[] = [
+  // Ceremonie / nuntă
+  { key: "church", label: "Biserică", Icon: Church },
+  { key: "townhall", label: "Primărie", Icon: Bank },
+  { key: "ceremony", label: "Cununie", Icon: HandsPraying },
+  { key: "certificate", label: "Acte", Icon: Certificate },
+  { key: "rings", label: "Verighete", Icon: Diamond },
+  { key: "bells", label: "Clopote", Icon: Bell },
+  { key: "dove", label: "Porumbei", Icon: Bird },
+  { key: "location", label: "Locație", Icon: MapPin },
+  // Petrecere / recepție
   { key: "microphone", label: "Microfon", Icon: MicrophoneStage },
   { key: "champagne", label: "Șampanie", Icon: Champagne },
   { key: "cheers", label: "Toast", Icon: Cheers },
@@ -29,7 +41,11 @@ export const PROGRAM_ICONS: { key: string; label: string; Icon: Icon }[] = [
   { key: "camera", label: "Foto", Icon: Camera },
   { key: "gift", label: "Cadou", Icon: Gift },
   { key: "flower", label: "Floare", Icon: Flower },
+  { key: "butterfly", label: "Fluture", Icon: Butterfly },
   { key: "balloon", label: "Balon", Icon: Balloon },
+  { key: "sunset", label: "Apus", Icon: SunHorizon },
+  { key: "moon", label: "Noapte", Icon: MoonStars },
+  { key: "van", label: "Microbuz", Icon: Van },
   { key: "car", label: "Plecare", Icon: Car },
 ];
 
