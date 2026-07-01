@@ -152,9 +152,22 @@ export function BarCard({ items, colors }: { items: BarItem[]; colors: TentColor
         return (
           <div key={item.id} style={{ marginBottom: idx === sorted.length - 1 ? 0 : 10 }}>
             <p style={labelStyle(colors)}>{header}</p>
-            {splitLines(item.descriere).map((line, i) => (
-              <p key={i} style={descStyle(colors)}>{line}</p>
-            ))}
+            {splitLines(item.descriere).map((line, i) => {
+              // Numele băuturii (partea cu MAJUSCULE dinaintea „–") — negru, ca în /program.
+              const dash = line.indexOf("–");
+              return (
+                <p key={i} style={descStyle(colors)}>
+                  {dash !== -1 ? (
+                    <>
+                      <span style={{ color: "#000", fontWeight: 700 }}>{line.slice(0, dash).trim()}</span>{" "}
+                      {line.slice(dash)}
+                    </>
+                  ) : (
+                    line
+                  )}
+                </p>
+              );
+            })}
           </div>
         );
       })}
